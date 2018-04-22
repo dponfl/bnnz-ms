@@ -34,7 +34,7 @@ module.exports.routes = {
 
   '/': {
     view: 'homepage'
-  }
+  },
 
   /***************************************************************************
   *                                                                          *
@@ -45,5 +45,12 @@ module.exports.routes = {
   * for configuration options and examples.                                  *
   *                                                                          *
   ***************************************************************************/
+
+  /**
+   * coreModule
+   */
+
+  'POST /core/newsubscription/start': 'CoreModuleController.newSubscription',
+  'POST /core/newsubscription/startone': 'TestController.someOne',
 
 };

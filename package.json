@@ -24,6 +24,7 @@
     "lodash": "^4.17.5",
     "node-telegram-bot-api": "^0.30.0",
     "rc": "1.0.1",
+    "request-promise": "^4.2.2",
     "sails": "~0.12.14",
     "sails-disk": "~0.10.9"
   },
