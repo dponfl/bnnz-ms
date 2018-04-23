@@ -34,7 +34,7 @@ module.exports = {
 
       setTimeout(function () {
         console.log('within setTimeout short...');
-        res.json(200, {result: 'ok', data: {a: 'A2', b: 'B2'}});
+        res.json(200, {result: 'ok', data: params});
         // return res.badRequest('bla-bla-bla');
       },2000);
 

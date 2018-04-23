@@ -5,7 +5,7 @@
   "description": "Bonanza Inst application",
   "keywords": [],
   "engines": {
-    "node": "6.9.2"
+    "node": "8.11.1"
   },
   "dependencies": {
     "grunt": "1.0.1",

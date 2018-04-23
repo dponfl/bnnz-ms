@@ -25,7 +25,7 @@ module.exports = {
 
     setTimeout(function () {
       console.log('within setTimeout long...');
-      res.json(200, {result: 'ok', data: {a: 'A', b: 'B'}});
+      res.json(200, {result: 'ok', data: params});
     },7000);
 
     // return res.json(200, {result: 'ok', data: {a: 'A', b: 'B'}});
