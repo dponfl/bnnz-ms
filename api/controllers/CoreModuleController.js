@@ -5,6 +5,9 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+const messegeBrokerTelegramServices = require('../services/messegeBrokerTelegram');
+const coreModuleServices = require('../services/coreModule');
+
 "use strict";
 
 
