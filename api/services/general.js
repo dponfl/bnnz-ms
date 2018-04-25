@@ -14,19 +14,6 @@ module.exports = {
     console.dir(url);
     console.dir(params);
 
-    console.log('_.some: ' + _.some(possibleMethods, (val, index, collection) => {
-      // console.log('method: ');
-      // console.dir(method);
-      // console.log('val: ');
-      // console.dir(val);
-      // console.log('index: ');
-      // console.dir(index);
-      // console.log('collection: ');
-      // console.dir(collection);
-
-        return val === method;
-      }));
-
     return new Promise((resolve, reject) => {
       if (!_.some(possibleMethods, (val) => {
         return val === method;
@@ -41,9 +28,7 @@ module.exports = {
       let options = {
         method: method,
         uri: sails.config.HOST + url,
-        body: {
-          param: params
-        },
+        body: params,
         json: true
       };
 
