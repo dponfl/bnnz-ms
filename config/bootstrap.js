@@ -15,7 +15,7 @@ module.exports.bootstrap = function(cb) {
   // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
 
   // require('../assets/js/coreNodes/bot');
-  require('../assets/js/coreNodes/chatListeners/telegramListener.js')
+  require('../assets/js/coreNodes/chatListeners/telegramListener.js');
 
   cb();
 };

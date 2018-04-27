@@ -22,8 +22,8 @@ function onStartCommand() {
 
   bot.onText(/ref(=|\s?)(.+)/, (msg, [source, match1, match2]) => {
 
-    // source = 'ref ABC=123' for '/ref ABC=123' command
-    // match = 'ABC=123' for '/ref ABC=123' command
+    // source = 'ref=ABC123' for '/ref=ABC123' command
+    // match2 = 'ABC123' for '/ref=ABC123' or /ref ABC123 command
 
     console.log('Bot got the following message:');
     console.dir(msg);
@@ -46,8 +46,6 @@ function onStartCommand() {
       ref: match2,
     };
 
-    console.log('11111111111111111111111111111111111111111111111111');
-
     (async () => {
       try {
 
@@ -58,15 +56,15 @@ function onStartCommand() {
       } catch (err) {
 
         console.log('Error received:');
-        console.error(err);
-
+        console.log('statusCode: ' + err.statusCode);
+        console.log('message: ' + err.message);
+        console.log('error: ');
+        console.dir(err.error);
+        console.log('options: ');
+        console.dir(err.options);
       }
 
-      console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-
     })();
-
-    console.log('22222222222222222222222222222222222222222222222222');
 
   });
 

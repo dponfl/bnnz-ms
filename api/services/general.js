@@ -35,7 +35,29 @@ module.exports = {
       resolve(rp(options));
     });
 
-
-
   }, // sendREST
+
+  clientExists: function (client) {
+
+    // dummy function
+    // in reality must request DB for client info and return
+
+    if (client) {
+      return {
+        result: true,
+        data: {
+          chatId: client.chatId,
+          firstName: client.firstName || '',
+          lastName: client.lastName || '',
+          userName: client.userName || '',
+          ref: client.ref,
+        },
+      }
+    } else {
+      return {
+        result: false,
+      }
+    }
+
+  }, // clientExists
 };
