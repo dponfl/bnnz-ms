@@ -1,5 +1,5 @@
 /**
- * MessegeBrokerTelegramController
+ * MessageBrokerTelegramController
  *
  * @description :: Server-side logic for managing messegebrokertelegrams
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers

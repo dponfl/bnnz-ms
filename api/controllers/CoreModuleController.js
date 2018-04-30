@@ -6,7 +6,7 @@
  */
 
 const serviceGeneral = require('../services/general');
-const messegeBrokerTelegramServices = require('../services/messegeBrokerTelegram');
+const messegeBrokerTelegramServices = require('../services/messageGateway');
 const coreModuleServices = require('../services/coreModule');
 
 
@@ -40,16 +40,14 @@ function proceedStartCommand(req, res) {
   console.log('params:');
   console.dir(params);
 
-  console.log('before setTimeout short...');
-
   client = serviceGeneral.clientExists(false);
 
-  if (client && client.result) {
-    res.json(200, {result: true, data: client});
+  if (client && !client.result) {
+    res.json(200, client);
   } else {
     res.badRequest({
       result: false,
-      text: 'Client was not found',
+      text: 'Client already exists or null',
     })
   }
 

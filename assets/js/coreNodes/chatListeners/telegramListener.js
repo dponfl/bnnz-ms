@@ -1,7 +1,10 @@
 "use strict";
 
 const serviceGeneral = require('../../../../api/services/general');
+const uuid = require('uuid-apikey');
+
 const TelegramBot = require('node-telegram-bot-api');
+
 const bot = new TelegramBot(sails.config.TOKEN, {
   polling: {
     interval: 300,
@@ -20,23 +23,25 @@ onStartCommand();
 
 function onStartCommand() {
 
-  bot.onText(/ref(=|\s?)(.+)/, (msg, [source, match1, match2]) => {
+  bot.onText(/start\s*ref(=|\s?)(.+)/, (msg, [source, match1, match2]) => {
 
-    // source = 'ref=ABC123' for '/ref=ABC123' command
-    // match2 = 'ABC123' for '/ref=ABC123' or /ref ABC123 command
+    // source = 'start ref=ABC123' for '/start ref=ABC123' command
+    // match2 = 'ABC123' for '/start ref=ABC123' or /start ref ABC123 command
 
-    console.log('Bot got the following message:');
+    console.log('Bot got such message:');
     console.dir(msg);
 
-    console.log('Bot got ref command with source:');
+    console.log('Bot got ref command with such source:');
     console.dir(source);
 
-    console.log('Bot got ref command with match:');
+    console.log('Bot got ref command such match:');
     console.dir(match1);
     console.dir(match2);
 
     // collect info to be sent to proceedStartCommand
     let params = {
+      messenger: 'telegram',
+      guid: uuid.create().uuid,
       chatId: msg.chat.id,
       firstName: msg.chat.first_name || '',
       lastName: msg.chat.last_name || '',
@@ -46,26 +51,56 @@ function onStartCommand() {
       ref: match2,
     };
 
-    (async () => {
-      try {
+    makeNewSubscriptionRequest(params);
 
-        let results = await serviceGeneral.sendREST('POST', '/core/newsubscription/start', params);
-        console.log('Results:');
-        console.dir(results);
+  });
 
-      } catch (err) {
+  bot.onText(/start$/, (msg, [source]) => {
 
-        console.log('Error received:');
-        console.log('statusCode: ' + err.statusCode);
-        console.log('message: ' + err.message);
-        console.log('error: ');
-        console.dir(err.error);
-        console.log('options: ');
-        console.dir(err.options);
-      }
+    // source = 'start' for '/start' command
 
-    })();
+    console.log('Bot got such message:');
+    console.dir(msg);
+
+    console.log('Bot got ref command with such source:');
+    console.dir(source);
+
+
+    // collect info to be sent to proceedStartCommand
+    let params = {
+      messenger: 'telegram',
+      guid: uuid.create().uuid,
+      chatId: msg.chat.id,
+      firstName: msg.chat.first_name || '',
+      lastName: msg.chat.last_name || '',
+      userName: msg.chat.username,
+      date: msg.date,
+      text: source,
+      ref: '',
+    };
+
+    makeNewSubscriptionRequest(params);
 
   });
 
 } // onStartCommand
+
+async function makeNewSubscriptionRequest(params) {
+    try {
+
+      let results = await serviceGeneral.sendREST('POST', '/core/newsubscription/start', params);
+      console.log('Results:');
+      console.dir(results);
+
+    } catch (err) {
+
+      console.log('Error received:');
+      console.log('statusCode: ' + err.statusCode);
+      console.log('message: ' + err.message);
+      console.log('error: ');
+      console.dir(err.error);
+      console.log('options: ');
+      console.dir(err.options);
+    }
+
+} // makeNewSubscriptionRequest
