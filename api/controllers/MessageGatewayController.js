@@ -48,6 +48,21 @@ module.exports = {
 
   sendSimpleMessage: function (req, res) {
 
+    let params = req.allParams();
+
+    console.log('MessageGatewayController::sendSimpleMessage, params:');
+    console.dir(params);
+
+    switch (params.messenger) {
+      case 'telegram' :
+        callTelegram('/mbt/sendsimplemessage', params);
+        break;
+      case 'facebook':
+        break;
+    }
+
+    res.json(200);
+
   }, // sendSimpleMessage
 
 

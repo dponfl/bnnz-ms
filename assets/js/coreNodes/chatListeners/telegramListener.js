@@ -126,21 +126,32 @@ function onCallbackQuery() {
         await bot.answerCallbackQuery(query.id);
 
         if (query.data == 'instagram') {
-          await bot.sendMessage(query.message.chat.id, 'Reply with your Instagram account', {
-            reply_markup: {
-              force_reply: true
-            }
-          })
+
+          let route = '/mbt/sendforcedmessage';
+          let callTelegramParams = {
+            chatId: query.message.chat.id,
+            html: 'Reply with your Instagram account',
+          };
+          await generalServices.sendREST('POST', route, callTelegramParams);
+
         } else if (query.data == 'other') {
-          await bot.sendMessage(query.message.chat.id, 'Other reply', {
-            reply_markup: {
-              force_reply: true
-            }
-          })
+
+          let route = '/mbt/sendforcedmessage';
+          let callTelegramParams = {
+            chatId: query.message.chat.id,
+            html: 'Other reply',
+          };
+          await generalServices.sendREST('POST', route, callTelegramParams);
+
         } else {
-          await bot.sendMessage(query.message.chat.id, html, {
-            parse_mode: 'HTML'
-          })
+
+          let route = '/mbt/sendsimplemessage';
+          let callTelegramParams = {
+            chatId: query.message.chat.id,
+            html: html,
+          };
+          await generalServices.sendREST('POST', route, callTelegramParams);
+
         }
 
       } catch (err) {

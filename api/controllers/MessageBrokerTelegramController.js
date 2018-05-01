@@ -12,6 +12,27 @@ const bot = messageGatewayServices.getTelegramBot();
 module.exports = {
 	sendSimpleMessage: function (req, res) {
 
+    let params = req.allParams();
+
+    console.log('MessageBrokerTelegramController::sendSimpleMessage, params:');
+    console.dir(params);
+
+    (async () => {
+      try {
+        await bot.sendMessage(params.chatId, params.html, {
+          parse_mode: 'HTML',
+        });
+      } catch (err) {
+        console.log('MessageBrokerTelegramController::sendSimpleMessage, Error:');
+        console.log('statusCode: ' + err.statusCode);
+        console.log('message: ' + err.message);
+        console.log('error: ');
+        console.dir(err.error);
+        console.log('options: ');
+        console.dir(err.options);
+      }
+    })();
+
   }, // sendSimpleMessage
 
 	sendForceMessage: function (req, res) {
@@ -21,11 +42,9 @@ module.exports = {
     console.log('MessageBrokerTelegramController::sendForceMessage, params:');
     console.dir(params);
 
-    let html = params.html;
-
     (async () => {
       try {
-        await bot.sendMessage(params.chatId, html, {
+        await bot.sendMessage(params.chatId, params.html, {
           parse_mode: 'HTML',
           reply_markup: {
             force_reply: true
