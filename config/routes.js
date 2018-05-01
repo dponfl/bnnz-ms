@@ -47,10 +47,15 @@ module.exports.routes = {
   ***************************************************************************/
 
   /**
-   * coreModule
+   * CoreModuleController
    */
 
   'POST /core/newsubscription/start': 'CoreModuleController.newSubscription',
-  'POST /core/newsubscription/startone': 'TestController.someOne',
+
+  /**
+   * MessageGatewayController
+   */
+
+  'POST /mg/sendinlinebuttons': 'MessageGatewayController.sendInlineButtons',
 
 };

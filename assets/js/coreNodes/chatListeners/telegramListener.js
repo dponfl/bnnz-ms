@@ -1,21 +1,27 @@
 "use strict";
 
-const serviceGeneral = require('../../../../api/services/general');
+const generalServices = require('../../../../api/services/general');
+const messageGatewayServices = require('../../../../api/services/messageGateway');
+
 const uuid = require('uuid-apikey');
 
-const TelegramBot = require('node-telegram-bot-api');
+// const TelegramBot = require('node-telegram-bot-api');
+//
+// const bot = new TelegramBot(sails.config.TOKEN, {
+//   polling: {
+//     interval: 300,
+//     autoStart: true,
+//     params: {
+//       timeout: 10
+//     }
+//   }
+// });
 
-const bot = new TelegramBot(sails.config.TOKEN, {
-  polling: {
-    interval: 300,
-    autoStart: true,
-    params: {
-      timeout: 10
-    }
-  }
-});
+const bot = messageGatewayServices.getTelegramBot();
 
 onStartCommand();
+
+onCallbackQuery();
 
 /**
  * Functions
@@ -85,10 +91,36 @@ function onStartCommand() {
 
 } // onStartCommand
 
+function onCallbackQuery() {
+
+  bot.on('callback_query', query => {
+
+    console.log('telegramListener::onCallbackQuery, query:');
+    console.dir(query);
+
+    (async () => {
+
+      let html = `
+    <b>We received from you the following reply:</b>
+    <i>${query.data}</i>
+`;
+
+      await bot.answerCallbackQuery(query.id, `${query.data}`);
+
+      await bot.sendMessage(query.message.chat.id, html, {
+        parse_mode: 'HTML'
+      })
+
+    })();
+
+  })
+
+} // onCallbackQuery
+
 async function makeNewSubscriptionRequest(params) {
     try {
 
-      let results = await serviceGeneral.sendREST('POST', '/core/newsubscription/start', params);
+      let results = await generalServices.sendREST('POST', '/core/newsubscription/start', params);
       console.log('Results:');
       console.dir(results);
 

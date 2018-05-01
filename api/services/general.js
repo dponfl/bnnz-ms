@@ -46,7 +46,9 @@ module.exports = {
       return {
         result: true,
         data: {
+          messenger: client.messenger,
           chatId: client.chatId,
+          guid: client.guid,
           firstName: client.firstName || '',
           lastName: client.lastName || '',
           userName: client.userName || '',
