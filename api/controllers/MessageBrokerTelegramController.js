@@ -16,6 +16,32 @@ module.exports = {
 
 	sendForceMessage: function (req, res) {
 
+    let params = req.allParams();
+
+    console.log('MessageBrokerTelegramController::sendForceMessage, params:');
+    console.dir(params);
+
+    let html = params.html;
+
+    (async () => {
+      try {
+        await bot.sendMessage(params.chatId, html, {
+          parse_mode: 'HTML',
+          reply_markup: {
+            force_reply: true
+          }
+        });
+      } catch (err) {
+        console.log('MessageBrokerTelegramController::sendForceMessage, Error:');
+        console.log('statusCode: ' + err.statusCode);
+        console.log('message: ' + err.message);
+        console.log('error: ');
+        console.dir(err.error);
+        console.log('options: ');
+        console.dir(err.options);
+      }
+    })();
+
   }, // sendForceMessage
 
   sendInlineButtons: function (req, res) {
@@ -31,7 +57,7 @@ module.exports = {
     <b>guid of your message is: ${params.guid}</b>
     <a href="https://www.instagram.com/webstudiopro/">Have a look at this profile</a>
 `;
-    
+
     (async () => {
       try {
         await bot.sendMessage(params.chatId, html, {

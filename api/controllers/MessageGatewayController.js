@@ -17,7 +17,7 @@ module.exports = {
 
     switch (params.messenger) {
       case 'telegram' :
-        callTelegram('sendinlinebuttons', params);
+        callTelegram('/mbt/sendinlinebuttons', params);
         break;
       case 'facebook':
         break;
@@ -26,12 +26,37 @@ module.exports = {
     res.json(200);
 
   }, // sendInlineButtons
+
+  sendForcedMessage: function (req, res) {
+
+    let params = req.allParams();
+
+    console.log('MessageGatewayController::sendForcedMessage, params:');
+    console.dir(params);
+
+    switch (params.messenger) {
+      case 'telegram' :
+        callTelegram('/mbt/sendforcedmessage', params);
+        break;
+      case 'facebook':
+        break;
+    }
+
+    res.json(200);
+
+  }, // sendForcedMessage
+
+  sendSimpleMessage: function (req, res) {
+
+  }, // sendSimpleMessage
+
+
 };
 
 async function callTelegram(route, callTelegramParams) {
 
   try {
-    await generalServices.sendREST('POST', '/mbt/' + route, callTelegramParams);
+    await generalServices.sendREST('POST', route, callTelegramParams);
   } catch (err) {
     console.log('MessageGatewayController::callTelegram, Error:');
     console.log('statusCode: ' + err.statusCode);

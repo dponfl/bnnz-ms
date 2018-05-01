@@ -121,24 +121,36 @@ function onCallbackQuery() {
     <i>${query.data}</i>
 `;
 
-      await bot.answerCallbackQuery(query.id);
+      try {
 
-      if (query.data == 'instagram') {
-        await bot.sendMessage(query.message.chat.id, 'Reply with your Instagram account', {
-          reply_markup: {
-            force_reply: true
-          }
-        })
-      } else if (query.data == 'other') {
-        await bot.sendMessage(query.message.chat.id, 'Other reply', {
-          reply_markup: {
-            force_reply: true
-          }
-        })
-      } else {
-        await bot.sendMessage(query.message.chat.id, html, {
-          parse_mode: 'HTML'
-        })
+        await bot.answerCallbackQuery(query.id);
+
+        if (query.data == 'instagram') {
+          await bot.sendMessage(query.message.chat.id, 'Reply with your Instagram account', {
+            reply_markup: {
+              force_reply: true
+            }
+          })
+        } else if (query.data == 'other') {
+          await bot.sendMessage(query.message.chat.id, 'Other reply', {
+            reply_markup: {
+              force_reply: true
+            }
+          })
+        } else {
+          await bot.sendMessage(query.message.chat.id, html, {
+            parse_mode: 'HTML'
+          })
+        }
+
+      } catch (err) {
+        console.log('telegramListener::onCallbackQuery, Error:');
+        console.log('statusCode: ' + err.statusCode);
+        console.log('message: ' + err.message);
+        console.log('error: ');
+        console.dir(err.error);
+        console.log('options: ');
+        console.dir(err.options);
       }
     })();
 
