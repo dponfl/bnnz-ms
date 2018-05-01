@@ -52,6 +52,16 @@ module.exports = {
                 text: 'I don\'t like it :(',
                 callback_data: 'dislike'
               }
+            ],
+            [
+              {
+                text: 'Provide your Instagram account',
+                callback_data: 'instagram'
+              },
+              {
+                text: 'Other reply',
+                callback_data: 'other'
+              }
             ]
           ]
         }

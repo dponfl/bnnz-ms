@@ -4,6 +4,7 @@ const generalServices = require('../../../../api/services/general');
 const messageGatewayServices = require('../../../../api/services/messageGateway');
 
 const uuid = require('uuid-apikey');
+const _ = require('lodash');
 
 // const TelegramBot = require('node-telegram-bot-api');
 //
@@ -22,6 +23,8 @@ const bot = messageGatewayServices.getTelegramBot();
 onStartCommand();
 
 onCallbackQuery();
+
+onMessage();
 
 /**
  * Functions
@@ -57,8 +60,20 @@ function onStartCommand() {
       ref: match2,
     };
 
-    makeNewSubscriptionRequest(params);
+    (async () => {
 
+      try {
+        await makeNewSubscriptionRequest(params);
+      } catch (err) {
+        console.log('telegramListener::onStartCommand, Error:');
+        console.log('statusCode: ' + err.statusCode);
+        console.log('message: ' + err.message);
+        console.log('error: ');
+        console.dir(err.error);
+        console.log('options: ');
+        console.dir(err.options);
+      }
+    })();
   });
 
   bot.onText(/start$/, (msg, [source]) => {
@@ -85,7 +100,20 @@ function onStartCommand() {
       ref: '',
     };
 
-    makeNewSubscriptionRequest(params);
+    (async () => {
+
+      try {
+        await makeNewSubscriptionRequest(params);
+      } catch (err) {
+        console.log('telegramListener::onStartCommand, Error:');
+        console.log('statusCode: ' + err.statusCode);
+        console.log('message: ' + err.message);
+        console.log('error: ');
+        console.dir(err.error);
+        console.log('options: ');
+        console.dir(err.options);
+      }
+    })();
 
   });
 
@@ -105,34 +133,74 @@ function onCallbackQuery() {
     <i>${query.data}</i>
 `;
 
-      await bot.answerCallbackQuery(query.id, `${query.data}`);
+      await bot.answerCallbackQuery(query.id);
 
-      await bot.sendMessage(query.message.chat.id, html, {
-        parse_mode: 'HTML'
-      })
-
+      if (query.data == 'instagram') {
+        await bot.sendMessage(query.message.chat.id, 'Reply with your Instagram account', {
+          reply_markup: {
+            force_reply: true
+          }
+        })
+      } else if (query.data == 'other') {
+        await bot.sendMessage(query.message.chat.id, 'Other reply', {
+          reply_markup: {
+            force_reply: true
+          }
+        })
+      } else {
+        await bot.sendMessage(query.message.chat.id, html, {
+          parse_mode: 'HTML'
+        })
+      }
     })();
 
   })
 
 } // onCallbackQuery
 
-async function makeNewSubscriptionRequest(params) {
-    try {
+function onMessage() {
+  bot.on('message', (msg) => {
+    console.log('telegramListener::onMessage, message:');
+    console.dir(msg);
 
-      let results = await generalServices.sendREST('POST', '/core/newsubscription/start', params);
-      console.log('Results:');
-      console.dir(results);
+    (async () => {
+      try {
+        if (!_.isNil(msg.reply_to_message) && !_.isNil(msg.reply_to_message.text)) {
+          switch (msg.reply_to_message.text) {
+            case 'Reply with your Instagram account':
+              await bot.sendMessage(msg.chat.id, 'Got a reply to Instagram account request: '
+                + msg.text);
+              break;
+            case 'Other reply':
+              await bot.sendMessage(msg.chat.id, 'Got other reply: '
+                + msg.text);
+              break;
+            default:
+              await bot.sendMessage(msg.chat.id, 'Got some reply: '
+                + msg.text);
+          }
+        } else {
+          await bot.sendMessage(msg.chat.id, 'Got message: '
+            + msg.text);
+        }
+      } catch (err) {
+        console.log('telegramListener::onMessage, Error:');
+        console.log('statusCode: ' + err.statusCode);
+        console.log('message: ' + err.message);
+        console.log('error: ');
+        console.dir(err.error);
+        console.log('options: ');
+        console.dir(err.options);
+      }
+    })();
 
-    } catch (err) {
 
-      console.log('Error received:');
-      console.log('statusCode: ' + err.statusCode);
-      console.log('message: ' + err.message);
-      console.log('error: ');
-      console.dir(err.error);
-      console.log('options: ');
-      console.dir(err.options);
-    }
+
+  })
+} // onMessage
+
+function makeNewSubscriptionRequest(params) {
+
+      return generalServices.sendREST('POST', '/core/newsubscription/start', params);
 
 } // makeNewSubscriptionRequest

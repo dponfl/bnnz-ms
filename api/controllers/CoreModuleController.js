@@ -38,57 +38,69 @@ function proceedStartCommand(req, res) {
   console.log('CoreModuleController::proceedStartCommand, params:');
   console.dir(params);
 
-  // client = generalServices.clientExists(params);
+  (async () => {
 
-  // todo: delete - used to mockup situation when client does not exist yet
-  client = generalServices.clientExists(false);
+    try {
+      client = await checkClient(params);
 
-  if (client && !client.result) {
-    // client.result = false => client doesn't exist in out database
-    // and we need to send a welcome message
+      if (client && !client.result) {
+        // client.result = false => client doesn't exist in out database
+        // and we need to send a welcome message
 
-    let messageParams = {
-      messenger: params.messenger,
-      chatId: params.chatId,
-      guid: params.guid,
-      firstName: params.firstName || '',
-      lastName: params.lastName ||'',
-      text: 'Some bla-bla text here...',
-    };
+        let messageParams = {
+          messenger: params.messenger,
+          chatId: params.chatId,
+          guid: params.guid,
+          firstName: params.firstName || '',
+          lastName: params.lastName ||'',
+          text: 'Some bla-bla text here...',
+        };
 
-    sendInlineBottons(messageParams);
+        await sendInlineButtons(messageParams);
 
-    return res.json(200);
-  } else {
-    // client do exists in our database
-    // and we need to send message with info about correct possible actions
+        return res.json(200);
 
-    return res.badRequest({
-      result: false,
-      data: client,
-      text: 'Client already exists or null',
-    })
-  }
+      } else if (client && client.result) {
+        // client do exists in our database
+        // and we need to send message with info about correct possible actions
 
+        return res.badRequest({
+          result: false,
+          data: client,
+          text: 'Client already exists',
+        })
+      } else {
+        return res.badRequest({
+          result: false,
+          text: 'No info on the client received',
+        })
+      }
+
+    } catch (err) {
+      console.log('CoreModuleController::proceedStartCommand, Error:');
+      console.log('statusCode: ' + err.statusCode);
+      console.log('message: ' + err.message);
+      console.log('error: ');
+      console.dir(err.error);
+      console.log('options: ');
+      console.dir(err.options);
+    }
+
+  })();
 } // proceedStartCommand
 
-async function sendInlineBottons(params) {
-  try {
+function checkClient(checkClientParams) {
 
-    let results = await generalServices.sendREST('POST', '/mg/sendinlinebuttons', params);
-    console.log('CoreModuleController::sendInlineBottons, results:');
-    console.dir(results);
+  // return generalServices.clientExists(checkClientParams);
 
-  } catch (err) {
+  // todo: delete - used to mockup situation when client does not exist yet
 
-    console.log('Error received:');
-    console.log('statusCode: ' + err.statusCode);
-    console.log('message: ' + err.message);
-    console.log('error: ');
-    console.dir(err.error);
-    console.log('options: ');
-    console.dir(err.options);
-  }
+    return generalServices.clientExists(false);
+} // checkClient
 
-} // sentInlineBottons
+function sendInlineButtons(params) {
+
+    return generalServices.sendREST('POST', '/mg/sendinlinebuttons', params);
+
+} // sentInlineButtons
 

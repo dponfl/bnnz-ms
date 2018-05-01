@@ -42,24 +42,29 @@ module.exports = {
     // dummy function
     // in reality must request DB for client info and return
 
-    if (client) {
-      return {
-        result: true,
-        data: {
-          messenger: client.messenger,
-          chatId: client.chatId,
-          guid: client.guid,
-          firstName: client.firstName || '',
-          lastName: client.lastName || '',
-          userName: client.userName || '',
-          ref: client.ref,
-        },
+    return new Promise((resolve) => {
+
+      if (client) {
+        resolve({
+          result: true,
+          data: {
+            messenger: client.messenger,
+            chatId: client.chatId,
+            guid: client.guid,
+            firstName: client.firstName || '',
+            lastName: client.lastName || '',
+            userName: client.userName || '',
+            ref: client.ref,
+          },
+        });
+      } else {
+        resolve({
+          result: false,
+        });
       }
-    } else {
-      return {
-        result: false,
-      }
-    }
+    });
+
+
 
   }, // clientExists
 };
