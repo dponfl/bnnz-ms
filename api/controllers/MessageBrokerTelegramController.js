@@ -33,6 +33,8 @@ module.exports = {
       }
     })();
 
+    res.json(200);
+
   }, // sendSimpleMessage
 
 	sendForceMessage: function (req, res) {
@@ -60,6 +62,8 @@ module.exports = {
         console.dir(err.options);
       }
     })();
+
+    res.json(200);
 
   }, // sendForceMessage
 
@@ -122,6 +126,8 @@ module.exports = {
         console.dir(err.options);
       }
     })();
+
+    res.json(200);
 
   }, // sendInlineButtons
 };

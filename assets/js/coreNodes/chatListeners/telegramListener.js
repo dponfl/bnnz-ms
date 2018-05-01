@@ -171,6 +171,10 @@ function onCallbackQuery() {
 
 function onMessage() {
   bot.on('message', (msg) => {
+
+    let route;
+    let callTelegramParams;
+
     console.log('telegramListener::onMessage, message:');
     console.dir(msg);
 
@@ -179,20 +183,46 @@ function onMessage() {
         if (!_.isNil(msg.reply_to_message) && !_.isNil(msg.reply_to_message.text)) {
           switch (msg.reply_to_message.text) {
             case 'Reply with your Instagram account':
-              await bot.sendMessage(msg.chat.id, 'Got a reply to Instagram account request: '
-                + msg.text);
+
+              route = '/mbt/sendsimplemessage';
+              callTelegramParams = {
+                chatId: msg.chat.id,
+                html: 'Got a reply to Instagram account request: '
+                + msg.text,
+              };
+              await generalServices.sendREST('POST', route, callTelegramParams);
+
               break;
             case 'Other reply':
-              await bot.sendMessage(msg.chat.id, 'Got other reply: '
-                + msg.text);
+
+              route = '/mbt/sendsimplemessage';
+              callTelegramParams = {
+                chatId: msg.chat.id,
+                html: 'Got other reply: '
+                + msg.text,
+              };
+              await generalServices.sendREST('POST', route, callTelegramParams);
+
               break;
             default:
-              await bot.sendMessage(msg.chat.id, 'Got some reply: '
-                + msg.text);
+
+              route = '/mbt/sendsimplemessage';
+              callTelegramParams = {
+                chatId: msg.chat.id,
+                html: 'Got some reply: '
+                + msg.text,
+              };
+              await generalServices.sendREST('POST', route, callTelegramParams);
           }
         } else {
-          await bot.sendMessage(msg.chat.id, 'Got message: '
-            + msg.text);
+
+          route = '/mbt/sendsimplemessage';
+          callTelegramParams = {
+            chatId: msg.chat.id,
+            html: 'Got message: '
+            + msg.text,
+          };
+          await generalServices.sendREST('POST', route, callTelegramParams);
         }
       } catch (err) {
         console.log('telegramListener::onMessage, Error:');
@@ -204,8 +234,6 @@ function onMessage() {
         console.dir(err.options);
       }
     })();
-
-
 
   })
 } // onMessage
