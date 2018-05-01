@@ -63,8 +63,9 @@ module.exports = {
         });
       }
     });
-
-
-
   }, // clientExists
+
+  t: function (str) {
+
+  } // t
 };

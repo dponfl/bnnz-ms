@@ -6,18 +6,6 @@ const messageGatewayServices = require('../../../../api/services/messageGateway'
 const uuid = require('uuid-apikey');
 const _ = require('lodash');
 
-// const TelegramBot = require('node-telegram-bot-api');
-//
-// const bot = new TelegramBot(sails.config.TOKEN, {
-//   polling: {
-//     interval: 300,
-//     autoStart: true,
-//     params: {
-//       timeout: 10
-//     }
-//   }
-// });
-
 const bot = messageGatewayServices.getTelegramBot();
 
 onStartCommand();
@@ -37,13 +25,13 @@ function onStartCommand() {
     // source = 'start ref=ABC123' for '/start ref=ABC123' command
     // match2 = 'ABC123' for '/start ref=ABC123' or /start ref ABC123 command
 
-    console.log('Bot got such message:');
+    console.log('Bot got message:');
     console.dir(msg);
 
-    console.log('Bot got ref command with such source:');
+    console.log('Bot got ref command with source:');
     console.dir(source);
 
-    console.log('Bot got ref command such match:');
+    console.log('Bot got ref command with match:');
     console.dir(match1);
     console.dir(match2);
 
