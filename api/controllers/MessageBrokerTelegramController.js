@@ -14,6 +14,10 @@ module.exports = {
 
   }, // sendSimpleMessage
 
+	sendForceMessage: function (req, res) {
+
+  }, // sendForceMessage
+
   sendInlineButtons: function (req, res) {
 
     let params = req.allParams();
@@ -27,40 +31,53 @@ module.exports = {
     <b>guid of your message is: ${params.guid}</b>
     <a href="https://www.instagram.com/webstudiopro/">Have a look at this profile</a>
 `;
-
-    bot.sendMessage(params.chatId, html, {
-      parse_mode: 'HTML',
-      reply_markup: {
-        inline_keyboard: [
-          [
-            {
-              text: 'Google',
-              url: 'https://google.com'
-            }
-          ],
-          [
-            {
-              text: 'I like it :)',
-              callback_data: 'like'
-            },
-            {
-              text: 'I don\'t like it :(',
-              callback_data: 'dislike'
-            }
-          ],
-          [
-            {
-              text: 'Provide your Instagram account',
-              callback_data: 'instagram'
-            },
-            {
-              text: 'Other reply',
-              callback_data: 'other'
-            }
-          ]
-        ]
+    
+    (async () => {
+      try {
+        await bot.sendMessage(params.chatId, html, {
+          parse_mode: 'HTML',
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: 'Google',
+                  url: 'https://google.com'
+                }
+              ],
+              [
+                {
+                  text: 'I like it :)',
+                  callback_data: 'like'
+                },
+                {
+                  text: 'I don\'t like it :(',
+                  callback_data: 'dislike'
+                }
+              ],
+              [
+                {
+                  text: 'Provide your Instagram account',
+                  callback_data: 'instagram'
+                },
+                {
+                  text: 'Other reply',
+                  callback_data: 'other'
+                }
+              ]
+            ]
+          }
+        });
+      } catch (err) {
+        console.log('MessageBrokerTelegramController::sendInlineButtons, Error:');
+        console.log('statusCode: ' + err.statusCode);
+        console.log('message: ' + err.message);
+        console.log('error: ');
+        console.dir(err.error);
+        console.log('options: ');
+        console.dir(err.options);
       }
-    });
+    })();
+
   }, // sendInlineButtons
 };
 
