@@ -8,9 +8,9 @@ const _ = require('lodash');
 
 const bot = messageGatewayServices.getTelegramBot();
 
-onStartCommand();
+// onStartCommand();
 
-onCallbackQuery();
+// onCallbackQuery();
 
 onMessage();
 
@@ -174,9 +174,70 @@ function onMessage() {
 
     let route;
     let callTelegramParams;
+    let params;
 
     console.log('telegramListener::onMessage, message:');
     console.dir(msg);
+
+
+
+    if (/\/start/i.test(_.trim(msg.text))) {
+      console.log('telegramListener::onMessage, got start command');
+
+      let result = _.trim(msg.text).match(/\/start\s*ref(=|\s?)(.+)/i);
+
+      if (result) {
+
+        // collect info to be sent to proceedStartCommand
+
+        params = {
+          messenger: 'telegram',
+          guid: uuid.create().uuid,
+          chatId: msg.chat.id,
+          firstName: msg.chat.first_name || '',
+          lastName: msg.chat.last_name || '',
+          userName: msg.chat.username,
+          date: msg.date,
+          text: result[0],
+          ref: result[2],
+        };
+
+      } else {
+
+        // collect info to be sent to proceedStartCommand
+
+        params = {
+          messenger: 'telegram',
+          guid: uuid.create().uuid,
+          chatId: msg.chat.id,
+          firstName: msg.chat.first_name || '',
+          lastName: msg.chat.last_name || '',
+          userName: msg.chat.username,
+          date: msg.date,
+          text: '/start',
+          ref: '',
+        };
+
+      }
+
+      (async () => {
+
+        try {
+          await makeNewSubscriptionRequest(params);
+        } catch (err) {
+          console.log('telegramListener::onStartCommand, Error:');
+          console.log('statusCode: ' + err.statusCode);
+          console.log('message: ' + err.message);
+          console.log('error: ');
+          console.dir(err.error);
+          console.log('options: ');
+          console.dir(err.options);
+        }
+      })();
+
+
+
+    }
 
     (async () => {
       try {

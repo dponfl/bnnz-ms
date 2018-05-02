@@ -47,16 +47,23 @@ function proceedStartCommand(req, res) {
         // client.result = false => client doesn't exist in out database
         // and we need to send a welcome message
 
+        let html = `
+    <b>Hi, ${params.firstName + ' ' + params.lastName}</b>
+    
+    <i>Welcome to BonanzaInst chat bot!</i>
+    
+    By joining our program you will not only 
+    <b>improve you Instagram account</b> but also
+    you can <b>earn money</b> inviting your friends!
+`;
+
         let messageParams = {
           messenger: params.messenger,
           chatId: params.chatId,
-          guid: params.guid,
-          firstName: params.firstName || '',
-          lastName: params.lastName ||'',
-          text: 'Some bla-bla text here...',
+          html: html,
         };
 
-        await sendInlineButtons(messageParams);
+        await sendSimpleMessage(messageParams);
 
         return res.json(200);
 
@@ -101,6 +108,18 @@ function checkClient(checkClientParams) {
 function sendInlineButtons(params) {
 
     return generalServices.sendREST('POST', '/mg/sendinlinebuttons', params);
+
+} // sentInlineButtons
+
+function sendSimpleMessage(params) {
+
+    return generalServices.sendREST('POST', '/mg/sendsimplemessage', params);
+
+} // sentInlineButtons
+
+function sendForcedMessage(params) {
+
+    return generalServices.sendREST('POST', '/mg/sendforcedmessage.r', params);
 
 } // sentInlineButtons
 
