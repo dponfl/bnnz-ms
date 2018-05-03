@@ -6,6 +6,7 @@
  */
 
 const generalServices = require('../services/general');
+const t = require('../services/translate');
 
 
 "use strict";
@@ -50,13 +51,13 @@ function proceedStartCommand(req, res) {
         // and we need to send a welcome message
 
         html = `
-    <b>Hi, ${params.firstName + ' ' + params.lastName}</b>
+    <b>${t.t('NEW_SUBS_WELCOME_01')}, ${params.firstName + ' ' + params.lastName}</b>
     
-    <i>Welcome to BonanzaInst chat bot!</i>
+    <i>${t.t('NEW_SUBS_WELCOME_02')}</i>
     
-    By joining our program you will not only 
-    <b>improve you Instagram account</b> but also
-    you can <b>earn money</b> inviting your friends!
+    ${t.t('NEW_SUBS_WELCOME_03')} 
+    <b>${t.t('NEW_SUBS_WELCOME_04')}</b> ${t.t('NEW_SUBS_WELCOME_05')}
+    ${t.t('NEW_SUBS_WELCOME_06')} <b>${t.t('NEW_SUBS_WELCOME_07')}</b> ${t.t('NEW_SUBS_WELCOME_08')}
 `;
 
         messageParams = {

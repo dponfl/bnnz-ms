@@ -1,6 +1,8 @@
 "use strict";
 
 const generalServices = require('../../../../api/services/general');
+const t = require('../../../../api/services/translate');
+
 const messageGatewayServices = require('../../../../api/services/messageGateway');
 
 const uuid = require('uuid-apikey');
@@ -19,6 +21,8 @@ onMessage();
 function onCallbackQuery() {
 
   bot.on('callback_query', query => {
+
+    t.setLang('ru');
 
     let route;
     let params;
@@ -90,6 +94,8 @@ function onCallbackQuery() {
 
 function onMessage() {
   bot.on('message', (msg) => {
+
+    t.setLang('ru');
 
     let route;
     let params;
