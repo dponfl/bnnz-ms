@@ -27,6 +27,8 @@ module.exports = {
 function proceedStartCommand(req, res) {
 
   let client;
+  let html;
+  let messageParams;
 
   console.log('proceedStartCommand...');
 
@@ -47,7 +49,7 @@ function proceedStartCommand(req, res) {
         // client.result = false => client doesn't exist in out database
         // and we need to send a welcome message
 
-        let html = `
+        html = `
     <b>Hi, ${params.firstName + ' ' + params.lastName}</b>
     
     <i>Welcome to BonanzaInst chat bot!</i>
@@ -57,13 +59,57 @@ function proceedStartCommand(req, res) {
     you can <b>earn money</b> inviting your friends!
 `;
 
-        let messageParams = {
+        messageParams = {
           messenger: params.messenger,
           chatId: params.chatId,
           html: html,
         };
 
         await sendSimpleMessage(messageParams);
+
+        html = `
+    <b>Hello, ${params.firstName + ' ' + params.lastName}</b>
+    <i>Some message text here...</i>
+    <a href="https://www.instagram.com/webstudiopro/">Have a look at this profile</a>
+`;
+
+        messageParams = {
+          messenger: params.messenger,
+          chatId: params.chatId,
+          html: html,
+          inline_keyboard: [
+            [
+              {
+                text: 'Google',
+                url: 'https://google.com'
+              }
+            ],
+            [
+              {
+                text: 'I like it :)',
+                callback_data: 'like'
+              },
+              {
+                text: 'I don\'t like it :(',
+                callback_data: 'dislike'
+              }
+            ],
+            [
+              {
+                text: 'Provide your Instagram account',
+                callback_data: 'instagram'
+              },
+            ],
+            [
+              {
+                text: 'Other reply',
+                callback_data: 'other'
+              }
+            ],
+          ],
+        };
+
+        await sendInlineButtons(messageParams);
 
         return res.json(200);
 
