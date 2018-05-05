@@ -44,23 +44,34 @@ module.exports = {
 
     return new Promise((resolve) => {
 
+      console.log('clientExists, client:');
+      console.dir(client);
+
       if (client) {
-        resolve({
-          result: true,
-          data: {
-            messenger: client.messenger,
-            chatId: client.chatId,
-            guid: client.guid,
-            firstName: client.firstName || '',
-            lastName: client.lastName || '',
-            userName: client.userName || '',
-            ref: client.ref,
-          },
-        });
+        console.log('clientExists, true');
+        setTimeout(() => {
+          resolve({
+            result: true,
+            data: {
+              messenger: client.messenger,
+              chatId: client.chatId,
+              guid: client.guid,
+              firstName: client.firstName || '',
+              lastName: client.lastName || '',
+              userName: client.userName || '',
+              ref: client.ref,
+            },
+          });
+        }, 5000);
+
       } else {
-        resolve({
+        console.log('clientExists, false');
+        setTimeout(() => {
+          resolve({
           result: false,
         });
+        }, 3000);
+
       }
     });
   }, // clientExists

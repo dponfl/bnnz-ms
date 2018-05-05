@@ -10,6 +10,8 @@ const _ = require('lodash');
 
 const bot = messageGatewayServices.getTelegramBot();
 
+t.setLang('ru');
+
 onCallbackQuery();
 
 onMessage();
@@ -95,8 +97,6 @@ function onCallbackQuery() {
 function onMessage() {
   bot.on('message', (msg) => {
 
-    t.setLang('ru');
-
     let route;
     let params;
     let sendREST = false;
@@ -154,6 +154,23 @@ function onMessage() {
 
       route = '/core/newsubscription/start';
 
+    } else if (/\/lang/i.test(_.trim(msg.text))) {
+      let result = _.trim(msg.text).match(/\/lang(=|\s?)(en|ru)/i);
+
+      console.log('telegramListener, check /lang, result:');
+      console.dir(result);
+
+      if (result) {
+        t.setLang(result[2]);
+
+        route = '/mbt/sendsimplemessage';
+        params = {
+          chatId: msg.chat.id,
+          html: `${t.t('CMD_LANG')}` + `${t.t('CMD_LANG_' + result[2].toUpperCase())}`,
+        };
+
+        sendREST = true;
+      }
     } else if (!_.isNil(msg.reply_to_message)
       && !_.isNil(msg.reply_to_message.text)) {
 
@@ -208,7 +225,7 @@ function onMessage() {
       route = '/mbt/sendsimplemessage';
       params = {
         chatId: msg.chat.id,
-        html: 'Got message: '
+        html: `${t.t('MSG_GENERAL')}: `
         + msg.text,
       };
 

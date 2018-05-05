@@ -44,7 +44,18 @@ function proceedStartCommand(req, res) {
   (async () => {
 
     try {
+
+
+      console.log('Check if the client already exists: ' + new Date());
+      console.log('params:');
+      console.dir(params);
+
       client = await checkClient(params);
+      // client = await checkClient(false);
+
+      console.log('Check finished, evaluating results: ' + new Date());
+      console.log('Results:');
+      console.dir(client);
 
       if (client && !client.result) {
         // client.result = false => client doesn't exist in out database
@@ -68,10 +79,59 @@ function proceedStartCommand(req, res) {
 
         await sendSimpleMessage(messageParams);
 
+//         html = `
+//     <b>Hello, ${params.firstName + ' ' + params.lastName}</b>
+//     <i>Some message text here...</i>
+//     <a href="https://www.instagram.com/webstudiopro/">Have a look at this profile</a>
+// `;
+//
+//         messageParams = {
+//           messenger: params.messenger,
+//           chatId: params.chatId,
+//           html: html,
+//           inline_keyboard: [
+//             [
+//               {
+//                 text: 'Google',
+//                 url: 'https://google.com'
+//               }
+//             ],
+//             [
+//               {
+//                 text: 'I like it :)',
+//                 callback_data: 'like'
+//               },
+//               {
+//                 text: 'I don\'t like it :(',
+//                 callback_data: 'dislike'
+//               }
+//             ],
+//             [
+//               {
+//                 text: 'Provide your Instagram account',
+//                 callback_data: 'instagram'
+//               },
+//             ],
+//             [
+//               {
+//                 text: 'Other reply',
+//                 callback_data: 'other'
+//               }
+//             ],
+//           ],
+//         };
+//
+//         await sendInlineButtons(messageParams);
+
+        return res.json(200);
+
+      } else if (client && client.result) {
+        // client do exists in our database
+        // and we need to send message with info about correct possible actions
+
         html = `
-    <b>Hello, ${params.firstName + ' ' + params.lastName}</b>
-    <i>Some message text here...</i>
-    <a href="https://www.instagram.com/webstudiopro/">Have a look at this profile</a>
+<b>${t.t('NEW_SUBS_EXISTS_01')}</b>
+${t.t('NEW_SUBS_EXISTS_02')}
 `;
 
         messageParams = {
@@ -81,30 +141,24 @@ function proceedStartCommand(req, res) {
           inline_keyboard: [
             [
               {
-                text: 'Google',
+                text: t.t('ACT_NEW_POST'),
+                callback_data: 'post'
+              },
+            ],
+            [
+              {
+                text: t.t('ACT_PAY'),
+                callback_data: 'payment'
+              },
+            ],
+            [
+              {
+                text: t.t('ACT_FAQ'),
+                callback_data: 'faq'
+              },
+              {
+                text: t.t('ACT_WEB'),
                 url: 'https://google.com'
-              }
-            ],
-            [
-              {
-                text: 'I like it :)',
-                callback_data: 'like'
-              },
-              {
-                text: 'I don\'t like it :(',
-                callback_data: 'dislike'
-              }
-            ],
-            [
-              {
-                text: 'Provide your Instagram account',
-                callback_data: 'instagram'
-              },
-            ],
-            [
-              {
-                text: 'Other reply',
-                callback_data: 'other'
               }
             ],
           ],
@@ -112,11 +166,14 @@ function proceedStartCommand(req, res) {
 
         await sendInlineButtons(messageParams);
 
-        return res.json(200);
+        // messageParams = {
+        //   messenger: params.messenger,
+        //   chatId: params.chatId,
+        //   html: html,
+        // };
+        //
+        // await sendSimpleMessage(messageParams);
 
-      } else if (client && client.result) {
-        // client do exists in our database
-        // and we need to send message with info about correct possible actions
 
         return res.badRequest({
           result: false,
@@ -145,11 +202,7 @@ function proceedStartCommand(req, res) {
 
 function checkClient(checkClientParams) {
 
-  // return generalServices.clientExists(checkClientParams);
-
-  // todo: delete - used to mockup situation when client does not exist yet
-
-    return generalServices.clientExists(false);
+    return generalServices.clientExists(checkClientParams);
 } // checkClient
 
 function sendInlineButtons(params) {
