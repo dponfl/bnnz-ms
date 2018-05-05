@@ -50,8 +50,8 @@ function proceedStartCommand(req, res) {
       console.log('params:');
       console.dir(params);
 
-      client = await checkClient(params);
-      // client = await checkClient(false);
+      // client = await checkClient(params);
+      client = await checkClient(false);
 
       console.log('Check finished, evaluating results: ' + new Date());
       console.log('Results:');
@@ -62,13 +62,11 @@ function proceedStartCommand(req, res) {
         // and we need to send a welcome message
 
         html = `
-    <b>${t.t('NEW_SUBS_WELCOME_01')}, ${params.firstName + ' ' + params.lastName}</b>
+<b>${t.t('NEW_SUBS_WELCOME_01')}, ${params.firstName + ' ' + params.lastName}</b>
     
-    <i>${t.t('NEW_SUBS_WELCOME_02')}</i>
+<b>${t.t('NEW_SUBS_WELCOME_02')}</b>
     
-    ${t.t('NEW_SUBS_WELCOME_03')} 
-    <b>${t.t('NEW_SUBS_WELCOME_04')}</b> ${t.t('NEW_SUBS_WELCOME_05')}
-    ${t.t('NEW_SUBS_WELCOME_06')} <b>${t.t('NEW_SUBS_WELCOME_07')}</b> ${t.t('NEW_SUBS_WELCOME_08')}
+${t.t('NEW_SUBS_WELCOME_03')} 
 `;
 
         messageParams = {
@@ -79,49 +77,20 @@ function proceedStartCommand(req, res) {
 
         await sendSimpleMessage(messageParams);
 
-//         html = `
-//     <b>Hello, ${params.firstName + ' ' + params.lastName}</b>
-//     <i>Some message text here...</i>
-//     <a href="https://www.instagram.com/webstudiopro/">Have a look at this profile</a>
-// `;
-//
-//         messageParams = {
-//           messenger: params.messenger,
-//           chatId: params.chatId,
-//           html: html,
-//           inline_keyboard: [
-//             [
-//               {
-//                 text: 'Google',
-//                 url: 'https://google.com'
-//               }
-//             ],
-//             [
-//               {
-//                 text: 'I like it :)',
-//                 callback_data: 'like'
-//               },
-//               {
-//                 text: 'I don\'t like it :(',
-//                 callback_data: 'dislike'
-//               }
-//             ],
-//             [
-//               {
-//                 text: 'Provide your Instagram account',
-//                 callback_data: 'instagram'
-//               },
-//             ],
-//             [
-//               {
-//                 text: 'Other reply',
-//                 callback_data: 'other'
-//               }
-//             ],
-//           ],
-//         };
-//
-//         await sendInlineButtons(messageParams);
+        // Request to enter Instagram profile
+
+        html = `
+${t.t('NEW_SUBS_INST_01')} 
+`;
+
+        messageParams = {
+          messenger: params.messenger,
+          chatId: params.chatId,
+          html: html,
+        };
+
+        await sendForcedMessage(messageParams);
+
 
         return res.json(200);
 
@@ -219,7 +188,7 @@ function sendSimpleMessage(params) {
 
 function sendForcedMessage(params) {
 
-    return generalServices.sendREST('POST', '/mg/sendforcedmessage.r', params);
+    return generalServices.sendREST('POST', '/mg/sendforcedmessage', params);
 
 } // sentInlineButtons
 

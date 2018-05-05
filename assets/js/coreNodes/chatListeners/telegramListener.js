@@ -24,50 +24,253 @@ function onCallbackQuery() {
 
   bot.on('callback_query', query => {
 
-    t.setLang('ru');
-
-    let route;
-    let params;
+    let route ='';
+    let params = {};
     let sendREST = false;
+    let html = '';
 
     console.log('telegramListener::onCallbackQuery, query:');
     console.dir(query);
 
-    let html = `
-    <b>We received from you the following reply:</b>
-    <i>${query.data}</i>
+    if (query.data == 'instagram_profile_yes') {
+
+      // route = '/mg/sendsimplemessage';
+      // params = {
+      //   messenger: 'telegram',
+      //   chatId: query.message.chat.id,
+      //   html: t.t('NEW_SUBS_INST_03'),
+      // };
+
+      html = `
+${t.t('NEW_SUBS_INST_05')}
+
+${t.t('NEW_SUBS_INST_06')}
 `;
 
-    if (query.data == 'instagram') {
-
-      route = '/mbt/sendforcedmessage';
+      route = '/mg/sendinlinebuttons';
       params = {
+        messenger: 'telegram',
         chatId: query.message.chat.id,
-        html: 'Reply with your Instagram account',
+        html: html,
+        inline_keyboard: [
+          [
+            {
+              text: t.t('PLAN_PLATINUM'),
+              callback_data: 'instagram_plan_platinum'
+            },
+          ],
+          [
+            {
+              text: t.t('PLAN_GOLD'),
+              callback_data: 'instagram_plan_gold'
+            },
+          ],
+          [
+            {
+              text: t.t('PLAN_BRONZE'),
+              callback_data: 'instagram_plan_bronze'
+            },
+          ],
+        ],
       };
 
       sendREST = true;
 
-    } else if (query.data == 'other') {
+    } else if (query.data == 'instagram_profile_no') {
 
-      route = '/mbt/sendforcedmessage';
+    // Request to enter Instagram profile
+
+      html = `
+${t.t('NEW_SUBS_INST_01')} 
+`;
+      route = '/mg/sendforcedmessage';
       params = {
-        chatId: query.message.chat.id,
-        html: 'Other reply',
-      };
-      sendREST = true;
-
-    } else {
-
-      route = '/mbt/sendsimplemessage';
-      params = {
+        messenger: 'telegram',
         chatId: query.message.chat.id,
         html: html,
       };
 
       sendREST = true;
 
+    } else if (query.data == 'instagram_plan_platinum') {
+
+      // Subscription to Platinum payment plan
+
+      html = `
+${t.t('PLAN_PLATINUM_THANKS_MSG')} 
+
+${t.t('PLAN_THANKS_MSG')} 
+`;
+      route = '/mg/sendinlinebuttons';
+      params = {
+        messenger: 'telegram',
+        chatId: query.message.chat.id,
+        html: html,
+        inline_keyboard: [
+          [
+            {
+              text: t.t('PLAN_PAY_BUTTON'),
+              callback_data: 'make_payment_plan_platinum'
+            },
+            {
+              text: t.t('PLAN_TC_BUTTON'),
+              url: 'https://policies.google.com/terms'
+            },
+          ],
+        ],
+      };
+
+      sendREST = true;
+
+    } else if (query.data == 'instagram_plan_gold') {
+
+      // Subscription to Gold payment plan
+
+      html = `
+${t.t('PLAN_GOLD_THANKS_MSG')} 
+
+${t.t('PLAN_THANKS_MSG')} 
+`;
+      route = '/mg/sendinlinebuttons';
+      params = {
+        messenger: 'telegram',
+        chatId: query.message.chat.id,
+        html: html,
+        inline_keyboard: [
+          [
+            {
+              text: t.t('PLAN_PAY_BUTTON'),
+              callback_data: 'make_payment_plan_gold'
+            },
+            {
+              text: t.t('PLAN_TC_BUTTON'),
+              url: 'https://policies.google.com/terms'
+            },
+          ],
+        ],
+      };
+
+      sendREST = true;
+
+    } else if (query.data == 'instagram_plan_bronze') {
+
+      // Subscription to Bronze payment plan
+
+      html = `
+${t.t('PLAN_BRONZE_THANKS_MSG')} 
+
+${t.t('PLAN_THANKS_MSG')} 
+`;
+      route = '/mg/sendinlinebuttons';
+      params = {
+        messenger: 'telegram',
+        chatId: query.message.chat.id,
+        html: html,
+        inline_keyboard: [
+          [
+            {
+              text: t.t('PLAN_PAY_BUTTON'),
+              callback_data: 'make_payment_plan_bronze'
+            },
+            {
+              text: t.t('PLAN_TC_BUTTON'),
+              url: 'https://policies.google.com/terms'
+            },
+          ],
+        ],
+      };
+
+      sendREST = true;
+
+    } else if (query.data == 'make_payment_plan_platinum') {
+
+      // Confirmation of Platinum plan payment
+
+      html = `
+${t.t('PLAN_PLATINUM_THANKS_MSG_02')} 
+
+${t.t('PLAN_THANKS_MSG_02')} 
+`;
+      route = '/mg/sendinlinebuttons';
+      params = {
+        messenger: 'telegram',
+        chatId: query.message.chat.id,
+        html: html,
+        inline_keyboard: [
+          [
+            {
+              text: t.t('POST_UPLOAD_BUTTON'),
+              callback_data: 'upload_post'
+            },
+          ],
+        ],
+
+      };
+
+      sendREST = true;
+
+    } else if (query.data == 'make_payment_plan_gold') {
+
+      // Confirmation of Gold plan payment
+
+      html = `
+${t.t('PLAN_GOLD_THANKS_MSG_02')} 
+
+${t.t('PLAN_THANKS_MSG_02')} 
+`;
+      route = '/mg/sendinlinebuttons';
+      params = {
+        messenger: 'telegram',
+        chatId: query.message.chat.id,
+        html: html,
+        inline_keyboard: [
+          [
+            {
+              text: t.t('POST_UPLOAD_BUTTON'),
+              callback_data: 'upload_post'
+            },
+          ],
+        ],
+
+      };
+
+      sendREST = true;
+
+    } else if (query.data == 'make_payment_plan_bronze') {
+
+      // Confirmation of Bronze plan payment
+
+      html = `
+${t.t('PLAN_BRONZE_THANKS_MSG_02')} 
+
+${t.t('PLAN_THANKS_MSG_02')} 
+`;
+      route = '/mg/sendinlinebuttons';
+      params = {
+        messenger: 'telegram',
+        chatId: query.message.chat.id,
+        html: html,
+        inline_keyboard: [
+          [
+            {
+              text: t.t('POST_UPLOAD_BUTTON'),
+              callback_data: 'upload_post'
+            },
+          ],
+        ],
+
+      };
+
+      sendREST = true;
+
     }
+
+
+
+
+
+
+
 
     (async () => {
 
@@ -155,6 +358,11 @@ function onMessage() {
       route = '/core/newsubscription/start';
 
     } else if (/\/lang/i.test(_.trim(msg.text))) {
+
+      /**
+       * lang command
+       */
+
       let result = _.trim(msg.text).match(/\/lang(=|\s?)(en|ru)/i);
 
       console.log('telegramListener, check /lang, result:');
@@ -163,8 +371,9 @@ function onMessage() {
       if (result) {
         t.setLang(result[2]);
 
-        route = '/mbt/sendsimplemessage';
+        route = '/mg/sendsimplemessage';
         params = {
+          messenger: 'telegram',
           chatId: msg.chat.id,
           html: `${t.t('CMD_LANG')}` + `${t.t('CMD_LANG_' + result[2].toUpperCase())}`,
         };
@@ -179,13 +388,34 @@ function onMessage() {
        */
 
       switch (msg.reply_to_message.text) {
-        case 'Reply with your Instagram account':
+        // case 'Reply with your Instagram account':
+        case t.t('NEW_SUBS_INST_01'):
 
-          route = '/mbt/sendsimplemessage';
+          // Check that the client provided Instagram account
+
+          let instUrl = 'https://www.instagram.com/' + _.trim(msg.text);
+          let instConfHtml = `
+${t.t('NEW_SUBS_INST_02')}
+<a href="${instUrl}">${instUrl}</a>
+`;
+
+          route = '/mg/sendinlinebuttons';
           params = {
+            messenger: 'telegram',
             chatId: msg.chat.id,
-            html: 'Got a reply to Instagram account request: '
-            + msg.text,
+            html: instConfHtml,
+            inline_keyboard: [
+              [
+                {
+                  text: t.t('ACT_YES'),
+                  callback_data: 'instagram_profile_yes'
+                },
+                {
+                  text: t.t('ACT_NO'),
+                  callback_data: 'instagram_profile_no'
+                }
+              ],
+            ],
           };
 
           sendREST = true;
@@ -193,8 +423,9 @@ function onMessage() {
           break;
         case 'Other reply':
 
-          route = '/mbt/sendsimplemessage';
+          route = '/mg/sendsimplemessage';
           params = {
+            messenger: 'telegram',
             chatId: msg.chat.id,
             html: 'Got other reply: '
             + msg.text,
@@ -205,8 +436,9 @@ function onMessage() {
           break;
         default:
 
-          route = '/mbt/sendsimplemessage';
+          route = '/mg/sendsimplemessage';
           params = {
+            messenger: 'telegram',
             chatId: msg.chat.id,
             html: 'Got some reply: '
             + msg.text,
@@ -222,8 +454,9 @@ function onMessage() {
        * Generic message
        */
 
-      route = '/mbt/sendsimplemessage';
+      route = '/mg/sendsimplemessage';
       params = {
+        messenger: 'telegram',
         chatId: msg.chat.id,
         html: `${t.t('MSG_GENERAL')}: `
         + msg.text,
