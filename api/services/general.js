@@ -62,7 +62,7 @@ module.exports = {
               ref: client.ref,
             },
           });
-        }, 5000);
+        }, 1000);
 
       } else {
         console.log('clientExists, false');
@@ -70,7 +70,7 @@ module.exports = {
           resolve({
           result: false,
         });
-        }, 3000);
+        }, 1000);
 
       }
     });

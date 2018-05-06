@@ -1,13 +1,13 @@
 "use strict";
 
 module.exports = {
-  t: function (useToken) {
-    return token[lang][useToken];
+  t: function (l, useToken) {
+    return token[l][useToken];
   }, // T
 
-  setLang: function (language) {
-    lang = language;
-  }, // setLang
+  // setLang: function (language) {
+  //   lang = language;
+  // }, // setLang
 };
 
 var lang = 'en';

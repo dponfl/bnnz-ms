@@ -10,7 +10,9 @@ const _ = require('lodash');
 
 const bot = messageGatewayServices.getTelegramBot();
 
-t.setLang('ru');
+let useLang = 'en';
+
+// t.setLang('ru');
 
 onCallbackQuery();
 
@@ -19,6 +21,26 @@ onMessage();
 /**
  * Functions
  */
+
+function getUserLang(data) {
+
+    if (!_.isNil(data.from.language_code)) {
+
+      // console.log('getUserLang, data.from.language_code: ' + data.from.language_code);
+
+      let res = data.from.language_code.match(/ru|en/i);
+
+      // console.log('getUserLang, res:');
+      // console.dir(res);
+
+      if (res && res[0]) {
+        useLang = res[0];
+      }
+
+      return;
+    }
+
+} // getUserLang
 
 function onCallbackQuery() {
 
@@ -32,19 +54,21 @@ function onCallbackQuery() {
     console.log('telegramListener::onCallbackQuery, query:');
     console.dir(query);
 
+    getUserLang(query);
+
     if (query.data == 'instagram_profile_yes') {
 
       // route = '/mg/sendsimplemessage';
       // params = {
       //   messenger: 'telegram',
       //   chatId: query.message.chat.id,
-      //   html: t.t('NEW_SUBS_INST_03'),
+      //   html: t.t(useLang, 'NEW_SUBS_INST_03'),
       // };
 
       html = `
-${t.t('NEW_SUBS_INST_05')}
+${t.t(useLang, 'NEW_SUBS_INST_05')}
 
-${t.t('NEW_SUBS_INST_06')}
+${t.t(useLang, 'NEW_SUBS_INST_06')}
 `;
 
       route = '/mg/sendinlinebuttons';
@@ -55,19 +79,19 @@ ${t.t('NEW_SUBS_INST_06')}
         inline_keyboard: [
           [
             {
-              text: t.t('PLAN_PLATINUM'),
+              text: t.t(useLang, 'PLAN_PLATINUM'),
               callback_data: 'instagram_plan_platinum'
             },
           ],
           [
             {
-              text: t.t('PLAN_GOLD'),
+              text: t.t(useLang, 'PLAN_GOLD'),
               callback_data: 'instagram_plan_gold'
             },
           ],
           [
             {
-              text: t.t('PLAN_BRONZE'),
+              text: t.t(useLang, 'PLAN_BRONZE'),
               callback_data: 'instagram_plan_bronze'
             },
           ],
@@ -81,7 +105,7 @@ ${t.t('NEW_SUBS_INST_06')}
     // Request to enter Instagram profile
 
       html = `
-${t.t('NEW_SUBS_INST_01')} 
+${t.t(useLang, 'NEW_SUBS_INST_01')} 
 `;
       route = '/mg/sendforcedmessage';
       params = {
@@ -97,9 +121,9 @@ ${t.t('NEW_SUBS_INST_01')}
       // Subscription to Platinum payment plan
 
       html = `
-${t.t('PLAN_PLATINUM_THANKS_MSG')} 
+${t.t(useLang, 'PLAN_PLATINUM_THANKS_MSG')} 
 
-${t.t('PLAN_THANKS_MSG')} 
+${t.t(useLang, 'PLAN_THANKS_MSG')} 
 `;
       route = '/mg/sendinlinebuttons';
       params = {
@@ -109,11 +133,11 @@ ${t.t('PLAN_THANKS_MSG')}
         inline_keyboard: [
           [
             {
-              text: t.t('PLAN_PAY_BUTTON'),
+              text: t.t(useLang, 'PLAN_PAY_BUTTON'),
               callback_data: 'make_payment_plan_platinum'
             },
             {
-              text: t.t('PLAN_TC_BUTTON'),
+              text: t.t(useLang, 'PLAN_TC_BUTTON'),
               url: 'https://policies.google.com/terms'
             },
           ],
@@ -127,9 +151,9 @@ ${t.t('PLAN_THANKS_MSG')}
       // Subscription to Gold payment plan
 
       html = `
-${t.t('PLAN_GOLD_THANKS_MSG')} 
+${t.t(useLang, 'PLAN_GOLD_THANKS_MSG')} 
 
-${t.t('PLAN_THANKS_MSG')} 
+${t.t(useLang, 'PLAN_THANKS_MSG')} 
 `;
       route = '/mg/sendinlinebuttons';
       params = {
@@ -139,11 +163,11 @@ ${t.t('PLAN_THANKS_MSG')}
         inline_keyboard: [
           [
             {
-              text: t.t('PLAN_PAY_BUTTON'),
+              text: t.t(useLang, 'PLAN_PAY_BUTTON'),
               callback_data: 'make_payment_plan_gold'
             },
             {
-              text: t.t('PLAN_TC_BUTTON'),
+              text: t.t(useLang, 'PLAN_TC_BUTTON'),
               url: 'https://policies.google.com/terms'
             },
           ],
@@ -157,9 +181,9 @@ ${t.t('PLAN_THANKS_MSG')}
       // Subscription to Bronze payment plan
 
       html = `
-${t.t('PLAN_BRONZE_THANKS_MSG')} 
+${t.t(useLang, 'PLAN_BRONZE_THANKS_MSG')} 
 
-${t.t('PLAN_THANKS_MSG')} 
+${t.t(useLang, 'PLAN_THANKS_MSG')} 
 `;
       route = '/mg/sendinlinebuttons';
       params = {
@@ -169,11 +193,11 @@ ${t.t('PLAN_THANKS_MSG')}
         inline_keyboard: [
           [
             {
-              text: t.t('PLAN_PAY_BUTTON'),
+              text: t.t(useLang, 'PLAN_PAY_BUTTON'),
               callback_data: 'make_payment_plan_bronze'
             },
             {
-              text: t.t('PLAN_TC_BUTTON'),
+              text: t.t(useLang, 'PLAN_TC_BUTTON'),
               url: 'https://policies.google.com/terms'
             },
           ],
@@ -187,9 +211,9 @@ ${t.t('PLAN_THANKS_MSG')}
       // Confirmation of Platinum plan payment
 
       html = `
-${t.t('PLAN_PLATINUM_THANKS_MSG_02')} 
+${t.t(useLang, 'PLAN_PLATINUM_THANKS_MSG_02')} 
 
-${t.t('PLAN_THANKS_MSG_02')} 
+${t.t(useLang, 'PLAN_THANKS_MSG_02')} 
 `;
       route = '/mg/sendinlinebuttons';
       params = {
@@ -199,7 +223,7 @@ ${t.t('PLAN_THANKS_MSG_02')}
         inline_keyboard: [
           [
             {
-              text: t.t('POST_UPLOAD_BUTTON'),
+              text: t.t(useLang, 'POST_UPLOAD_BUTTON'),
               callback_data: 'upload_post'
             },
           ],
@@ -214,9 +238,9 @@ ${t.t('PLAN_THANKS_MSG_02')}
       // Confirmation of Gold plan payment
 
       html = `
-${t.t('PLAN_GOLD_THANKS_MSG_02')} 
+${t.t(useLang, 'PLAN_GOLD_THANKS_MSG_02')} 
 
-${t.t('PLAN_THANKS_MSG_02')} 
+${t.t(useLang, 'PLAN_THANKS_MSG_02')} 
 `;
       route = '/mg/sendinlinebuttons';
       params = {
@@ -226,7 +250,7 @@ ${t.t('PLAN_THANKS_MSG_02')}
         inline_keyboard: [
           [
             {
-              text: t.t('POST_UPLOAD_BUTTON'),
+              text: t.t(useLang, 'POST_UPLOAD_BUTTON'),
               callback_data: 'upload_post'
             },
           ],
@@ -241,9 +265,9 @@ ${t.t('PLAN_THANKS_MSG_02')}
       // Confirmation of Bronze plan payment
 
       html = `
-${t.t('PLAN_BRONZE_THANKS_MSG_02')} 
+${t.t(useLang, 'PLAN_BRONZE_THANKS_MSG_02')} 
 
-${t.t('PLAN_THANKS_MSG_02')} 
+${t.t(useLang, 'PLAN_THANKS_MSG_02')} 
 `;
       route = '/mg/sendinlinebuttons';
       params = {
@@ -253,7 +277,7 @@ ${t.t('PLAN_THANKS_MSG_02')}
         inline_keyboard: [
           [
             {
-              text: t.t('POST_UPLOAD_BUTTON'),
+              text: t.t(useLang, 'POST_UPLOAD_BUTTON'),
               callback_data: 'upload_post'
             },
           ],
@@ -307,7 +331,7 @@ function onMessage() {
     console.log('telegramListener::onMessage, message:');
     console.dir(msg);
 
-
+    getUserLang(msg);
 
     if (/\/start/i.test(_.trim(msg.text))) {
 
@@ -335,6 +359,7 @@ function onMessage() {
           date: msg.date,
           text: result[0],
           ref: result[2],
+          lang: useLang,
         };
 
       } else {
@@ -351,6 +376,7 @@ function onMessage() {
           date: msg.date,
           text: '/start',
           ref: '',
+          lang: useLang,
         };
 
       }
@@ -369,13 +395,15 @@ function onMessage() {
       console.dir(result);
 
       if (result) {
-        t.setLang(result[2]);
+        // t.setLang(result[2]);
+
+        useLang = result[2];
 
         route = '/mg/sendsimplemessage';
         params = {
           messenger: 'telegram',
           chatId: msg.chat.id,
-          html: `${t.t('CMD_LANG')}` + `${t.t('CMD_LANG_' + result[2].toUpperCase())}`,
+          html: `${t.t(useLang, 'CMD_LANG')}` + `${t.t(useLang, 'CMD_LANG_' + result[2].toUpperCase())}`,
         };
 
         sendREST = true;
@@ -389,13 +417,13 @@ function onMessage() {
 
       switch (msg.reply_to_message.text) {
         // case 'Reply with your Instagram account':
-        case t.t('NEW_SUBS_INST_01'):
+        case t.t(useLang, 'NEW_SUBS_INST_01'):
 
           // Check that the client provided Instagram account
 
           let instUrl = 'https://www.instagram.com/' + _.trim(msg.text);
           let instConfHtml = `
-${t.t('NEW_SUBS_INST_02')}
+${t.t(useLang, 'NEW_SUBS_INST_02')}
 <a href="${instUrl}">${instUrl}</a>
 `;
 
@@ -407,11 +435,11 @@ ${t.t('NEW_SUBS_INST_02')}
             inline_keyboard: [
               [
                 {
-                  text: t.t('ACT_YES'),
+                  text: t.t(useLang, 'ACT_YES'),
                   callback_data: 'instagram_profile_yes'
                 },
                 {
-                  text: t.t('ACT_NO'),
+                  text: t.t(useLang, 'ACT_NO'),
                   callback_data: 'instagram_profile_no'
                 }
               ],
@@ -458,7 +486,7 @@ ${t.t('NEW_SUBS_INST_02')}
       params = {
         messenger: 'telegram',
         chatId: msg.chat.id,
-        html: `${t.t('MSG_GENERAL')}: `
+        html: `${t.t(useLang, 'MSG_GENERAL')}: `
         + msg.text,
       };
 

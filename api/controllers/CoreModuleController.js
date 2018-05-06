@@ -8,6 +8,7 @@
 const generalServices = require('../services/general');
 const t = require('../services/translate');
 
+let useLang = 'en';
 
 "use strict";
 
@@ -41,6 +42,8 @@ function proceedStartCommand(req, res) {
   console.log('CoreModuleController::proceedStartCommand, params:');
   console.dir(params);
 
+  useLang = params.lang;
+
   (async () => {
 
     try {
@@ -50,8 +53,8 @@ function proceedStartCommand(req, res) {
       console.log('params:');
       console.dir(params);
 
-      // client = await checkClient(params);
-      client = await checkClient(false);
+      client = await checkClient(params);
+      // client = await checkClient(false);
 
       console.log('Check finished, evaluating results: ' + new Date());
       console.log('Results:');
@@ -62,11 +65,11 @@ function proceedStartCommand(req, res) {
         // and we need to send a welcome message
 
         html = `
-<b>${t.t('NEW_SUBS_WELCOME_01')}, ${params.firstName + ' ' + params.lastName}</b>
+<b>${t.t(useLang, 'NEW_SUBS_WELCOME_01')}, ${params.firstName + ' ' + params.lastName}</b>
     
-<b>${t.t('NEW_SUBS_WELCOME_02')}</b>
+<b>${t.t(useLang, 'NEW_SUBS_WELCOME_02')}</b>
     
-${t.t('NEW_SUBS_WELCOME_03')} 
+${t.t(useLang, 'NEW_SUBS_WELCOME_03')} 
 `;
 
         messageParams = {
@@ -80,7 +83,7 @@ ${t.t('NEW_SUBS_WELCOME_03')}
         // Request to enter Instagram profile
 
         html = `
-${t.t('NEW_SUBS_INST_01')} 
+${t.t(useLang, 'NEW_SUBS_INST_01')} 
 `;
 
         messageParams = {
@@ -92,15 +95,18 @@ ${t.t('NEW_SUBS_INST_01')}
         await sendForcedMessage(messageParams);
 
 
-        return res.json(200);
+        return res.json(200, {
+          text: 'New client',
+        });
 
       } else if (client && client.result) {
         // client do exists in our database
         // and we need to send message with info about correct possible actions
 
         html = `
-<b>${t.t('NEW_SUBS_EXISTS_01')}</b>
-${t.t('NEW_SUBS_EXISTS_02')}
+<b>${t.t(useLang, 'NEW_SUBS_EXISTS_01')}</b>
+
+${t.t(useLang, 'NEW_SUBS_EXISTS_02')}
 `;
 
         messageParams = {
@@ -110,48 +116,21 @@ ${t.t('NEW_SUBS_EXISTS_02')}
           inline_keyboard: [
             [
               {
-                text: t.t('ACT_NEW_POST'),
-                callback_data: 'post'
+                text: t.t(useLang, 'POST_UPLOAD_BUTTON'),
+                callback_data: 'upload_post'
               },
-            ],
-            [
-              {
-                text: t.t('ACT_PAY'),
-                callback_data: 'payment'
-              },
-            ],
-            [
-              {
-                text: t.t('ACT_FAQ'),
-                callback_data: 'faq'
-              },
-              {
-                text: t.t('ACT_WEB'),
-                url: 'https://google.com'
-              }
             ],
           ],
         };
 
         await sendInlineButtons(messageParams);
 
-        // messageParams = {
-        //   messenger: params.messenger,
-        //   chatId: params.chatId,
-        //   html: html,
-        // };
-        //
-        // await sendSimpleMessage(messageParams);
-
-
-        return res.badRequest({
-          result: false,
+        return res.json(200, {
           data: client,
           text: 'Client already exists',
         })
       } else {
-        return res.badRequest({
-          result: false,
+        return res.json(200, {
           text: 'No info on the client received',
         })
       }
