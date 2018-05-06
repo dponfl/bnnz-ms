@@ -56,6 +56,7 @@ const token = {
     // Other messages
 
     MSG_GENERAL: 'Got message',
+    MSG_FORCED_GENERAL: 'Got some reply:',
 
     // Payment plans
 
@@ -81,6 +82,9 @@ const token = {
     PLAN_TC_BUTTON: 'Terms & Conditions',
 
     POST_UPLOAD_BUTTON: 'Upload Instagram post',
+    POST_UPLOAD: 'Place your Instagram post',
+    POST_UPLOAD_MSG: 'Your friend placed new Instagram post. ' +
+    'Follow this link and put like there.',
 
   },
   ru: {
@@ -127,6 +131,7 @@ const token = {
     // Other messages
 
     MSG_GENERAL: 'Обычное сообщение',
+    MSG_FORCED_GENERAL: 'Получено сообщение:',
 
     // Payment plans
 
@@ -150,5 +155,8 @@ const token = {
     PLAN_TC_BUTTON: 'Условиями оказания услуг',
 
     POST_UPLOAD_BUTTON: 'Загрузить пост Инстаграм',
+    POST_UPLOAD: 'Введите ссылку на свой пост в Инстаграм',
+    POST_UPLOAD_MSG: 'Твой друг разместил новый пост в Инстаграм. ' +
+    'Перейди по этой ссылке и поставь лайк.',
   },
 };

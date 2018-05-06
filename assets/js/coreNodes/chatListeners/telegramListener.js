@@ -56,6 +56,23 @@ function onCallbackQuery() {
 
     getUserLang(query);
 
+    (async () => {
+
+      try {
+
+        await bot.answerCallbackQuery(query.id);
+
+      } catch (err) {
+        console.log('telegramListener::onCallbackQuery, Error:');
+        console.log('statusCode: ' + err.statusCode);
+        console.log('message: ' + err.message);
+        console.log('error: ');
+        console.dir(err.error);
+        console.log('options: ');
+        console.dir(err.options);
+      }
+    })();
+
     if (query.data == 'instagram_profile_yes') {
 
       // route = '/mg/sendsimplemessage';
@@ -282,7 +299,22 @@ ${t.t(useLang, 'PLAN_THANKS_MSG_02')}
             },
           ],
         ],
+      };
 
+      sendREST = true;
+
+    } else if (query.data == 'upload_post') {
+
+      // Load Instagram post
+
+      html = `
+${t.t(useLang, 'POST_UPLOAD')} 
+`;
+      route = '/mg/sendforcedmessage';
+      params = {
+        messenger: 'telegram',
+        chatId: query.message.chat.id,
+        html: html,
       };
 
       sendREST = true;
@@ -300,7 +332,7 @@ ${t.t(useLang, 'PLAN_THANKS_MSG_02')}
 
       try {
 
-        await bot.answerCallbackQuery(query.id);
+        // await bot.answerCallbackQuery(query.id);
 
         if (sendREST) {
           await generalServices.sendREST('POST', route, params);
@@ -412,14 +444,14 @@ function onMessage() {
       && !_.isNil(msg.reply_to_message.text)) {
 
       /**
-       * Reply to message
+       * Reply to forced messages
        */
 
       switch (msg.reply_to_message.text) {
-        // case 'Reply with your Instagram account':
-        case t.t(useLang, 'NEW_SUBS_INST_01'):
 
-          // Check that the client provided Instagram account
+        // case 'Reply with your Instagram account':
+
+        case t.t(useLang, 'NEW_SUBS_INST_01'):
 
           let instUrl = 'https://www.instagram.com/' + _.trim(msg.text);
           let instConfHtml = `
@@ -449,17 +481,56 @@ ${t.t(useLang, 'NEW_SUBS_INST_02')}
           sendREST = true;
 
           break;
-        case 'Other reply':
+
+        case t.t(useLang, 'POST_UPLOAD'):
+
+          // case 'Place your Instagram post'
+
+          let instPostUrl = _.trim(msg.text);
+          let instPostHtml = `
+${t.t(useLang, 'POST_UPLOAD_MSG')}
+<a href="${instPostUrl}">${instPostUrl}</a>
+`;
 
           route = '/mg/sendsimplemessage';
           params = {
             messenger: 'telegram',
-            chatId: msg.chat.id,
-            html: 'Got other reply: '
-            + msg.text,
+            // chatId: msg.chat.id,
+            html: instPostHtml,
           };
+          let postSenderChatId = msg.chat.id;
 
-          sendREST = true;
+          // Send messages to all superClients except the one who made Inst post
+
+          _.forEach(sails.config.superClients, async (c) => {
+
+            // console.log('c.chatId: ' + c.chatId +
+            // ' postSenderChatId: ' + postSenderChatId);
+
+            if (c.chatId != postSenderChatId) {
+
+              // console.log('c.chatId != postSenderChatId');
+
+              try {
+                params.chatId = c.chatId;
+
+                // console.log('sending message to ' + params.chatId);
+                // console.log('params:');
+                // console.dir(params);
+
+                await generalServices.sendREST('POST', route, params);
+              }
+              catch (err) {
+                console.log('telegramListener::onMessage, Error:');
+                console.log('statusCode: ' + err.statusCode);
+                console.log('message: ' + err.message);
+                console.log('error: ');
+                console.dir(err.error);
+                console.log('options: ');
+                console.dir(err.options);
+              }
+            }
+          });
 
           break;
         default:
@@ -468,7 +539,7 @@ ${t.t(useLang, 'NEW_SUBS_INST_02')}
           params = {
             messenger: 'telegram',
             chatId: msg.chat.id,
-            html: 'Got some reply: '
+            html: t.t(useLang, 'MSG_FORCED_GENERAL') + ' '
             + msg.text,
           };
 
