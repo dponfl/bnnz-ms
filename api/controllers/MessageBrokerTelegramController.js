@@ -96,5 +96,37 @@ module.exports = {
     res.json(200);
 
   }, // sendInlineButtons
+
+  sendKeyboard: function (req, res) {
+
+    let params = req.allParams();
+
+    console.log('MessageBrokerTelegramController::sendKeyboard, params:');
+    console.dir(params);
+
+    (async () => {
+      try {
+        await bot.sendMessage(params.chatId, params.html, {
+          // parse_mode: 'HTML',
+          reply_markup: {
+            keyboard: params.keyboard,
+          }
+        });
+      } catch (err) {
+        console.log('MessageBrokerTelegramController::sendKeyboard, Error:');
+        console.log('statusCode: ' + err.statusCode);
+        console.log('message: ' + err.message);
+        console.log('error: ');
+        console.dir(err.error);
+        console.log('options: ');
+        console.dir(err.options);
+      }
+    })();
+
+    res.json(200);
+
+  }, // sendKeyboard
+
+
 };
 

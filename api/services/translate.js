@@ -27,12 +27,14 @@ const token = {
     NEW_SUBS_INST_03: 'Your Instagram login was confirmed',
     NEW_SUBS_INST_04: 'Your Instagram login was not confirmed',
     NEW_SUBS_INST_05: 'You are about to start promoting your account. ',
-    NEW_SUBS_INST_06: 'Just one final step left - please select your service plan and make payment',
+    NEW_SUBS_INST_06: 'Just one final step left - please select your payment plan and make payment',
+    NEW_SUBS_INST_07: 'Pls select payment plan for the next period and make payment',
+
 
     // New registration, the client was signed up already
 
     NEW_SUBS_EXISTS_01: 'You already have been registered at BonanzaInst',
-    NEW_SUBS_EXISTS_02: 'Pls use keyboard to upload info about new Instagram post, etc.',
+    NEW_SUBS_EXISTS_02: 'Pls use keyboard to upload info about new Instagram post',
 
     // General actions
 
@@ -86,6 +88,8 @@ const token = {
     POST_UPLOAD_MSG: 'Your friend placed new Instagram post. ' +
     'Follow this link and put like there.',
 
+    MSG_KEYBOARD: 'To upload new Instagram posts and to make payment pls use the below keyboard',
+
   },
   ru: {
 
@@ -102,12 +106,13 @@ const token = {
     NEW_SUBS_INST_04: 'Твой профиль Инстаграм не подтвержден',
     NEW_SUBS_INST_05: 'Еще немного и ты сможешь получить продвижение твоего аккаунта. ',
     NEW_SUBS_INST_06: 'Остался всего один шаг - выбери план обслуживания и внеси платеж',
+    NEW_SUBS_INST_07: 'Выбери план продолжения обслуживания и внеси платеж',
 
     // New registration, the client was signed up already
 
     NEW_SUBS_EXISTS_01: 'Вы уже зарегистрированы в BonanzaInst',
     NEW_SUBS_EXISTS_02: 'Используйте клавиатуру, чтобы загрузить информации о новом посте ' +
-    'в Инстаграм и др.',
+    'в Инстаграм',
 
     // General actions
 
@@ -158,5 +163,7 @@ const token = {
     POST_UPLOAD: 'Введите ссылку на свой пост в Инстаграм',
     POST_UPLOAD_MSG: 'Твой друг разместил новый пост в Инстаграм. ' +
     'Перейди по этой ссылке и поставь лайк.',
+
+    MSG_KEYBOARD: 'Для отправки новых постов и оплаты используй клавиатуру',
   },
 };

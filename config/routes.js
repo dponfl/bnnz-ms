@@ -56,16 +56,18 @@ module.exports.routes = {
    * MessageGatewayController
    */
 
-  'POST /mg/sendinlinebuttons': 'MessageGatewayController.sendInlineButtons',
-  'POST /mg/sendforcedmessage': 'MessageGatewayController.sendForcedMessage',
-  'POST /mg/sendsimplemessage': 'MessageGatewayController.sendSimpleMessage',
+  'POST /mg/sendinlinebuttons':   'MessageGatewayController.sendInlineButtons',
+  'POST /mg/sendforcedmessage':   'MessageGatewayController.sendForcedMessage',
+  'POST /mg/sendsimplemessage':   'MessageGatewayController.sendSimpleMessage',
+  'POST /mg/sendkeyboard':        'MessageGatewayController.sendKeyboard',
 
   /**
    * MessageBrokerTelegramController
    */
 
-  'POST /mbt/sendinlinebuttons': 'MessageBrokerTelegramController.sendInlineButtons',
-  'POST /mbt/sendforcedmessage': 'MessageBrokerTelegramController.sendForceMessage',
-  'POST /mbt/sendsimplemessage': 'MessageBrokerTelegramController.sendSimpleMessage',
+  'POST /mbt/sendinlinebuttons':  'MessageBrokerTelegramController.sendInlineButtons',
+  'POST /mbt/sendforcedmessage':  'MessageBrokerTelegramController.sendForceMessage',
+  'POST /mbt/sendsimplemessage':  'MessageBrokerTelegramController.sendSimpleMessage',
+  'POST /mbt/sendkeyboard':       'MessageBrokerTelegramController.sendKeyboard',
 
 };

@@ -65,6 +65,25 @@ module.exports = {
 
   }, // sendSimpleMessage
 
+  sendKeyboard: function (req, res) {
+
+    let params = req.allParams();
+
+    console.log('MessageGatewayController::sendKeyboard, params:');
+    console.dir(params);
+
+    switch (params.messenger) {
+      case 'telegram' :
+        callTelegram('/mbt/sendkeyboard', params);
+        break;
+      case 'facebook':
+        break;
+    }
+
+    res.json(200);
+
+  }, // sendKeyboard
+
 
 };
 

@@ -75,13 +75,6 @@ function onCallbackQuery() {
 
     if (query.data == 'instagram_profile_yes') {
 
-      // route = '/mg/sendsimplemessage';
-      // params = {
-      //   messenger: 'telegram',
-      //   chatId: query.message.chat.id,
-      //   html: t.t(useLang, 'NEW_SUBS_INST_03'),
-      // };
-
       html = `
 ${t.t(useLang, 'NEW_SUBS_INST_05')}
 
@@ -296,6 +289,41 @@ ${t.t(useLang, 'PLAN_THANKS_MSG_02')}
             {
               text: t.t(useLang, 'POST_UPLOAD_BUTTON'),
               callback_data: 'upload_post'
+            },
+          ],
+        ],
+      };
+
+      sendREST = true;
+
+    } else if (query.data == 'make_next_payment') {
+
+      html = `
+${t.t(useLang, 'NEW_SUBS_INST_07')}
+`;
+
+      route = '/mg/sendinlinebuttons';
+      params = {
+        messenger: 'telegram',
+        chatId: query.message.chat.id,
+        html: html,
+        inline_keyboard: [
+          [
+            {
+              text: t.t(useLang, 'PLAN_PLATINUM'),
+              callback_data: 'instagram_plan_platinum'
+            },
+          ],
+          [
+            {
+              text: t.t(useLang, 'PLAN_GOLD'),
+              callback_data: 'instagram_plan_gold'
+            },
+          ],
+          [
+            {
+              text: t.t(useLang, 'PLAN_BRONZE'),
+              callback_data: 'instagram_plan_bronze'
             },
           ],
         ],
@@ -519,6 +547,7 @@ ${t.t(useLang, 'POST_UPLOAD_MSG')}
                 // console.dir(params);
 
                 await generalServices.sendREST('POST', route, params);
+
               }
               catch (err) {
                 console.log('telegramListener::onMessage, Error:');
@@ -531,6 +560,38 @@ ${t.t(useLang, 'POST_UPLOAD_MSG')}
               }
             }
           });
+
+          (async () => {
+
+            // Sending keyboard
+
+            let keyboardMsgHtml = `
+${t.t(useLang, 'MSG_KEYBOARD')}
+`;
+
+            route = '/mg/sendinlinebuttons';
+            params = {
+              messenger: 'telegram',
+              chatId: msg.chat.id,
+              html: keyboardMsgHtml,
+              inline_keyboard: [
+                [
+                  {
+                    text: t.t(useLang, 'POST_UPLOAD_BUTTON'),
+                    callback_data: 'upload_post'
+                  },
+                ],
+                [
+                  {
+                    text: t.t(useLang, 'ACT_PAY'),
+                    callback_data: 'make_next_payment'
+                  },
+                ],
+              ],
+            };
+
+            await generalServices.sendREST('POST', route, params);
+          })();
 
           break;
         default:
