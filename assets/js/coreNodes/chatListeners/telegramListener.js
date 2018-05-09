@@ -386,6 +386,7 @@ function onMessage() {
 
     let route;
     let params;
+    let html;
     let sendREST = false;
 
     console.log('telegramListener::onMessage, message:');
@@ -468,6 +469,47 @@ function onMessage() {
 
         sendREST = true;
       }
+    } else if (/\/help/i.test(_.trim(msg.text))) {
+
+      /**
+       * Help command
+       */
+
+      html = `${t.t(useLang, 'MSG_HELP')}`;
+
+      route = '/mg/sendinlinebuttons';
+      params = {
+        messenger: 'telegram',
+        chatId: msg.chat.id,
+        html: html,
+        inline_keyboard: [
+          [
+            {
+              text: t.t(useLang, 'ACT_NEW_POST'),
+              callback_data: 'upload_post'
+            },
+          ],
+          [
+            {
+              text: t.t(useLang, 'ACT_PAY'),
+              callback_data: 'make_next_payment',
+            },
+          ],
+          [
+            {
+              text: t.t(useLang, 'ACT_FAQ'),
+              url: 'https://policies.google.com/terms',
+            },
+            {
+              text: t.t(useLang, 'ACT_WEB'),
+              url: 'https://policies.google.com/terms',
+            },
+          ],
+        ],
+      };
+
+      sendREST = true;
+
     } else if (!_.isNil(msg.reply_to_message)
       && !_.isNil(msg.reply_to_message.text)) {
 
