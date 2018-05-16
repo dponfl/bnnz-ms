@@ -416,8 +416,6 @@ ${t.t(lang, 'NEW_SUBS_INST_02')}
 
     let res = {};
 
-    // todo: make check that this is really Instagram link
-
     /**
      * check that the provided Instagram link is correct
      */
@@ -446,6 +444,10 @@ ${t.t(lang, 'NEW_SUBS_INST_02')}
 
       return res;
     }
+
+    /**
+     * As the link is OK we can proceed with sending post to the chat
+     */
 
     let instPostUrl = _.trim(msg.text);
     let instPostHtml = `
