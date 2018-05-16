@@ -180,8 +180,8 @@ ${t.t(lang, 'NEW_SUBS_EXISTS_02')}
          * Check of the client already exists
          */
 
-        // client = await checkClient(params);
-        client = await checkClient(false);
+        client = await checkClient(params);
+        // client = await checkClient(false);
 
 
         if (client && !client.result) {
@@ -224,23 +224,23 @@ ${t.t(lang, 'NEW_SUBS_EXISTS_02')}
             inline_keyboard: [
               [
                 {
-                  text: t.t(useLang, 'ACT_NEW_POST'),
+                  text: t.t(lang, 'ACT_NEW_POST'),
                   callback_data: 'upload_post'
                 },
               ],
               [
                 {
-                  text: t.t(useLang, 'ACT_PAY'),
+                  text: t.t(lang, 'ACT_PAY'),
                   callback_data: 'make_next_payment',
                 },
               ],
               [
                 {
-                  text: t.t(useLang, 'ACT_FAQ'),
+                  text: t.t(lang, 'ACT_FAQ'),
                   url: 'https://policies.google.com/terms',
                 },
                 {
-                  text: t.t(useLang, 'ACT_WEB'),
+                  text: t.t(lang, 'ACT_WEB'),
                   url: 'https://policies.google.com/terms',
                 },
               ],
