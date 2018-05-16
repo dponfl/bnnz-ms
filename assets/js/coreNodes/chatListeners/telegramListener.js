@@ -17,8 +17,6 @@ const moduleName = 'telegramListener:: ';
 
 let useLang = 'en';
 
-// t.setLang('ru');
-
 onCallbackQuery();
 
 onMessage();
@@ -211,7 +209,16 @@ function onMessage() {
 
           REST = convScript.onMessageNewInstagramPost(msg, useLang);
 
-          sendREST = false;
+          console.log('<<<<<<< REST:');
+          console.dir(REST);
+
+          if (!REST) {
+            sendREST = false;
+          } else {
+            sendREST = true;
+          }
+
+
 
           break;
         default:

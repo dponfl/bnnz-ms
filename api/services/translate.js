@@ -61,6 +61,8 @@ const token = {
 
     MSG_GENERAL: 'Got message',
     MSG_FORCED_GENERAL: 'Got some reply:',
+    MSG_FORCED_WRONG_INST: 'You provided the wrong Instagram post. Please try again using the below button.',
+
 
     // Payment plans
 
@@ -143,6 +145,8 @@ const token = {
 
     MSG_GENERAL: 'Обычное сообщение',
     MSG_FORCED_GENERAL: 'Получено сообщение:',
+    MSG_FORCED_WRONG_INST: 'Введен неверный Инстаграм пост. Попробуй снова использую кнопку ниже.',
+
 
     // Payment plans
 

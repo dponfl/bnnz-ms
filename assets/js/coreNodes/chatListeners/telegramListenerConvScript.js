@@ -418,6 +418,35 @@ ${t.t(lang, 'NEW_SUBS_INST_02')}
 
     // todo: make check that this is really Instagram link
 
+    /**
+     * check that the provided Instagram link is correct
+     */
+
+    let instagramRegexp = new RegExp(restLinks.trueInstagram);
+
+    if (!instagramRegexp.test(_.trim(msg.text.toLowerCase()))) {
+
+      let html = `${t.t(lang, 'MSG_FORCED_WRONG_INST')}`;
+
+      res.params = {
+        messenger: 'telegram',
+        chatId: msg.chat.id,
+        html: html,
+        inline_keyboard: [
+          [
+            {
+              text: t.t(lang, 'ACT_NEW_POST'),
+              callback_data: 'upload_post'
+            },
+          ],
+        ],
+      };
+
+      res.route = restLinks.mgSendInlineButtons;
+
+      return res;
+    }
+
     let instPostUrl = _.trim(msg.text);
     let instPostHtml = `
 ${t.t(lang, 'POST_UPLOAD_MSG')}
@@ -496,7 +525,7 @@ ${t.t(lang, 'MSG_KEYBOARD')}
       await generalServices.sendREST('POST', res.route, res.params);
     })();
 
-    return true;
+    return false;
 
   }, // onMessageNewInstagramPost
 

@@ -131,6 +131,8 @@ module.exports = {
       mgSendInlineButtons: '/mg/sendinlinebuttons',
       mgSendForcedMessage: '/mg/sendforcedmessage',
       mgSendSimpleMessage: '/mg/sendsimplemessage',
+
+      trueInstagram: '^https:\/\/www\.instagram\.com\/',
     }
   }, // RESTLinks
 
