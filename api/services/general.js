@@ -132,7 +132,7 @@ module.exports = {
       mgSendForcedMessage: '/mg/sendforcedmessage',
       mgSendSimpleMessage: '/mg/sendsimplemessage',
 
-      trueInstagram: '^https:\/\/www\.instagram\.com\/',
+      trueInstagram: '^https:\/\/www\.instagram\.com\/|^https:\/\/instagram\.com\/',
     }
   }, // RESTLinks
 
