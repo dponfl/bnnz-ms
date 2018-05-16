@@ -1,7 +1,6 @@
 "use strict";
 
 const generalServices = require('../../../../api/services/general');
-const clientCodes = generalServices.clientCodes();
 
 const t = require('../../../../api/services/translate');
 
@@ -190,34 +189,15 @@ function onMessage() {
 
       switch (msg.reply_to_message.text) {
 
-        // case 'Reply with your Instagram account':
+        /**
+         * case 'Reply with your Instagram account'
+         */
 
         case t.t(useLang, 'NEW_SUBS_INST_01'):
 
-          let instUrl = 'https://www.instagram.com/' + _.trim(msg.text);
-          let instConfHtml = `
-${t.t(useLang, 'NEW_SUBS_INST_02')}
-<a href="${instUrl}">${instUrl}</a>
-`;
+          console.log(moduleName + methodName + ', got reply with Instagram account');
 
-          REST.route = '/mg/sendinlinebuttons';
-          REST.params = {
-            messenger: 'telegram',
-            chatId: msg.chat.id,
-            html: instConfHtml,
-            inline_keyboard: [
-              [
-                {
-                  text: t.t(useLang, 'ACT_YES'),
-                  callback_data: 'instagram_profile_yes'
-                },
-                {
-                  text: t.t(useLang, 'ACT_NO'),
-                  callback_data: 'instagram_profile_no'
-                }
-              ],
-            ],
-          };
+          REST = convScript.onMessageNewInstagramAccount(msg, useLang);
 
           sendREST = true;
 
@@ -225,99 +205,20 @@ ${t.t(useLang, 'NEW_SUBS_INST_02')}
 
         case t.t(useLang, 'POST_UPLOAD'):
 
-          // case 'Place your Instagram post'
+          /**
+           * case 'Place your Instagram post'
+           */
 
-          // todo: make check that this is really Instagram link
+          REST = convScript.onMessageNewInstagramPost(msg, useLang);
 
-          let instPostUrl = _.trim(msg.text);
-          let instPostHtml = `
-${t.t(useLang, 'POST_UPLOAD_MSG')}
-<a href="${instPostUrl}">${instPostUrl}</a>
-`;
-
-          REST.route = '/mg/sendsimplemessage';
-          REST.params = {
-            messenger: 'telegram',
-            // chatId: msg.chat.id,
-            html: instPostHtml,
-          };
-          let postSenderChatId = msg.chat.id;
-
-          // Send messages to all superClients except the one who made Inst post
-
-          _.forEach(sails.config.superClients, async (c) => {
-
-            // console.log('c.chatId: ' + c.chatId +
-            // ' postSenderChatId: ' + postSenderChatId);
-
-            if (c.chatId != postSenderChatId) {
-
-              // console.log('c.chatId != postSenderChatId');
-
-              try {
-                REST.params.chatId = c.chatId;
-
-                // console.log('sending message to ' + REST.params.chatId);
-                // console.log('REST.params:');
-                // console.dir(REST.params);
-
-                await generalServices.sendREST('POST', REST.route, REST.params);
-
-              }
-              catch (err) {
-                console.log(moduleName + methodName + ', Error:');
-                console.log('statusCode: ' + err.statusCode);
-                console.log('message: ' + err.message);
-                console.log('error: ');
-                console.dir(err.error);
-                console.log('options: ');
-                console.dir(err.options);
-              }
-            }
-          });
-
-          (async () => {
-
-            // Sending inline keyboard
-
-            let keyboardMsgHtml = `
-${t.t(useLang, 'MSG_KEYBOARD')}
-`;
-
-            REST.route = '/mg/sendinlinebuttons';
-            REST.params = {
-              messenger: 'telegram',
-              chatId: msg.chat.id,
-              html: keyboardMsgHtml,
-              inline_keyboard: [
-                [
-                  {
-                    text: t.t(useLang, 'POST_UPLOAD_BUTTON'),
-                    callback_data: 'upload_post'
-                  },
-                ],
-                [
-                  {
-                    text: t.t(useLang, 'ACT_PAY'),
-                    callback_data: 'make_next_payment'
-                  },
-                ],
-              ],
-            };
-
-            await generalServices.sendREST('POST', REST.route, REST.params);
-          })();
+          sendREST = false;
 
           break;
         default:
 
-          REST.route = '/mg/sendsimplemessage';
-          REST.params = {
-            messenger: 'telegram',
-            chatId: msg.chat.id,
-            html: t.t(useLang, 'MSG_FORCED_GENERAL') + ' '
-            + msg.text,
-          };
+          console.log(moduleName + methodName + ', got wrong forced message');
+
+          REST = convScript.onMessageHelp(msg, useLang);
 
           sendREST = true;
 
@@ -331,16 +232,11 @@ ${t.t(useLang, 'MSG_KEYBOARD')}
        * Generic message
        */
 
-      REST.route = '/mg/sendsimplemessage';
-      REST.params = {
-        messenger: 'telegram',
-        chatId: msg.chat.id,
-        html: `${t.t(useLang, 'MSG_GENERAL')}: `
-        + msg.text,
-      };
+      console.log(moduleName + methodName + ', got general message');
+
+      REST = convScript.onMessageHelp(msg, useLang);
 
       sendREST = true;
-
 
     }
 

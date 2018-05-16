@@ -1,8 +1,10 @@
 "use strict";
 
 const t = require('../../../../api/services/translate');
+const generalServices = require('../../../../api/services/general');
 const restLinks = require('../../../../api/services/general').RESTLinks();
 const uuid = require('uuid-apikey');
+const _ = require('lodash');
 
 const moduleName = 'CoreModuleController:: ';
 
@@ -371,6 +373,132 @@ ${t.t(lang, 'POST_UPLOAD')}
     return res;
 
   }, // onMessageHelp
+
+  onMessageNewInstagramAccount: function (msg, lang) {
+
+    const methodName = 'onMessageNewInstagramAccount';
+
+    let res = {};
+
+    let instUrl = 'https://www.instagram.com/' + _.trim(msg.text);
+    let instConfHtml = `
+${t.t(lang, 'NEW_SUBS_INST_02')}
+<a href="${instUrl}">${instUrl}</a>
+`;
+
+    res.params = {
+      messenger: 'telegram',
+      chatId: msg.chat.id,
+      html: instConfHtml,
+      inline_keyboard: [
+        [
+          {
+            text: t.t(lang, 'ACT_YES'),
+            callback_data: 'instagram_profile_yes'
+          },
+          {
+            text: t.t(lang, 'ACT_NO'),
+            callback_data: 'instagram_profile_no'
+          }
+        ],
+      ],
+    };
+
+    res.route = restLinks.mgSendInlineButtons;
+
+    return res;
+
+  }, // onMessageNewInstagramAccount
+
+  onMessageNewInstagramPost: function (msg, lang) {
+
+    const methodName = 'onMessageNewInstagramPost';
+
+    let res = {};
+
+    // todo: make check that this is really Instagram link
+
+    let instPostUrl = _.trim(msg.text);
+    let instPostHtml = `
+${t.t(lang, 'POST_UPLOAD_MSG')}
+<a href="${instPostUrl}">${instPostUrl}</a>
+`;
+
+    res.route = restLinks.mgSendSimpleMessage;
+    res.params = {
+      messenger: 'telegram',
+      html: instPostHtml,
+    };
+    let postSenderChatId = msg.chat.id;
+
+    // Send messages to all superClients except the one who made Inst post
+
+    _.forEach(sails.config.superClients, async (c) => {
+
+      // console.log('c.chatId: ' + c.chatId +
+      // ' postSenderChatId: ' + postSenderChatId);
+
+      if (c.chatId != postSenderChatId) {
+
+        // console.log('c.chatId != postSenderChatId');
+
+        try {
+          res.params.chatId = c.chatId;
+
+          // console.log('sending message to ' + res.params.chatId);
+          // console.log('res.params:');
+          // console.dir(res.params);
+
+          await generalServices.sendREST('POST', res.route, res.params);
+
+        }
+        catch (err) {
+          console.log(moduleName + methodName + ', Error:');
+          console.log('statusCode: ' + err.statusCode);
+          console.log('message: ' + err.message);
+          console.log('error: ');
+          console.dir(err.error);
+          console.log('options: ');
+          console.dir(err.options);
+        }
+      }
+    });
+
+    (async () => {
+
+      // Sending inline keyboard
+
+      let keyboardMsgHtml = `
+${t.t(lang, 'MSG_KEYBOARD')}
+`;
+
+      res.route = restLinks.mgSendInlineButtons;
+      res.params = {
+        messenger: 'telegram',
+        chatId: msg.chat.id,
+        html: keyboardMsgHtml,
+        inline_keyboard: [
+          [
+            {
+              text: t.t(lang, 'POST_UPLOAD_BUTTON'),
+              callback_data: 'upload_post'
+            },
+          ],
+          [
+            {
+              text: t.t(lang, 'ACT_PAY'),
+              callback_data: 'make_next_payment'
+            },
+          ],
+        ],
+      };
+
+      await generalServices.sendREST('POST', res.route, res.params);
+    })();
+
+    return true;
+
+  }, // onMessageNewInstagramPost
 
 
 };
