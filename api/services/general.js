@@ -76,7 +76,62 @@ module.exports = {
     });
   }, // clientExists
 
-  t: function (str) {
+  clientCodes: function () {
+    return {
+      /**
+       * New client
+       */
 
-  } // t
+      newClient: {
+        code: 200,
+        ext_code: 100,
+        text: 'New client',
+      },
+
+      /**
+       * Existing client
+       */
+
+      existingClient: {
+        code: 200,
+        ext_code: 101,
+        text: 'Existing client',
+      },
+
+      /**
+       * Error and no info about client
+       */
+
+      noClient: {
+        code: 200,
+        ext_code: 103,
+        text: 'No info about client',
+      },
+
+      /**
+       * New client used the wrong command
+       */
+
+      wrongCommand: {
+        code: 200,
+        ext_code: 104,
+        text: 'Wrong command for new client',
+      },
+
+
+    }
+  }, // clientCodes
+
+  RESTLinks: function () {
+    return {
+      start: '/core/start',
+      help: '/core/help',
+
+
+      mgSendInlineButtons: '/mg/sendinlinebuttons',
+      mgSendForcedMessage: '/mg/sendforcedmessage',
+      mgSendSimpleMessage: '/mg/sendsimplemessage',
+    }
+  }, // RESTLinks
+
 };

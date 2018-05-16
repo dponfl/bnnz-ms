@@ -22,6 +22,8 @@ const token = {
     NEW_SUBS_WELCOME_03: 'By joining our program you will not only ' +
     'improve you Instagram account but also you can ' +
     'earn money inviting your friends!',
+    NEW_SUBS_ERROR_COMMAND: 'You are not registered at our service yet. ' +
+    'To proceed with registration please enter /start',
     NEW_SUBS_INST_01: 'Please enter your Instagram login:',
     NEW_SUBS_INST_02: 'Please confirm that this is your Instagram login:',
     NEW_SUBS_INST_03: 'Your Instagram login was confirmed',
@@ -88,7 +90,7 @@ const token = {
     POST_UPLOAD_MSG: 'Your friend placed new Instagram post. ' +
     'Follow this link and put like there.',
 
-    MSG_KEYBOARD: 'To upload new Instagram posts and to make payment pls use the below keyboard',
+    MSG_KEYBOARD: 'Your post was sent successfully. To upload new Instagram posts and to make payment pls use the below keyboard',
 
     MSG_HELP: 'Pls use the below buttons',
 
@@ -102,6 +104,8 @@ const token = {
     NEW_SUBS_WELCOME_03: 'Наша программа не только ' +
     'обеспечит продвижение твоего аккаунта Инстаграм, ' +
     'но также ты сможешь получать деньги приглашая своих друзей!',
+    NEW_SUBS_ERROR_COMMAND: 'Ты не зарегистрирован в этом чате. ' +
+    'Для того чтобы зарегистрироваться введи команду /start',
     NEW_SUBS_INST_01: 'Введи свой логин в Инстаграм:',
     NEW_SUBS_INST_02: 'Подтверди, что это твой профиль Инстаграм:',
     NEW_SUBS_INST_03: 'Твой профиль Инстаграм подтвержден',
@@ -166,7 +170,7 @@ const token = {
     POST_UPLOAD_MSG: 'Твой друг разместил новый пост в Инстаграм. ' +
     'Перейди по этой ссылке и поставь лайк.',
 
-    MSG_KEYBOARD: 'Для отправки новых постов и оплаты используй клавиатуру',
+    MSG_KEYBOARD: 'Твой пост успешно отправлен. Для отправки новых постов и оплаты используй клавиатуру',
 
     MSG_HELP: 'Используй клавиатуру ниже',
 

@@ -50,7 +50,8 @@ module.exports.routes = {
    * CoreModuleController
    */
 
-  'POST /core/newsubscription/start': 'CoreModuleController.newSubscription',
+  'POST /core/start': 'CoreModuleController.proceedStartCommand',
+  'POST /core/help': 'CoreModuleController.proceedHelpCommand',
 
   /**
    * MessageGatewayController
