@@ -10,7 +10,7 @@ const moduleName = 'CoreModuleController:: ';
 
 
 module.exports = {
-  onCallbackQueryScript: function (lang, chatId) {
+  onCallbackQueryScript: function (lang, chatId, msg = '') {
 
     const methodName = 'onCallbackQueryScript';
 
@@ -177,13 +177,16 @@ ${t.t(lang, 'PLAN_THANKS_MSG')}
           html: `
 ${t.t(lang, 'PLAN_PLATINUM_THANKS_MSG_02')} 
 
-${t.t(lang, 'PLAN_THANKS_MSG_02')} 
+${t.t(lang, 'NEW_SUBS_INST_08')} 
+${msg}
+
+${t.t(lang, 'NEW_SUBS_INST_09')} 
 `,
           inline_keyboard: [
             [
               {
-                text: t.t(lang, 'POST_UPLOAD_BUTTON'),
-                callback_data: 'upload_post'
+                text: t.t(lang, 'ACT_SUBSCRIBE'),
+                callback_data: 'subscribed'
               },
             ],
           ],
@@ -203,13 +206,16 @@ ${t.t(lang, 'PLAN_THANKS_MSG_02')}
           html: `
 ${t.t(lang, 'PLAN_GOLD_THANKS_MSG_02')} 
 
-${t.t(lang, 'PLAN_THANKS_MSG_02')} 
+${t.t(lang, 'NEW_SUBS_INST_08')} 
+${msg}
+
+${t.t(lang, 'NEW_SUBS_INST_09')} 
 `,
           inline_keyboard: [
             [
               {
-                text: t.t(lang, 'POST_UPLOAD_BUTTON'),
-                callback_data: 'upload_post'
+                text: t.t(lang, 'ACT_SUBSCRIBE'),
+                callback_data: 'subscribed'
               },
             ],
           ],
@@ -229,6 +235,33 @@ ${t.t(lang, 'PLAN_THANKS_MSG_02')}
           html: `
 ${t.t(lang, 'PLAN_BRONZE_THANKS_MSG_02')} 
 
+${t.t(lang, 'NEW_SUBS_INST_08')} 
+${msg}
+
+${t.t(lang, 'NEW_SUBS_INST_09')} 
+`,
+          inline_keyboard: [
+            [
+              {
+                text: t.t(lang, 'ACT_SUBSCRIBE'),
+                callback_data: 'subscribed'
+              },
+            ],
+          ],
+        },
+      },
+
+      /**
+       * subscribed - Confirmation of subscription to the list of Instagram profiles
+       */
+
+      {
+        req: 'subscribed',
+        route: restLinks.mgSendInlineButtons,
+        params: {
+          messenger: 'telegram',
+          chatId: chatId,
+          html: `
 ${t.t(lang, 'PLAN_THANKS_MSG_02')} 
 `,
           inline_keyboard: [
@@ -464,8 +497,10 @@ ${t.t(lang, 'POST_UPLOAD_MSG')}
 
     // Send messages to all superClients except the one who made Inst post
 
-    // let useList = sails.config.superClients;
-    let useList = [];
+    // todo: get superClients list from DB
+
+    let useList = sails.config.superClients;
+    // let useList = [];
 
 
     _.forEach(useList, async (c) => {

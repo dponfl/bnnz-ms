@@ -24,9 +24,11 @@ const token = {
     NEW_SUBS_INST_03: 'Your Instagram login was confirmed',
     NEW_SUBS_INST_04: 'Your Instagram login was not confirmed',
     NEW_SUBS_INST_05: 'You are about to start promoting your account. ',
-    NEW_SUBS_INST_06: 'Just one final step left - please select your payment plan and make payment',
+    NEW_SUBS_INST_06: 'Please select your payment plan and make payment',
     NEW_SUBS_INST_07: 'Pls select payment plan for the next period and make payment',
-
+    NEW_SUBS_INST_08: 'Just one final step left - please subscribe to the ' +
+    'following Instagram profiles:',
+    NEW_SUBS_INST_09: 'and then press the below button',
 
     // New registration, the client was signed up already
 
@@ -36,6 +38,7 @@ const token = {
     // General actions
 
     ACT_NEW_POST: 'Upload Instagram post',
+    ACT_SUBSCRIBE: 'Confirm subscription',
     ACT_PAY: 'Make monthly payment',
     ACT_FAQ: 'FAQ',
     ACT_WEB: 'Web site',
@@ -76,7 +79,7 @@ const token = {
     PLAN_THANKS_MSG: 'By pressing "Make payment" button you accept ' +
     'Service Terms and Conditions and will be redirected to the payment system',
 
-    PLAN_THANKS_MSG_02: 'Now you can upload your posts using the below button',
+    PLAN_THANKS_MSG_02: 'Ready. Now you can upload your posts using the below button',
 
 
     PLAN_PAY_BUTTON: '>>> Make payment <<<',
@@ -108,8 +111,12 @@ const token = {
     NEW_SUBS_INST_03: 'Твой профиль Инстаграм подтвержден',
     NEW_SUBS_INST_04: 'Твой профиль Инстаграм не подтвержден',
     NEW_SUBS_INST_05: 'Еще немного и ты сможешь получить продвижение твоего аккаунта. ',
-    NEW_SUBS_INST_06: 'Остался всего один шаг - выбери план обслуживания и внеси платеж',
+    NEW_SUBS_INST_06: 'Выбери план обслуживания и внеси платеж',
     NEW_SUBS_INST_07: 'Выбери план продолжения обслуживания и внеси платеж',
+    NEW_SUBS_INST_08: 'Остался всего один шаг - подпишись на эти профили ' +
+    'Инстаграм:',
+    NEW_SUBS_INST_09: 'и после этого нажми кнопку ниже',
+
 
     // New registration, the client was signed up already
 
@@ -120,6 +127,7 @@ const token = {
     // General actions
 
     ACT_NEW_POST: 'Загрузить пост Инстаграм',
+    ACT_SUBSCRIBE: 'Подтверждаю подписку',
     ACT_PAY: 'Внести платеж',
     ACT_FAQ: 'Помощь',
     ACT_WEB: 'Перейти на сайт',
@@ -159,7 +167,7 @@ const token = {
 
     PLAN_THANKS_MSG: 'Нажимая кнопку "Оплатить" ты соглашаешся с ' +
     'Условиями оказания услуг и будешь перенаправлен на платежную систему',
-    PLAN_THANKS_MSG_02: 'Теперь ты можешь загрузить свои посты используя кнопку ниже',
+    PLAN_THANKS_MSG_02: 'Все готово. Теперь ты можешь загрузить свои посты используя кнопку ниже',
 
     PLAN_PAY_BUTTON: '>>> Оплатить <<<',
     PLAN_TC_BUTTON: 'Условиями оказания услуг',

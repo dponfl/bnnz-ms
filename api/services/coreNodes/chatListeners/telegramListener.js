@@ -72,7 +72,20 @@ function onCallbackQuery() {
 
         await bot.answerCallbackQuery(query.id);
 
-        let queryScript = convScript.onCallbackQueryScript(useLang, query.message.chat.id);
+        let queryScript = {};
+
+        if (query.data == 'make_payment_plan_platinum'
+          || query.data == 'make_payment_plan_gold'
+          || query.data == 'make_payment_plan_bronze') {
+
+          queryScript = convScript.onCallbackQueryScript(useLang, query.message.chat.id,
+            '<a href="www.google.com">bla-bla-bla</a>');
+
+        } else {
+
+          queryScript = convScript.onCallbackQueryScript(useLang, query.message.chat.id);
+
+        }
 
         queryScript.map((elem) => {
           if (elem.req == query.data) {
