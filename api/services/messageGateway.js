@@ -2,7 +2,7 @@
 
 const TelegramBot = require('node-telegram-bot-api');
 
-const bot = new TelegramBot(sails.config.TOKEN, {
+const bot = new TelegramBot(sails.config.TELEGRAM_TOKEN, {
   polling: {
     interval: 300,
     autoStart: true,

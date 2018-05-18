@@ -464,7 +464,11 @@ ${t.t(lang, 'POST_UPLOAD_MSG')}
 
     // Send messages to all superClients except the one who made Inst post
 
-    _.forEach(sails.config.superClients, async (c) => {
+    // let useList = sails.config.superClients;
+    let useList = [];
+
+
+    _.forEach(useList, async (c) => {
 
       // console.log('c.chatId: ' + c.chatId +
       // ' postSenderChatId: ' + postSenderChatId);

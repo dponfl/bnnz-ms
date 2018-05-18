@@ -35,4 +35,8 @@ module.exports = {
   //   level: "silent"
   // }
 
+  TELEGRAM_TOKEN: process.env.TELEGRAM_TOKEN || '',
+
+  HOST: process.env.HOST || 'http://localhost:1337',
+
 };
