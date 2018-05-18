@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const generalServices = require('../../api/services/general');
+let generalServices = require('../../api/services/general');
 
 
 module.exports = {

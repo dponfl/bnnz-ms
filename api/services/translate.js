@@ -3,14 +3,9 @@
 module.exports = {
   t: function (l, useToken) {
     return token[l][useToken];
-  }, // T
+  }, // t
 
-  // setLang: function (language) {
-  //   lang = language;
-  // }, // setLang
 };
-
-var lang = 'en';
 
 const token = {
   en: {

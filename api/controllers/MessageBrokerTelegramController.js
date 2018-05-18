@@ -5,9 +5,9 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const messageGatewayServices = require('../../api/services/messageGateway');
+let messageGatewayServices = require('../../api/services/messageGateway');
 
-const bot = messageGatewayServices.getTelegramBot();
+let bot = messageGatewayServices.getTelegramBot();
 
 module.exports = {
 	sendSimpleMessage: function (req, res) {

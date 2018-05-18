@@ -1,7 +1,7 @@
 "use strict";
 
-const rp = require('request-promise');
-const _ = require('lodash');
+let rp = require('request-promise');
+let _ = require('lodash');
 
 module.exports = {
   sendREST: function (method, url, params) {
