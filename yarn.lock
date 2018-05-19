@@ -259,6 +259,10 @@ async@2.0.1:
   dependencies:
     lodash "^4.8.0"
 
+async@~0.9.0:
+  version "0.9.2"
+  resolved "https://registry.yarnpkg.com/async/-/async-0.9.2.tgz#aea74d5e61c1f899613bf64bda66d4c78f2fd17d"
+
 async@~1.2.0:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/async/-/async-1.2.1.tgz#a4816a17cd5ff516dfa2c7698a453369b9790de0"
@@ -318,6 +322,10 @@ better-assert@~1.0.0:
   resolved "https://registry.yarnpkg.com/better-assert/-/better-assert-1.0.2.tgz#40866b9e1b9e0b55b481894311e68faffaebc522"
   dependencies:
     callsite "1.0.0"
+
+bignumber.js@2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-2.1.4.tgz#29b3bb693dbb238e88b72eac2fb89650888b2d59"
 
 bl@^1.2.1:
   version "1.2.2"
@@ -1904,6 +1912,10 @@ lodash@2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-2.4.1.tgz#5b7723034dda4d262e5a46fb2c58d7cc22f71420"
 
+lodash@3.10.0:
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.0.tgz#93d51c672828a4416a12af57220ba8a8737e2fbb"
+
 lodash@3.10.1, lodash@^3.10.1, lodash@^3.8.0:
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
@@ -2178,6 +2190,13 @@ mustache@*:
 mute-stream@~0.0.4:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
+
+mysql@2.10.2:
+  version "2.10.2"
+  resolved "https://registry.yarnpkg.com/mysql/-/mysql-2.10.2.tgz#9ee5e46f056b2ba3a7840a10eae3426f59384292"
+  dependencies:
+    bignumber.js "2.1.4"
+    readable-stream "~1.1.13"
 
 native-or-bluebird@~1.1.2:
   version "1.1.2"
@@ -2570,7 +2589,7 @@ readable-stream@^2.2.2, readable-stream@^2.3.5:
     string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
 
-readable-stream@~1.1.8, readable-stream@~1.1.9:
+readable-stream@~1.1.13, readable-stream@~1.1.8, readable-stream@~1.1.9:
   version "1.1.14"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-1.1.14.tgz#7cf4c54ef648e3813084c636dd2079e166c081d9"
   dependencies:
@@ -2880,6 +2899,17 @@ sails-hook-sockets@^0.13.9:
     semver "^4.3.4"
     socket.io "1.7.3"
     uid2 "0.0.3"
+
+sails-mysql@0.11.5:
+  version "0.11.5"
+  resolved "https://registry.yarnpkg.com/sails-mysql/-/sails-mysql-0.11.5.tgz#ab2a2cd7b8b48d32190cc961f8e984921b7fe60b"
+  dependencies:
+    async "1.5.2"
+    lodash "3.10.1"
+    mysql "2.10.2"
+    waterline-cursor "0.0.6"
+    waterline-errors "0.10.1"
+    waterline-sequel "0.5.7"
 
 sails-stringfile@~0.3.2:
   version "0.3.2"
@@ -3650,6 +3680,13 @@ waterline-criteria@~1.0.1:
   dependencies:
     lodash "3.10.1"
 
+waterline-cursor@0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/waterline-cursor/-/waterline-cursor-0.0.6.tgz#7750eea88b88f800996d1153047dbc850f452f4f"
+  dependencies:
+    async "~0.9.0"
+    lodash "~2.4.1"
+
 waterline-cursor@~0.0.6:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/waterline-cursor/-/waterline-cursor-0.0.7.tgz#ccd9cfed661d94af6027495942b5fa27ad65feb3"
@@ -3657,7 +3694,7 @@ waterline-cursor@~0.0.6:
     async "1.5.2"
     lodash "3.10.1"
 
-waterline-errors@~0.10.1:
+waterline-errors@0.10.1, waterline-errors@~0.10.1:
   version "0.10.1"
   resolved "https://registry.yarnpkg.com/waterline-errors/-/waterline-errors-0.10.1.tgz#ee63632aadde993271b7514b7ca98d9fd5b86a2e"
 
@@ -3666,6 +3703,12 @@ waterline-schema@~0.2.1:
   resolved "https://registry.yarnpkg.com/waterline-schema/-/waterline-schema-0.2.2.tgz#3a5af0d795e5c23b080fbb0b99f9d00a5e407a4c"
   dependencies:
     lodash "3.10.1"
+
+waterline-sequel@0.5.7:
+  version "0.5.7"
+  resolved "https://registry.yarnpkg.com/waterline-sequel/-/waterline-sequel-0.5.7.tgz#1d7e4328babfad8a31bd3fb26a86d71800ad828d"
+  dependencies:
+    lodash "3.10.0"
 
 waterline@~0.11.0:
   version "0.11.12"

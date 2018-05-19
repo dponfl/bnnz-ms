@@ -347,7 +347,7 @@ ${t.t(lang, 'POST_UPLOAD')}
 
     let res = {};
 
-    let result = _.trim(msg.text).match(/\/start\s*ref(=|\s?)(.+)/i);
+    let result = _.trim(msg.text).match(/\/start\s*ref(.+)/i);
 
     if (result) {
 
@@ -360,7 +360,7 @@ ${t.t(lang, 'POST_UPLOAD')}
         userName: msg.chat.username,
         date: msg.date,
         text: result[0],
-        ref: result[2],
+        ref: result[1],
         lang: lang,
       };
 
