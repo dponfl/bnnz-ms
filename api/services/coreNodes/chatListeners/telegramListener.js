@@ -78,8 +78,16 @@ function onCallbackQuery() {
           || query.data == 'make_payment_plan_gold'
           || query.data == 'make_payment_plan_bronze') {
 
-          queryScript = convScript.onCallbackQueryScript(useLang, query.message.chat.id,
-            '<a href="www.google.com">bla-bla-bla</a>');
+          let listProfiles = '';
+
+          _.forEach(sails.config.superProfiles, (el) => {
+            let listElem = `"https://instagram.com/${el}"`;
+            listProfiles = listProfiles +
+              `<a href=${listElem}>${el}</a>
+`;
+          });
+
+          queryScript = convScript.onCallbackQueryScript(useLang, query.message.chat.id, listProfiles);
 
         } else {
 
