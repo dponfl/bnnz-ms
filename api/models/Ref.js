@@ -17,7 +17,7 @@ module.exports = {
       type: 'string',
       size: 31,
     },
-    group: {
+    service: {
       type: 'string',
       size: 30,
     },
