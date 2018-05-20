@@ -1,0 +1,11 @@
+/**
+ * RefController
+ *
+ * @description :: Server-side logic for managing refs
+ * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
+ */
+
+module.exports = {
+	
+};
+
