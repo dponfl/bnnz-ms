@@ -47,7 +47,7 @@ module.exports = {
     subscription_until: {
       type: 'datetime',
     },
-    service_level: {
+    service: {
       type: 'string',
       size: 20,
     },
