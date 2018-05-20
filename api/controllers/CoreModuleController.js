@@ -48,8 +48,8 @@ module.exports = {
          * Check if this client already exists
          */
 
-        // client = await checkClient(params);
-        client = await checkClient(false);
+        client = await checkClient(params);
+        // client = await checkClient(false);
 
         // console.log('Check finished, evaluating results: ' + new Date());
         // console.log('Results:');

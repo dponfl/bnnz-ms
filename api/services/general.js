@@ -2,6 +2,7 @@
 
 let rp = require('request-promise');
 let _ = require('lodash');
+const moduleName = 'general::';
 
 module.exports = {
   sendREST: function (method, url, params) {
@@ -39,39 +40,75 @@ module.exports = {
 
   clientExists: function (client) {
 
+    const methodName = 'clientExists';
+
     // dummy function
     // in reality must request DB for client info and return
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
 
-      console.log('clientExists, client:');
+      console.log(moduleName + methodName + ', client:');
       console.dir(client);
 
       if (client) {
-        console.log('clientExists, true');
-        setTimeout(() => {
-          resolve({
-            result: true,
-            data: {
-              messenger: client.messenger,
-              chatId: client.chatId,
-              guid: client.guid,
-              firstName: client.firstName || '',
-              lastName: client.lastName || '',
-              userName: client.userName || '',
-              ref: client.ref,
-            },
+        console.log(moduleName + methodName + ', client parameter passed');
+
+        /**
+         * check if such client already exists
+         */
+
+        Client.findOne({
+          chat_id: client.chatId
+        })
+          .exec(function (err, rec) {
+            if (err) {
+              reject(err);
+            }
+
+            if (!rec) {
+
+              /**
+               * record for the specified criteria was not found
+               */
+
+              console.log(moduleName + methodName + ', client was NOT FOUND');
+
+              resolve({
+                result: false
+              });
+            } else {
+
+              /**
+               * found record for the specified criteria
+               */
+
+              console.log(moduleName + methodName + ', client was FOUND');
+
+              resolve({
+                result: true,
+                data: rec,
+              });
+            }
           });
-        }, 1000);
+
+        // setTimeout(() => {
+        //   resolve({
+        //     result: true,
+        //     data: {
+        //       messenger: client.messenger,
+        //       chatId: client.chatId,
+        //       guid: client.guid,
+        //       firstName: client.firstName || '',
+        //       lastName: client.lastName || '',
+        //       userName: client.userName || '',
+        //       ref: client.ref,
+        //     },
+        //   });
+        // }, 1000);
 
       } else {
-        console.log('clientExists, false');
-        setTimeout(() => {
-          resolve({
-          result: false,
-        });
-        }, 1000);
-
+        console.log(moduleName + methodName + ', no client parameter');
+        reject({message: moduleName + methodName + ', no client parameter'})
       }
     });
   }, // clientExists
