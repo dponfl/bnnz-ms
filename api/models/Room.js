@@ -16,6 +16,9 @@ module.exports = {
     room: {
       type: 'integer',
     },
+    user: {
+      model: 'client',
+    },
   }
 };
 

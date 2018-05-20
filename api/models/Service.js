@@ -26,6 +26,10 @@ module.exports = {
     messages_to_stars: {
       type: 'integer',
     },
+    user: {
+      collection: 'client',
+      via: 'service_link',
+    }
   }
 };
 

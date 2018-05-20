@@ -75,6 +75,17 @@ module.exports = {
     admin: {
       type: 'boolean',
     },
+    messages: {
+      collection: 'message',
+      via: 'owner',
+    },
+    rooms: {
+      collection: 'room',
+      via: 'user',
+    },
+    service_link: {
+      model: 'service',
+    }
   }
 };
 

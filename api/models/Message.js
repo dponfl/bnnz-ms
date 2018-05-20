@@ -44,6 +44,9 @@ module.exports = {
       type: 'string',
       size: 36,
     },
+    owner: {
+      model: 'client',
+    }
   }
 };
 
