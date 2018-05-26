@@ -128,7 +128,7 @@ function onMessage() {
 
   bot.on('message', (msg) => {
 
-    let html;
+    let result;
     let sendREST = false;
     let REST = {
       route: '',
@@ -272,7 +272,13 @@ function onMessage() {
       (async () => {
         try {
 
-          await generalServices.sendREST('POST', REST.route, REST.params);
+          result = await generalServices.sendREST('POST', REST.route, REST.params);
+
+          console.log('REST request and result:');
+          console.log('Request:');
+          console.dir(REST);
+          console.log('Response:');
+          console.dir(result);
 
         } catch (err) {
           console.log(moduleName + methodName + ', Error:');

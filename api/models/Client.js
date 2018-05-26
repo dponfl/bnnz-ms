@@ -7,7 +7,7 @@
 
 module.exports = {
   tableName: 'client',
-  migrate: 'alter',
+  migrate: 'safe',
   attributes: {
     guid: {
       type: 'string',
@@ -85,7 +85,22 @@ module.exports = {
     },
     service_link: {
       model: 'service',
-    }
+    },
+    lang: {
+      type: 'string',
+      size: 2,
+    },
+    inst_profile: {
+      type: 'string',
+      size: 50,
+    },
+
+    // Override the default toJSON method
+
+    // toJSON: function() {
+    //   var obj = this.toObject();
+    //   return obj;
+    // },
   }
 };
 

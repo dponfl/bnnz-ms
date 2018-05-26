@@ -2,6 +2,7 @@
 
 let rp = require('request-promise');
 let _ = require('lodash');
+const PromiseBB = require('bluebird');
 const moduleName = 'general::';
 
 module.exports = {
@@ -15,7 +16,7 @@ module.exports = {
     console.dir(url);
     console.dir(params);
 
-    return new Promise((resolve, reject) => {
+    return new PromiseBB((resolve, reject) => {
       if (!_.some(possibleMethods, (val) => {
         return val === method;
         })) {
@@ -45,7 +46,7 @@ module.exports = {
     // dummy function
     // in reality must request DB for client info and return
 
-    return new Promise((resolve, reject) => {
+    return new PromiseBB((resolve, reject) => {
 
       console.log(moduleName + methodName + ', client:');
       console.dir(client);
@@ -60,10 +61,17 @@ module.exports = {
         Client.findOne({
           chat_id: client.chatId
         })
-          .exec(function (err, rec) {
+          .populate('messages')
+          .populate('rooms')
+          .exec((err, record) => {
             if (err) {
               reject(err);
             }
+
+            let rec = (record) ? record.toObject() : null;
+
+            // console.log('Client.findOne, rec: ');
+            // console.dir(rec);
 
             if (!rec) {
 
@@ -73,9 +81,7 @@ module.exports = {
 
               console.log(moduleName + methodName + ', client was NOT FOUND');
 
-              resolve({
-                result: false
-              });
+              resolve(false);
             } else {
 
               /**
@@ -85,30 +91,18 @@ module.exports = {
               console.log(moduleName + methodName + ', client was FOUND');
 
               resolve({
-                result: true,
+                code: 200,
                 data: rec,
               });
             }
           });
 
-        // setTimeout(() => {
-        //   resolve({
-        //     result: true,
-        //     data: {
-        //       messenger: client.messenger,
-        //       chatId: client.chatId,
-        //       guid: client.guid,
-        //       firstName: client.firstName || '',
-        //       lastName: client.lastName || '',
-        //       userName: client.userName || '',
-        //       ref: client.ref,
-        //     },
-        //   });
-        // }, 1000);
-
       } else {
         console.log(moduleName + methodName + ', no client parameter');
-        reject({message: moduleName + methodName + ', no client parameter'})
+        reject({
+          code: 500,
+          data: moduleName + methodName + ', no client parameter'
+        })
       }
     });
   }, // clientExists
@@ -123,6 +117,16 @@ module.exports = {
         code: 200,
         ext_code: 100,
         text: 'New client',
+      },
+
+      /**
+       * New client creation error
+       */
+
+      newClientCreateError: {
+        code: 500,
+        ext_code: 500,
+        text: 'New client create error',
       },
 
       /**

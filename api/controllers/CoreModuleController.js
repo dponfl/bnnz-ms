@@ -13,7 +13,11 @@ const t = require('../services/translate');
 
 const moduleName = 'CoreModuleController:: ';
 
+const PromiseBB = require('bluebird');
+
 let lang = 'en';
+
+let passResult;
 
 "use strict";
 
@@ -24,7 +28,14 @@ module.exports = {
     const methodName = 'proceedStartCommand';
     let client;
     let html;
-    let messageParams;
+    let message01Params;
+    let message02Params;
+    let message03Params;
+    let clientRec;
+    let message01Rec;
+    let message02Rec;
+    let message03Rec;
+    let clientRecId;
 
     console.log(moduleName + methodName + ', req.url:');
     console.dir(req.url);
@@ -36,112 +47,23 @@ module.exports = {
 
     lang = params.lang;
 
+
+
+    // console.log('Check if the client already exists: ' + new Date());
+    // console.log('params:');
+    // console.dir(params);
+
+    /**
+     * Check if this client already exists
+     */
+
     (async () => {
 
       try {
 
-        // console.log('Check if the client already exists: ' + new Date());
-        // console.log('params:');
-        // console.dir(params);
-
-        /**
-         * Check if this client already exists
-         */
-
         client = await checkClient(params);
-        // client = await checkClient(false);
 
-        // console.log('Check finished, evaluating results: ' + new Date());
-        // console.log('Results:');
-        // console.dir(client);
-
-        if (client && !client.result) {
-
-          /**
-           * client.result = false => client doesn't exist in out database
-           * and we need to create record about this new client in DB
-           * and we need to send a welcome message
-           */
-
-          // todo: create record for the new client in DB
-
-          html = `
-<b>${t.t(lang, 'NEW_SUBS_WELCOME_01')}, ${params.firstName + ' ' + params.lastName}</b>
-
-<b>${t.t(lang, 'NEW_SUBS_WELCOME_02')}</b>
-
-${t.t(lang, 'NEW_SUBS_WELCOME_03')} 
-`;
-
-          messageParams = {
-            messenger: params.messenger,
-            chatId: params.chatId,
-            html: html,
-          };
-
-          await sendSimpleMessage(messageParams);
-
-          /**
-           * Request to enter Instagram profile
-           */
-
-          html = `
-${t.t(lang, 'NEW_SUBS_INST_01')} 
-`;
-
-          messageParams = {
-            messenger: params.messenger,
-            chatId: params.chatId,
-            html: html,
-          };
-
-          await sendForcedMessage(messageParams);
-
-
-          return res.json(clientCodes.newClient.code, {
-            code: clientCodes.newClient.ext_code,
-            text: clientCodes.newClient.text,
-          });
-
-        } else if (client && client.result) {
-
-          /**
-           * client do exists in our database
-           * and we need to send message with info about correct possible actions
-           */
-
-          html = `
-<b>${t.t(lang, 'NEW_SUBS_EXISTS_01')}</b>
-
-${t.t(lang, 'NEW_SUBS_EXISTS_02')}
-`;
-
-          messageParams = {
-            messenger: params.messenger,
-            chatId: params.chatId,
-            html: html,
-            inline_keyboard: [
-              [
-                {
-                  text: t.t(lang, 'POST_UPLOAD_BUTTON'),
-                  callback_data: 'upload_post'
-                },
-              ],
-            ],
-          };
-
-          await sendInlineButtons(messageParams);
-
-          return res.json(clientCodes.existingClient.code, {
-            code: clientCodes.existingClient.ext_code,
-            text: clientCodes.existingClient.text,
-          })
-        } else {
-          return res.json(clientCodes.noClient.code, {
-            code: clientCodes.noClient.ext_code,
-            text: clientCodes.noClient.text,
-          })
-        }
+        await proceedClient(client, params);
 
       } catch (err) {
         console.log(moduleName + methodName + ', Error:');
@@ -152,7 +74,6 @@ ${t.t(lang, 'NEW_SUBS_EXISTS_02')}
         console.log('options: ');
         console.dir(err.options);
       }
-
     })();
   }, // proceedStartCommand
 
@@ -273,9 +194,6 @@ ${t.t(lang, 'NEW_SUBS_EXISTS_02')}
     })();
   }, // proceedHelpCommand
 
-
-
-
 };
 
 
@@ -298,4 +216,204 @@ function sendSimpleMessage(params) {
 function sendForcedMessage(params) {
     return generalServices.sendREST('POST', restLinks.mgSendForcedMessage, params);
 } // sentInlineButtons
+
+function proceedClient(client, params) {
+
+  const methodName = 'proceedClient';
+
+  if (!client) {
+
+    /**
+     * Proceed with new client
+     */
+
+    console.log('proceedClient, client does not exists, params:');
+    console.dir(params);
+
+    (async () => {
+
+      try {
+
+        let clientRec = {
+          guid: params.guid,
+          first_name: params.firstName,
+          last_name: params.lastName,
+          chat_id: params.chatId,
+          username: params.userName,
+          ref_guid: params.ref,
+          messenger: params.messenger,
+          lang: params.lang,
+        };
+
+        let saveNewClientRecord = await saveNewClient(clientRec);
+
+        // await ((p) => {
+        //   console.log('!!!!!!!!!!!!!!!!!!!!!!');
+        //   console.dir(p);
+        // })(saveNewClientResult);
+
+        let saveComandRecord = await saveCommand(saveNewClientRecord, params);
+        let sendMessage01Record = await sendMessage01(saveNewClientRecord);
+        let sendMessage02Record = await sendMessage02(saveNewClientRecord);
+
+        await checkClient(params);
+
+      } catch (err) {
+        console.log(moduleName + methodName + ', Error:');
+        console.log('statusCode: ' + err.statusCode);
+        console.log('message: ' + err.message);
+        console.log('error: ');
+        console.dir(err.error);
+        console.log('options: ');
+        console.dir(err.options);
+      }
+
+    })();
+  } else {
+
+    /**
+     * Proceed with existing client
+     */
+
+    console.log('proceedClient, client do exists, client:');
+    console.dir(client);
+  }
+} // proceedClient
+
+function saveNewClient(rec) {
+
+  return new PromiseBB((resolve, reject) => {
+
+    Client.create(rec).exec((err, record) => {
+
+      if (err) {
+        reject(err);
+      }
+
+      if (record) {
+        resolve(record.toObject());
+      }
+    });
+  });
+} // saveNewClient
+
+function saveCommand(command, params) {
+
+  console.log('saveCommand, command:');
+  console.dir(command);
+  console.log('saveCommand, params:');
+  console.dir(params);
+
+
+  return new PromiseBB((resolve, reject) => {
+
+    let commandRec = {
+      guid: command.guid,
+      message: params.text,
+      message_format: 'command',
+      messenger: command.messenger,
+      message_originator: 'client',
+      owner: command.id,
+    };
+
+    Message.create(commandRec).exec((err, record) => {
+      if (err) {
+        reject(err);
+      }
+
+      if (record) {
+        resolve(record);
+      }
+    })
+
+  });
+} // saveCommand
+
+function sendMessage01(params) {
+
+  console.log('sendMessage01, params:');
+  console.dir(params);
+
+
+  return new PromiseBB((resolve, reject) => {
+
+    let html = `
+<b>${t.t(lang, 'NEW_SUBS_WELCOME_01')}, ${params.first_name + ' ' + params.last_name}</b>
+
+<b>${t.t(lang, 'NEW_SUBS_WELCOME_02')}</b>
+
+${t.t(lang, 'NEW_SUBS_WELCOME_03')} 
+`;
+
+    let messageParams = {
+      messenger: params.messenger,
+      chatId: params.chat_id,
+      html: html,
+    };
+
+    let messageRec = {
+      guid: params.guid,
+      message: messageParams.html,
+      message_format: 'simple',
+      messenger: params.messenger,
+      message_originator: 'bot',
+      owner: params.id,
+    };
+
+    sendSimpleMessage(messageParams);
+
+    Message.create(messageRec).exec((err, record) => {
+
+      if (err) {
+        reject(err);
+      }
+
+      if (record) {
+        resolve(record);
+      }
+    });
+  });
+
+} // sendMessage01
+
+function sendMessage02(params) {
+
+  console.log('sendMessage02, params:');
+  console.dir(params);
+
+  return new PromiseBB((resolve, reject) => {
+
+    let html = `
+${t.t(lang, 'NEW_SUBS_INST_01')} 
+`;
+
+    let messageParams = {
+      messenger: params.messenger,
+      chatId: params.chat_id,
+      html: html,
+    };
+
+    let messageRec = {
+      guid: params.guid,
+      message: messageParams.html,
+      message_format: 'forced',
+      messenger: params.messenger,
+      message_originator: 'bot',
+      owner: params.id,
+    };
+
+    sendForcedMessage(messageParams);
+
+    Message.create(messageRec).exec((err, record) => {
+
+      if (err) {
+        reject(err);
+      }
+
+      if (record) {
+        resolve(record);
+      }
+    });
+  });
+} // sendMessage02
 

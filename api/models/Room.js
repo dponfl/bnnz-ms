@@ -7,7 +7,7 @@
 
 module.exports = {
   tableName: 'room',
-  migrate: 'safe',
+  migrate: 'alter',
   attributes: {
     guid: {
       type: 'string',
