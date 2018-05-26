@@ -58,6 +58,8 @@ module.exports = {
          * check if such client already exists
          */
 
+        // todo: exclude pupulate below because we do need this info here
+
         Client.findOne({
           chat_id: client.chatId
         })

@@ -253,8 +253,8 @@ function proceedClient(client, params) {
         // })(saveNewClientResult);
 
         let saveComandRecord = await saveCommand(saveNewClientRecord, params);
-        let sendMessage01Record = await sendMessage01(saveNewClientRecord);
-        let sendMessage02Record = await sendMessage02(saveNewClientRecord);
+        let newClientSendMessage01Record = await newClientSendMessage01(saveNewClientRecord);
+        let newClientSendMessage02Record = await newClientSendMessage02(saveNewClientRecord);
 
       } catch (err) {
         console.log(moduleName + methodName + ', Error:');
@@ -267,14 +267,37 @@ function proceedClient(client, params) {
       }
 
     })();
-  } else {
+  } else if (client && client.code == 200) {
 
     /**
      * Proceed with existing client
      */
 
+    client = client.data;
+
     console.log('proceedClient, client do exists, client:');
     console.dir(client);
+
+    // todo: check information about existing client
+    // todo: and based on it send him different messages
+
+    (async () => {
+
+      try {
+
+        let saveComandRecord = await saveCommand(client, params);
+        let existingClientSendMessage01Record = await existingClientSendMessage01(client);
+
+      } catch (err) {
+        console.log(moduleName + methodName + ', Error:');
+        console.log('statusCode: ' + err.statusCode);
+        console.log('message: ' + err.message);
+        console.log('error: ');
+        console.dir(err.error);
+        console.log('options: ');
+        console.dir(err.options);
+      }
+    })();
   }
 } // proceedClient
 
@@ -327,7 +350,7 @@ function saveCommand(command, params) {
   });
 } // saveCommand
 
-function sendMessage01(params) {
+function newClientSendMessage01(params) {
 
   console.log('sendMessage01, params:');
   console.dir(params);
@@ -372,9 +395,9 @@ ${t.t(lang, 'NEW_SUBS_WELCOME_03')}
     });
   });
 
-} // sendMessage01
+} // newClientSendMessage01
 
-function sendMessage02(params) {
+function newClientSendMessage02(params) {
 
   console.log('sendMessage02, params:');
   console.dir(params);
@@ -413,5 +436,55 @@ ${t.t(lang, 'NEW_SUBS_INST_01')}
       }
     });
   });
-} // sendMessage02
+} // newClientSendMessage02
+
+function existingClientSendMessage01(params) {
+
+  return new PromiseBB((resolve, reject) => {
+
+    let html = `
+<b>${t.t(lang, 'NEW_SUBS_EXISTS_01')}</b>
+
+${t.t(lang, 'NEW_SUBS_EXISTS_02')}
+`;
+
+    let messageParams = {
+      messenger: params.messenger,
+      chatId: params.chat_id,
+      html: html,
+      inline_keyboard: [
+        [
+          {
+            text: t.t(lang, 'POST_UPLOAD_BUTTON'),
+            callback_data: 'upload_post'
+          },
+        ],
+      ],
+    };
+
+    let messageRec = {
+      guid: params.guid,
+      message: messageParams.html,
+      message_format: 'inline_keyboard',
+      message_buttons: JSON.stringify(messageParams.inline_keyboard),
+      messenger: params.messenger,
+      message_originator: 'bot',
+      owner: params.id,
+    };
+
+    sendInlineButtons(messageParams);
+
+    Message.create(messageRec).exec((err, record) => {
+
+      if (err) {
+        reject(err);
+      }
+
+      if (record) {
+        resolve(record);
+      }
+    });
+  });
+
+} // existingClientSendMessage01
 
