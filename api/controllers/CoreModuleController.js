@@ -256,8 +256,6 @@ function proceedClient(client, params) {
         let sendMessage01Record = await sendMessage01(saveNewClientRecord);
         let sendMessage02Record = await sendMessage02(saveNewClientRecord);
 
-        await checkClient(params);
-
       } catch (err) {
         console.log(moduleName + methodName + ', Error:');
         console.log('statusCode: ' + err.statusCode);
