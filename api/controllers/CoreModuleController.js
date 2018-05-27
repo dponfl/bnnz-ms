@@ -219,87 +219,108 @@ function sendForcedMessage(params) {
 
 function proceedClient(client, params) {
 
-  const methodName = 'proceedClient';
+  return new PromiseBB((resolve, reject) => {
 
-  if (!client) {
+    const methodName = 'proceedClient';
 
-    /**
-     * Proceed with new client
-     */
+    if (!client) {
 
-    console.log('proceedClient, client does not exists, params:');
-    console.dir(params);
+      /**
+       * Proceed with new client
+       */
 
-    (async () => {
+      console.log('proceedClient, client does not exists, params:');
+      console.dir(params);
 
-      try {
+      (async () => {
 
-        let clientRec = {
-          guid: params.guid,
-          first_name: params.firstName,
-          last_name: params.lastName,
-          chat_id: params.chatId,
-          username: params.userName,
-          ref_guid: params.ref,
-          messenger: params.messenger,
-          lang: params.lang,
-        };
+        try {
 
-        let saveNewClientRecord = await saveNewClient(clientRec);
+          let clientRec = {
+            guid: params.guid,
+            first_name: params.firstName,
+            last_name: params.lastName,
+            chat_id: params.chatId,
+            username: params.userName,
+            ref_guid: params.ref,
+            messenger: params.messenger,
+            lang: params.lang,
+          };
 
-        // await ((p) => {
-        //   console.log('!!!!!!!!!!!!!!!!!!!!!!');
-        //   console.dir(p);
-        // })(saveNewClientResult);
+          let saveNewClientRecord = await saveNewClient(clientRec);
 
-        let saveComandRecord = await saveCommand(saveNewClientRecord, params);
-        let newClientSendMessage01Record = await newClientSendMessage01(saveNewClientRecord);
-        let newClientSendMessage02Record = await newClientSendMessage02(saveNewClientRecord);
+          // await ((p) => {
+          //   console.log('!!!!!!!!!!!!!!!!!!!!!!');
+          //   console.dir(p);
+          // })(saveNewClientResult);
 
-      } catch (err) {
-        console.log(moduleName + methodName + ', Error:');
-        console.log('statusCode: ' + err.statusCode);
-        console.log('message: ' + err.message);
-        console.log('error: ');
-        console.dir(err.error);
-        console.log('options: ');
-        console.dir(err.options);
-      }
+          let saveComandRecord = await saveCommand(saveNewClientRecord, params);
+          let newClientSendMessage01Record = await newClientSendMessage01(saveNewClientRecord);
+          let newClientSendMessage02Record = await newClientSendMessage02(saveNewClientRecord);
 
-    })();
-  } else if (client && client.code == 200) {
+          resolve();
 
-    /**
-     * Proceed with existing client
-     */
+        } catch (err) {
+          // console.log(moduleName + methodName + ', Error:');
+          // console.log('statusCode: ' + err.statusCode);
+          // console.log('message: ' + err.message);
+          // console.log('error: ');
+          // console.dir(err.error);
+          // console.log('options: ');
+          // console.dir(err.options);
 
-    client = client.data;
+          reject({
+            err_location: moduleName + methodName,
+            err_statusCode: err.statusCode,
+            err_message: err.message,
+            err_options: err.options,
+          });
+        }
 
-    console.log('proceedClient, client do exists, client:');
-    console.dir(client);
+      })();
+    } else if (client && client.code == 200) {
 
-    // todo: check information about existing client
-    // todo: and based on it send him different messages
+      /**
+       * Proceed with existing client
+       */
 
-    (async () => {
+      client = client.data;
 
-      try {
+      console.log('proceedClient, client do exists, client:');
+      console.dir(client);
 
-        let saveComandRecord = await saveCommand(client, params);
-        // let existingClientSendMessage01Record = await existingClientValidSubscriptionSendMessage01(client);
-        let existingClientSendMessage01Record = await existingClientProlongSubscriptionSendMessage01(client);
+      // todo: check information about existing client
+      // todo: and based on it send him different messages
 
-      } catch (err) {
-        console.log(moduleName + methodName + ', Error:');
-        console.log('statusCode: ' + err.statusCode);
-        console.log('message: ' + err.message);
-        console.log('error: ');
-        console.dir(err.error);
-        console.log('options: ');
-        console.dir(err.options);
-      }
-    })();
-  }
+      (async () => {
+
+        try {
+
+          let saveComandRecord = await saveCommand(client, params);
+          let existingClientSendMessage01Record = await existingClientValidSubscriptionSendMessage01(client);
+          // let existingClientSendMessage01Record = await existingClientProlongSubscriptionSendMessage01(client);
+
+          resolve();
+
+        } catch (err) {
+          // console.log(moduleName + methodName + ', Error:');
+          // console.log('statusCode: ' + err.statusCode);
+          // console.log('message: ' + err.message);
+          // console.log('error: ');
+          // console.dir(err.error);
+          // console.log('options: ');
+          // console.dir(err.options);
+
+          reject({
+            err_location: moduleName + methodName,
+            err_statusCode: err.statusCode,
+            err_message: err.message,
+            err_options: err.options,
+          });
+        }
+      })();
+    }
+  });
 } // proceedClient
 
 function saveNewClient(rec) {
