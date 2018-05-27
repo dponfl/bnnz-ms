@@ -40,6 +40,8 @@ const token = {
     NEW_SUBS_EXISTS_03: 'Period of your subscription ended. ' +
     'Pls use the button below to pay off the next period.',
 
+    EXISTING_DELETED: 'Твоя подписка удалена. Обратись к администратору.',
+
     // General actions
 
     ACT_NEW_POST: 'Upload Instagram post',
@@ -133,6 +135,8 @@ const token = {
 
     NEW_SUBS_EXISTS_03: 'Срок действия твоей подписки закончился. ' +
     'Используй кнопку ниже, чтобы оплатить следующий период.',
+
+    EXISTING_DELETED: 'Твоя подписка удалена. Обратись к администратору.',
 
     // General actions
 

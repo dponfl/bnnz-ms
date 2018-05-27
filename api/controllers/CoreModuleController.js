@@ -232,6 +232,8 @@ function proceedClient(client, params) {
       console.log('proceedClient, client does not exists, params:');
       console.dir(params);
 
+      // todo: check special subscription groups and
+
       (async () => {
 
         try {
@@ -289,16 +291,36 @@ function proceedClient(client, params) {
       console.log('proceedClient, client do exists, client:');
       console.dir(client);
 
-      // todo: check information about existing client
-      // todo: and based on it send him different messages
-
       (async () => {
 
         try {
 
           let saveComandRecord = await saveCommand(client, params);
-          let existingClientSendMessage01Record = await existingClientValidSubscriptionSendMessage01(client);
-          // let existingClientSendMessage01Record = await existingClientProlongSubscriptionSendMessage01(client);
+
+          let clientStatus = await checkClientStatus(client);
+
+          await proceedClientStatus(clientStatus, client);
+
+
+          // if (!checkProfileProvided()) {
+          //   let existingClientNoProfileSendMessage01Record = await existingClientNoProfileSendMessage01(client);
+          // } else if (checkDeleted()) {
+          //
+          // } else if (checkBanned()) {
+          //
+          // } else if (!checkPaymentPlanSelected()) {
+          //   let existingClientNoPaymentPlanSendMessage01Record = await existingClientNoPaymentPlanSendMessage01(client);
+          // } else if (!checkPaymentMade()) {
+          //   let existingClientNoPaymentMadeSendMessage01Record = await existingClientNoPaymentMadeSendMessage01(client);
+          // } else if (!checkSubscriptionMade()) {
+          //   let existingClientNoSubscriptionMadeSendMessage01Record = await existingClientNoSubscriptionMadeSendMessage01(client);
+          // } else if (!checkSubscriptionFinalized()) {
+          //   let existingClientNoSubscriptionFinalizedSendMessage01Record = await existingClientNoSubscriptionFinalizedSendMessage01(client);
+          // } else if (!checkSubscriptionPeriodValid()) {
+          //   let existingClientProlongSubscriptionSendMessage01Record = await existingClientProlongSubscriptionSendMessage01(client);
+          // } else {
+          //   let existingClientSendMessage01Record = await existingClientValidSubscriptionSendMessage01(client);
+          // }
 
           resolve();
 
@@ -559,4 +581,111 @@ ${t.t(lang, 'NEW_SUBS_EXISTS_03')}
   });
 
 } // existingClientProlongSubscriptionSendMessage01
+
+function checkClientStatus(client) {
+
+  let methodName = 'checkClientStatus';
+
+  return new PromiseBB((resolve, reject) => {
+
+    // console.log(moduleName + methodName);
+
+    // todo: check current client's status and resolve with respective reply
+
+    resolve('deleted');
+
+    // console.log(new Date());
+    // setTimeout(() => {
+    //   console.log(moduleName + methodName);
+    //   console.log(new Date());
+    //   resolve('deleted');
+    // }, 2000);
+  });
+} // checkClientStatus
+
+function proceedClientStatus(status, client) {
+
+  let methodName = 'proceedClientStatus';
+
+  return new PromiseBB((resolve, reject) => {
+
+    // console.log(moduleName + methodName);
+
+    (async () => {
+
+      try {
+
+        switch (status) {
+          case 'deleted':
+            // console.log('before proceedDeleted: ' + new Date());
+            await proceedDeleted(client);
+            // console.log('after proceedDeleted: ' + new Date());
+            resolve();
+            break;
+          case 'banned':
+            break;
+          case 'no_payment_plan_selected':
+            break;
+          case 'no_payment_made':
+            break;
+          case 'no_subscription_made':
+            break;
+          case 'no_subscription_finalized':
+            break;
+          case 'no_subscription_valid':
+            break;
+          default:
+            break;
+        }
+      } catch (err) {
+        reject({
+          err_location: moduleName + methodName,
+          err_statusCode: err.statusCode,
+          err_message: err.message,
+          err_options: err.options,
+        });
+      }
+    })();
+  });
+} // proceedClientStatus
+
+function proceedDeleted(params) {
+
+  let methodName = 'proceedDeleted';
+
+  return new PromiseBB((resolve, reject) => {
+
+    // console.log(moduleName + methodName);
+
+    let html = `
+<b>${t.t(lang, 'EXISTING_DELETED')}</b>
+`;
+
+    let messageParams = {
+      messenger: params.messenger,
+      chatId: params.chat_id,
+      html: html,
+    };
+
+    sendSimpleMessage(messageParams);
+
+    resolve();
+
+    // console.log(new Date());
+    // setTimeout(() => {
+    //   console.log(moduleName + methodName);
+    //   console.log(new Date());
+    //   resolve();
+    // }, 5000);
+  });
+} // proceedDeleted
+
+function fakeMethod() {
+
+  return new PromiseBB((resolve, reject) => {
+
+    console.log('fakeMethod: ' + new Date());
+    resolve();
+  });
+} // fakeMethod
 
