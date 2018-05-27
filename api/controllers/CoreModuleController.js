@@ -286,7 +286,8 @@ function proceedClient(client, params) {
       try {
 
         let saveComandRecord = await saveCommand(client, params);
-        let existingClientSendMessage01Record = await existingClientSendMessage01(client);
+        // let existingClientSendMessage01Record = await existingClientValidSubscriptionSendMessage01(client);
+        let existingClientSendMessage01Record = await existingClientProlongSubscriptionSendMessage01(client);
 
       } catch (err) {
         console.log(moduleName + methodName + ', Error:');
@@ -438,7 +439,7 @@ ${t.t(lang, 'NEW_SUBS_INST_01')}
   });
 } // newClientSendMessage02
 
-function existingClientSendMessage01(params) {
+function existingClientValidSubscriptionSendMessage01(params) {
 
   return new PromiseBB((resolve, reject) => {
 
@@ -486,5 +487,55 @@ ${t.t(lang, 'NEW_SUBS_EXISTS_02')}
     });
   });
 
-} // existingClientSendMessage01
+} // existingClientValidSubscriptionSendMessage01
+
+function existingClientProlongSubscriptionSendMessage01(params) {
+
+  return new PromiseBB((resolve, reject) => {
+
+    let html = `
+<b>${t.t(lang, 'NEW_SUBS_EXISTS_01')}</b>
+
+${t.t(lang, 'NEW_SUBS_EXISTS_03')}
+`;
+
+    let messageParams = {
+      messenger: params.messenger,
+      chatId: params.chat_id,
+      html: html,
+      inline_keyboard: [
+        [
+          {
+            text: t.t(lang, 'ACT_PAY'),
+            callback_data: 'make_next_payment'
+          },
+        ],
+      ],
+    };
+
+    let messageRec = {
+      guid: params.guid,
+      message: messageParams.html,
+      message_format: 'inline_keyboard',
+      message_buttons: JSON.stringify(messageParams.inline_keyboard),
+      messenger: params.messenger,
+      message_originator: 'bot',
+      owner: params.id,
+    };
+
+    sendInlineButtons(messageParams);
+
+    Message.create(messageRec).exec((err, record) => {
+
+      if (err) {
+        reject(err);
+      }
+
+      if (record) {
+        resolve(record);
+      }
+    });
+  });
+
+} // existingClientProlongSubscriptionSendMessage01
 

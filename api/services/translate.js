@@ -35,6 +35,11 @@ const token = {
     NEW_SUBS_EXISTS_01: 'You already have been registered at BonanzaInst',
     NEW_SUBS_EXISTS_02: 'Pls use keyboard to upload info about new Instagram post',
 
+    // Existing client, subscription finished
+
+    NEW_SUBS_EXISTS_03: 'Period of your subscription ended. ' +
+    'Pls use the button below to pay off the next period.',
+
     // General actions
 
     ACT_NEW_POST: 'Upload Instagram post',
@@ -123,6 +128,11 @@ const token = {
     NEW_SUBS_EXISTS_01: 'Вы уже зарегистрированы в BonanzaInst',
     NEW_SUBS_EXISTS_02: 'Используй клавиатуру, чтобы загрузить информации о новом посте ' +
     'в Инстаграм',
+
+    // Existing client, subscription finished
+
+    NEW_SUBS_EXISTS_03: 'Срок действия твоей подписки закончился. ' +
+    'Используй кнопку ниже, чтобы оплатить следующий период.',
 
     // General actions
 
