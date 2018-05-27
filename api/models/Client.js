@@ -94,6 +94,22 @@ module.exports = {
       type: 'string',
       size: 50,
     },
+    profile_provided: {
+      type: 'boolean',
+    },
+    payment_plan_selected: {
+      type: 'boolean',
+    },
+    payment_made: {
+      type: 'boolean',
+    },
+    subscription_made: {
+      type: 'boolean',
+    },
+    service_subscription_finalized: {
+      type: 'boolean',
+    },
+
 
     // Override the default toJSON method
 
