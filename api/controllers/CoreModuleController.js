@@ -480,7 +480,10 @@ ${t.t(lang, 'NEW_SUBS_INST_01')}
       }
     });
   });
+
 } // newClientSendMessage02
+
+
 
 function existingClientValidSubscriptionSendMessage01(params) {
 
@@ -592,7 +595,16 @@ function checkClientStatus(client) {
 
     // todo: check current client's status and resolve with respective reply
 
-    resolve('deleted');
+    resolve({
+      deletedFlag: client.deleted,
+      bannedFlag: client.banned,
+      noProfileProvidedFlag: !client.profile_provided,
+      noProfileConfirmedFlag: !client.profile_confirmed,
+      noPaymentPlanSelectedFlag: !client.payment_plan_selected,
+      noPaymentFlag: !client.payment_made,
+      noSubscriptionFlag: !client.subscription_made,
+      noSubscriptionFinalizedFlag: !client.service_subscription_finalized,
+    });
 
     // console.log(new Date());
     // setTimeout(() => {
@@ -603,40 +615,36 @@ function checkClientStatus(client) {
   });
 } // checkClientStatus
 
-function proceedClientStatus(status, client) {
+function proceedClientStatus(statusObj, client) {
 
   let methodName = 'proceedClientStatus';
 
   return new PromiseBB((resolve, reject) => {
 
     // console.log(moduleName + methodName);
+    let {deletedFlag, bannedFlag, noProfileProvidedFlag,
+    noProfileConfirmedFlag, noPaymentPlanSelectedFlag,
+    noPaymentFlag, noSubscriptionFlag, noSubscriptionFinalizedFlag} = statusObj;
 
     (async () => {
 
       try {
 
-        switch (status) {
-          case 'deleted':
-            // console.log('before proceedDeleted: ' + new Date());
-            await proceedDeleted(client);
-            // console.log('after proceedDeleted: ' + new Date());
-            resolve();
-            break;
-          case 'banned':
-            break;
-          case 'no_payment_plan_selected':
-            break;
-          case 'no_payment_made':
-            break;
-          case 'no_subscription_made':
-            break;
-          case 'no_subscription_finalized':
-            break;
-          case 'no_subscription_valid':
-            break;
-          default:
-            break;
+        if (deletedFlag) {
+          // console.log('before proceedDeleted: ' + new Date());
+          await proceedDeleted(client);
+          // console.log('after proceedDeleted: ' + new Date());
+          resolve();
+        } else if (bannedFlag) {
+          await proceedBanned(client);
+          resolve();
+        } else if (noProfileProvidedFlag) {
+          await newClientSendMessage02(client);
+          resolve();
+        } else if (noProfileConfirmedFlag) {
+          await clientConfirmProfile(client);
         }
+
       } catch (err) {
         reject({
           err_location: moduleName + methodName,
@@ -679,6 +687,95 @@ function proceedDeleted(params) {
     // }, 5000);
   });
 } // proceedDeleted
+
+function proceedBanned(params) {
+
+  let methodName = 'proceedBanned';
+
+  return new PromiseBB((resolve, reject) => {
+
+    // console.log(moduleName + methodName);
+
+    let html = `
+<b>${t.t(lang, 'EXISTING_BANNED')}</b>
+`;
+
+    let messageParams = {
+      messenger: params.messenger,
+      chatId: params.chat_id,
+      html: html,
+    };
+
+    sendSimpleMessage(messageParams);
+
+    resolve();
+
+    // console.log(new Date());
+    // setTimeout(() => {
+    //   console.log(moduleName + methodName);
+    //   console.log(new Date());
+    //   resolve();
+    // }, 5000);
+  });
+} // proceedBanned
+
+function clientConfirmProfile(params) {
+
+  let methodName = 'clientConfirmProfile';
+
+  console.log(moduleName + methodName + ', params:');
+  console.dir(params);
+
+  return new PromiseBB((resolve, reject) => {
+
+    let instUrl = 'https://www.instagram.com/' + _.trim(params.inst_profile);
+    let instConfHtml = `
+${t.t(lang, 'NEW_SUBS_INST_02')}
+<a href="${instUrl}">${instUrl}</a>
+`;
+
+    let messageParams = {
+      messenger: params.messenger,
+      chatId: params.chat_id,
+      html: instConfHtml,
+      inline_keyboard: [
+        [
+          {
+            text: t.t(lang, 'ACT_YES'),
+            callback_data: 'instagram_profile_yes'
+          },
+          {
+            text: t.t(lang, 'ACT_NO'),
+            callback_data: 'instagram_profile_no'
+          }
+        ],
+      ],
+    };
+
+    let messageRec = {
+      guid: params.guid,
+      message: messageParams.html,
+      message_format: 'inline_keyboard',
+      message_buttons: JSON.stringify(messageParams.inline_keyboard),
+      messenger: params.messenger,
+      message_originator: 'bot',
+      owner: params.id,
+    };
+
+    sendInlineButtons(messageParams);
+
+    Message.create(messageRec).exec((err, record) => {
+
+      if (err) {
+        reject(err);
+      }
+
+      if (record) {
+        resolve(record);
+      }
+    });
+  });
+} // clientConfirmProfile
 
 function fakeMethod() {
 

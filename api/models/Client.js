@@ -97,6 +97,9 @@ module.exports = {
     profile_provided: {
       type: 'boolean',
     },
+    profile_confirmed: {
+      type: 'boolean',
+    },
     payment_plan_selected: {
       type: 'boolean',
     },

@@ -40,7 +40,8 @@ const token = {
     NEW_SUBS_EXISTS_03: 'Period of your subscription ended. ' +
     'Pls use the button below to pay off the next period.',
 
-    EXISTING_DELETED: 'Твоя подписка удалена. Обратись к администратору.',
+    EXISTING_DELETED: 'Your subscription is deleted. Please contact administrator.',
+    EXISTING_BANNED: 'Your subscription is blocked. Please contact administrator.',
 
     // General actions
 
@@ -137,6 +138,8 @@ const token = {
     'Используй кнопку ниже, чтобы оплатить следующий период.',
 
     EXISTING_DELETED: 'Твоя подписка удалена. Обратись к администратору.',
+    EXISTING_BANNED: 'Твоя подписка заблокирована. Обратись к администратору.',
+
 
     // General actions
 
