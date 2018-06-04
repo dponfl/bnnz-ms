@@ -643,6 +643,20 @@ function proceedClientStatus(statusObj, client) {
           resolve();
         } else if (noProfileConfirmedFlag) {
           await clientConfirmProfile(client);
+        } else if (noPaymentPlanSelectedFlag) {
+          await clientSelectPaymentPlan(client);
+        } else if (noPaymentFlag) {
+          switch (client.service_link.name) {
+            case 'bronze':
+              await clientBronzePlanSelected(client);
+              break;
+            case 'gold':
+              await clientGoldPlanSelected(client);
+              break;
+            case 'platinum':
+              await clientPlatinumPlanSelected(client);
+              break;
+          }
         }
 
       } catch (err) {
@@ -776,6 +790,246 @@ ${t.t(lang, 'NEW_SUBS_INST_02')}
     });
   });
 } // clientConfirmProfile
+
+function clientSelectPaymentPlan(params) {
+
+  let methodName = 'clientSelectPaymentPlan';
+
+  console.log(moduleName + methodName + ', params:');
+  console.dir(params);
+
+  return new PromiseBB((resolve, reject) => {
+
+    let html = `
+${t.t(lang, 'NEW_SUBS_INST_05')}
+
+${t.t(lang, 'NEW_SUBS_INST_06')}
+`;
+
+    let messageParams = {
+      messenger: params.messenger,
+      chatId: params.chat_id,
+      html: html,
+      inline_keyboard: [
+        [
+          {
+            text: t.t(lang, 'PLAN_PLATINUM'),
+            callback_data: 'instagram_plan_platinum'
+          },
+        ],
+        [
+          {
+            text: t.t(lang, 'PLAN_GOLD'),
+            callback_data: 'instagram_plan_gold'
+          },
+        ],
+        [
+          {
+            text: t.t(lang, 'PLAN_BRONZE'),
+            callback_data: 'instagram_plan_bronze'
+          },
+        ],
+      ],
+    };
+
+    let messageRec = {
+      guid: params.guid,
+      message: messageParams.html,
+      message_format: 'inline_keyboard',
+      message_buttons: JSON.stringify(messageParams.inline_keyboard),
+      messenger: params.messenger,
+      message_originator: 'bot',
+      owner: params.id,
+    };
+
+    sendInlineButtons(messageParams);
+
+    Message.create(messageRec).exec((err, record) => {
+
+      if (err) {
+        reject(err);
+      }
+
+      if (record) {
+        resolve(record);
+      }
+    });
+  });
+} // clientSelectPaymentPlan
+
+function clientBronzePlanSelected(params) {
+
+  let methodName = 'clientBronzePlanSelected';
+
+  console.log(moduleName + methodName + ', params:');
+  console.dir(params);
+
+  return new PromiseBB((resolve, reject) => {
+
+    let html = `
+${t.t(lang, 'PLAN_BRONZE_THANKS_MSG')} 
+
+${t.t(lang, 'PLAN_THANKS_MSG')} 
+`;
+
+    let messageParams = {
+      messenger: params.messenger,
+      chatId: params.chat_id,
+      html: html,
+      inline_keyboard: [
+        [
+          {
+            text: t.t(lang, 'PLAN_PAY_BUTTON'),
+            callback_data: 'make_payment_plan_bronze'
+          },
+          {
+            text: t.t(lang, 'PLAN_TC_BUTTON'),
+            url: 'https://policies.google.com/terms'
+          },
+        ],
+      ],
+    };
+
+    let messageRec = {
+      guid: params.guid,
+      message: messageParams.html,
+      message_format: 'inline_keyboard',
+      message_buttons: JSON.stringify(messageParams.inline_keyboard),
+      messenger: params.messenger,
+      message_originator: 'bot',
+      owner: params.id,
+    };
+
+    sendInlineButtons(messageParams);
+
+    Message.create(messageRec).exec((err, record) => {
+
+      if (err) {
+        reject(err);
+      }
+
+      if (record) {
+        resolve(record);
+      }
+    });
+  });
+} // clientBronzePlanSelected
+
+function clientGoldPlanSelected(params) {
+
+  let methodName = 'clientGoldPlanSelected';
+
+  console.log(moduleName + methodName + ', params:');
+  console.dir(params);
+
+  return new PromiseBB((resolve, reject) => {
+
+    let html = `
+${t.t(lang, 'PLAN_GOLD_THANKS_MSG')} 
+
+${t.t(lang, 'PLAN_THANKS_MSG')} 
+`;
+
+    let messageParams = {
+      messenger: params.messenger,
+      chatId: params.chat_id,
+      html: html,
+      inline_keyboard: [
+        [
+          {
+            text: t.t(lang, 'PLAN_PAY_BUTTON'),
+            callback_data: 'make_payment_plan_gold'
+          },
+          {
+            text: t.t(lang, 'PLAN_TC_BUTTON'),
+            url: 'https://policies.google.com/terms'
+          },
+        ],
+      ],
+    };
+
+    let messageRec = {
+      guid: params.guid,
+      message: messageParams.html,
+      message_format: 'inline_keyboard',
+      message_buttons: JSON.stringify(messageParams.inline_keyboard),
+      messenger: params.messenger,
+      message_originator: 'bot',
+      owner: params.id,
+    };
+
+    sendInlineButtons(messageParams);
+
+    Message.create(messageRec).exec((err, record) => {
+
+      if (err) {
+        reject(err);
+      }
+
+      if (record) {
+        resolve(record);
+      }
+    });
+  });
+} // clientGoldPlanSelected
+
+function clientPlatinumPlanSelected(params) {
+
+  let methodName = 'clientPlatinumPlanSelected';
+
+  console.log(moduleName + methodName + ', params:');
+  console.dir(params);
+
+  return new PromiseBB((resolve, reject) => {
+
+    let html = `
+${t.t(lang, 'PLAN_PLATINUM_THANKS_MSG')} 
+
+${t.t(lang, 'PLAN_THANKS_MSG')} 
+`;
+
+    let messageParams = {
+      messenger: params.messenger,
+      chatId: params.chat_id,
+      html: html,
+      inline_keyboard: [
+        [
+          {
+            text: t.t(lang, 'PLAN_PAY_BUTTON'),
+            callback_data: 'make_payment_plan_platinum'
+          },
+          {
+            text: t.t(lang, 'PLAN_TC_BUTTON'),
+            url: 'https://policies.google.com/terms'
+          },
+        ],
+      ],
+    };
+
+    let messageRec = {
+      guid: params.guid,
+      message: messageParams.html,
+      message_format: 'inline_keyboard',
+      message_buttons: JSON.stringify(messageParams.inline_keyboard),
+      messenger: params.messenger,
+      message_originator: 'bot',
+      owner: params.id,
+    };
+
+    sendInlineButtons(messageParams);
+
+    Message.create(messageRec).exec((err, record) => {
+
+      if (err) {
+        reject(err);
+      }
+
+      if (record) {
+        resolve(record);
+      }
+    });
+  });
+} // clientPlatinumPlanSelected
 
 function fakeMethod() {
 
