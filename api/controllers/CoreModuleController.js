@@ -9,6 +9,8 @@ const generalServices = require('../services/general');
 const clientCodes = generalServices.clientCodes();
 const restLinks = generalServices.RESTLinks();
 
+const _ = require('lodash');
+
 const t = require('../services/translate');
 
 const moduleName = 'CoreModuleController:: ';
@@ -657,6 +659,8 @@ function proceedClientStatus(statusObj, client) {
               await clientPlatinumPlanSelected(client);
               break;
           }
+        } else if (noSubscriptionFlag) {
+          await clientConfirmSubscription(client);
         }
 
       } catch (err) {
@@ -1030,6 +1034,68 @@ ${t.t(lang, 'PLAN_THANKS_MSG')}
     });
   });
 } // clientPlatinumPlanSelected
+
+function clientConfirmSubscription(params) {
+
+  let methodName = 'clientConfirmSubscription';
+
+  console.log(moduleName + methodName + ', params:');
+  console.dir(params);
+
+  return new PromiseBB((resolve, reject) => {
+
+    let listProfiles = '';
+
+    _.forEach(sails.config.superProfiles, (el) => {
+      let listElem = `"https://instagram.com/${el}"`;
+      listProfiles = listProfiles +
+        `<a href=${listElem}>${el}</a>
+`;
+    });
+
+    let messageParams = {
+      messenger: params.messenger,
+      chatId: params.chat_id,
+      html: `
+${t.t(lang, 'NEW_SUBS_INST_08')} 
+${listProfiles}
+
+${t.t(lang, 'NEW_SUBS_INST_09')} 
+`,
+      inline_keyboard: [
+        [
+          {
+            text: t.t(lang, 'ACT_SUBSCRIBE'),
+            callback_data: 'subscribed'
+          },
+        ],
+      ],
+    };
+
+    let messageRec = {
+      guid: params.guid,
+      message: messageParams.html,
+      message_format: 'inline_keyboard',
+      message_buttons: JSON.stringify(messageParams.inline_keyboard),
+      messenger: params.messenger,
+      message_originator: 'bot',
+      owner: params.id,
+    };
+
+    sendInlineButtons(messageParams);
+
+    Message.create(messageRec).exec((err, record) => {
+
+      if (err) {
+        reject(err);
+      }
+
+      if (record) {
+        resolve(record);
+      }
+    });
+  });
+} // clientConfirmSubscription
 
 function fakeMethod() {
 
