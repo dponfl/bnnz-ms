@@ -47,10 +47,6 @@ module.exports = {
     subscription_until: {
       type: 'datetime',
     },
-    service: {
-      type: 'string',
-      size: 20,
-    },
     subscription_url: {
       type: 'string',
       size: 100,
@@ -83,7 +79,7 @@ module.exports = {
       collection: 'room',
       via: 'user',
     },
-    service_link: {
+    service: {
       model: 'service',
     },
     lang: {

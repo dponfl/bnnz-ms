@@ -14,9 +14,48 @@ module.exports = {
 
     const methodName = 'onCallbackQueryScript';
 
-    // console.log('from inside onCallbackQueryScript...');
-    // console.log('lang: ' + lang);
-    // console.log('chatId: ' + chatId);
+    let client;
+
+    /**
+     * Check if this client already exists
+     */
+
+    (async () => {
+
+      try {
+
+        client = await generalServices.clientExists({chatId: chatId});
+
+        if (client && client.code == 200) {
+          client = client.data;
+        }
+
+        console.log('from inside onCallbackQueryScript...');
+        console.log('lang: ' + lang);
+        console.log('chatId: ' + chatId);
+        console.log('client:');
+        console.dir(client);
+
+        if (client.service.name == 'star') {
+          return starStaps();
+        } else if (/^friend_/.test(client.service.name)) {
+          return friendSteps();
+        } else {
+          return generalSteps();
+        }
+
+      } catch (err) {
+        console.log(moduleName + methodName + ', Error:');
+        console.log('statusCode: ' + err.statusCode);
+        console.log('message: ' + err.message);
+        console.log('error: ');
+        console.dir(err.error);
+        console.log('options: ');
+        console.dir(err.options);
+      }
+    })();
+
+
 
     return [
 
@@ -588,3 +627,15 @@ ${t.t(lang, 'MSG_KEYBOARD')}
 
 
 };
+
+function generalSteps() {
+
+} // generalSteps
+
+function starStaps() {
+
+} // starStaps
+
+function friendSteps() {
+
+} // friendSteps

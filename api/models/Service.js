@@ -26,9 +26,18 @@ module.exports = {
     messages_to_stars: {
       type: 'integer',
     },
+    check_profile: {
+      type: 'boolean',
+    },
+    check_payment: {
+      type: 'boolean',
+    },
+    check_subscription: {
+      type: 'boolean',
+    },
     user: {
       collection: 'client',
-      via: 'service_link',
+      via: 'service',
     }
   }
 };

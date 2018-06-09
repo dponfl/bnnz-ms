@@ -65,7 +65,7 @@ module.exports = {
         })
           .populate('messages')
           .populate('rooms')
-          .populate('service_link')
+          .populate('service')
           .exec((err, record) => {
             if (err) {
               reject(err);

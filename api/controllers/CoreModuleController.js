@@ -299,7 +299,7 @@ function proceedClient(client, params) {
 
           let saveComandRecord = await saveCommand(client, params);
 
-          let clientStatus = await checkClientStatus(client);
+          let clientStatus = await getClientStatus(client);
 
           await proceedClientStatus(clientStatus, client);
 
@@ -587,9 +587,9 @@ ${t.t(lang, 'NEW_SUBS_EXISTS_03')}
 
 } // existingClientProlongSubscriptionSendMessage01
 
-function checkClientStatus(client) {
+function getClientStatus(client) {
 
-  let methodName = 'checkClientStatus';
+  let methodName = 'getClientStatus';
 
   return new PromiseBB((resolve, reject) => {
 
@@ -606,6 +606,9 @@ function checkClientStatus(client) {
       noPaymentFlag: !client.payment_made,
       noSubscriptionFlag: !client.subscription_made,
       noSubscriptionFinalizedFlag: !client.service_subscription_finalized,
+      profileFlag: !!client.service.check_profile,
+      paymentFlag: !!client.service.check_payment,
+      subscriptionFlag: !!client.service.check_subscription,
     });
 
     // console.log(new Date());
@@ -615,7 +618,7 @@ function checkClientStatus(client) {
     //   resolve('deleted');
     // }, 2000);
   });
-} // checkClientStatus
+} // getClientStatus
 
 function proceedClientStatus(statusObj, client) {
 
@@ -623,10 +626,14 @@ function proceedClientStatus(statusObj, client) {
 
   return new PromiseBB((resolve, reject) => {
 
-    // console.log(moduleName + methodName);
+    console.log(moduleName + methodName);
+    console.log('statusObj:');
+    console.dir(statusObj);
+
     let {deletedFlag, bannedFlag, noProfileProvidedFlag,
     noProfileConfirmedFlag, noPaymentPlanSelectedFlag,
-    noPaymentFlag, noSubscriptionFlag, noSubscriptionFinalizedFlag} = statusObj;
+    noPaymentFlag, noSubscriptionFlag, noSubscriptionFinalizedFlag,
+    profileFlag, paymentFlag, subscriptionFlag} = statusObj;
 
     (async () => {
 
@@ -640,14 +647,14 @@ function proceedClientStatus(statusObj, client) {
         } else if (bannedFlag) {
           await proceedBanned(client);
           resolve();
-        } else if (noProfileProvidedFlag) {
+        } else if (profileFlag && noProfileProvidedFlag) {
           await newClientSendMessage02(client);
           resolve();
-        } else if (noProfileConfirmedFlag) {
+        } else if (profileFlag && noProfileConfirmedFlag) {
           await clientConfirmProfile(client);
-        } else if (noPaymentPlanSelectedFlag) {
+        } else if (paymentFlag && noPaymentPlanSelectedFlag) {
           await clientSelectPaymentPlan(client);
-        } else if (noPaymentFlag) {
+        } else if (paymentFlag && noPaymentFlag) {
           switch (client.service_link.name) {
             case 'bronze':
               await clientBronzePlanSelected(client);
@@ -659,9 +666,9 @@ function proceedClientStatus(statusObj, client) {
               await clientPlatinumPlanSelected(client);
               break;
           }
-        } else if (noSubscriptionFlag) {
+        } else if (subscriptionFlag && noSubscriptionFlag) {
           await clientConfirmSubscription(client);
-        } else if (noSubscriptionFinalizedFlag) {
+        } else if (subscriptionFlag && noSubscriptionFinalizedFlag) {
           await clientConfirmSubscriptionNotConfirmed(client);
         } else {
           await clientConfirmSubscriptionConfirmed(client);
