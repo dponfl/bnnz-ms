@@ -87,7 +87,8 @@ const token = {
     PLAN_THANKS_MSG: 'By pressing "Make payment" button you accept ' +
     'Service Terms and Conditions and will be redirected to the payment system',
 
-    PLAN_THANKS_MSG_02: 'Ready. Now you can upload your posts using the below button',
+    PLAN_THANKS_MSG_02: 'As your subscription is confirmed I\'ll get message and will be able to upload your posts',
+    PLAN_THANKS_MSG_03: 'Ready. Now you can upload your posts using the below button',
 
 
     PLAN_PAY_BUTTON: '>>> Make payment <<<',
@@ -184,7 +185,8 @@ const token = {
 
     PLAN_THANKS_MSG: 'Нажимая кнопку "Оплатить" ты соглашаешся с ' +
     'Условиями оказания услуг и будешь перенаправлен на платежную систему',
-    PLAN_THANKS_MSG_02: 'Все готово. Теперь ты можешь загрузить свои посты используя кнопку ниже',
+    PLAN_THANKS_MSG_02: 'После проверки твоей подписки ты получишь сообщение и сможешь загружать свои посты',
+    PLAN_THANKS_MSG_03: 'Все готово. Теперь ты можешь загрузить свои посты используя кнопку ниже',
 
     PLAN_PAY_BUTTON: '>>> Оплатить <<<',
     PLAN_TC_BUTTON: 'Условиями оказания услуг',

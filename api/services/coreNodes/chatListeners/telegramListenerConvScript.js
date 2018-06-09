@@ -257,12 +257,28 @@ ${t.t(lang, 'NEW_SUBS_INST_09')}
 
       {
         req: 'subscribed',
-        route: restLinks.mgSendInlineButtons,
+        route: restLinks.mgSendSimpleMessage,
         params: {
           messenger: 'telegram',
           chatId: chatId,
           html: `
 ${t.t(lang, 'PLAN_THANKS_MSG_02')} 
+`,
+        },
+      },
+
+      /**
+       * subscription confirmed - Subscription to the list of Instagram profiles is confirmed
+       */
+
+      {
+        req: 'subscribed_confirmed',
+        route: restLinks.mgSendInlineButtons,
+        params: {
+          messenger: 'telegram',
+          chatId: chatId,
+          html: `
+${t.t(lang, 'PLAN_THANKS_MSG_03')} 
 `,
           inline_keyboard: [
             [

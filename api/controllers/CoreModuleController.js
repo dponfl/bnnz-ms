@@ -661,6 +661,10 @@ function proceedClientStatus(statusObj, client) {
           }
         } else if (noSubscriptionFlag) {
           await clientConfirmSubscription(client);
+        } else if (noSubscriptionFinalizedFlag) {
+          await clientConfirmSubscriptionNotConfirmed(client);
+        } else {
+          await clientConfirmSubscriptionConfirmed(client);
         }
 
       } catch (err) {
@@ -1096,6 +1100,97 @@ ${t.t(lang, 'NEW_SUBS_INST_09')}
     });
   });
 } // clientConfirmSubscription
+
+function clientConfirmSubscriptionNotConfirmed(params) {
+
+  let methodName = 'clientConfirmSubscriptionNotConfirmed';
+
+  console.log(moduleName + methodName + ', params:');
+  console.dir(params);
+
+  return new PromiseBB((resolve, reject) => {
+
+    let messageParams = {
+      messenger: params.messenger,
+      chatId: params.chat_id,
+      html: `
+${t.t(lang, 'PLAN_THANKS_MSG_02')} 
+`,
+    };
+
+    let messageRec = {
+      guid: params.guid,
+      message: messageParams.html,
+      message_format: 'simple',
+      messenger: params.messenger,
+      message_originator: 'bot',
+      owner: params.id,
+    };
+
+    sendSimpleMessage(messageParams);
+
+    Message.create(messageRec).exec((err, record) => {
+
+      if (err) {
+        reject(err);
+      }
+
+      if (record) {
+        resolve(record);
+      }
+    });
+  });
+} // clientConfirmSubscriptionNotConfirmed
+
+function clientConfirmSubscriptionConfirmed(params) {
+
+  let methodName = 'clientConfirmSubscriptionConfirmed';
+
+  console.log(moduleName + methodName + ', params:');
+  console.dir(params);
+
+  return new PromiseBB((resolve, reject) => {
+
+    let messageParams = {
+      messenger: params.messenger,
+      chatId: params.chat_id,
+      html: `
+${t.t(lang, 'PLAN_THANKS_MSG_03')} 
+`,
+      inline_keyboard: [
+        [
+          {
+            text: t.t(lang, 'POST_UPLOAD_BUTTON'),
+            callback_data: 'upload_post'
+          },
+        ],
+      ],
+    };
+
+    let messageRec = {
+      guid: params.guid,
+      message: messageParams.html,
+      message_format: 'inline_keyboard',
+      message_buttons: JSON.stringify(messageParams.inline_keyboard),
+      messenger: params.messenger,
+      message_originator: 'bot',
+      owner: params.id,
+    };
+
+    sendInlineButtons(messageParams);
+
+    Message.create(messageRec).exec((err, record) => {
+
+      if (err) {
+        reject(err);
+      }
+
+      if (record) {
+        resolve(record);
+      }
+    });
+  });
+} // clientConfirmSubscriptionConfirmed
 
 function fakeMethod() {
 
