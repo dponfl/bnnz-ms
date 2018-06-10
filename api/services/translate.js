@@ -99,7 +99,7 @@ const token = {
     POST_UPLOAD_MSG: 'Your friend placed new Instagram post. ' +
     'Follow this link and put like there.',
 
-    MSG_KEYBOARD: 'Your post was sent successfully. To upload new Instagram posts and to make payment pls use the below keyboard',
+    MSG_KEYBOARD: 'Your post was sent successfully. To upload new Instagram posts pls use the below button',
 
     MSG_HELP: 'Pls use the below buttons',
 
@@ -196,7 +196,7 @@ const token = {
     POST_UPLOAD_MSG: 'Твой друг разместил новый пост в Инстаграм. ' +
     'Перейди по этой ссылке и поставь лайк.',
 
-    MSG_KEYBOARD: 'Твой пост успешно отправлен. Для отправки новых постов и оплаты используй клавиатуру',
+    MSG_KEYBOARD: 'Твой пост успешно отправлен. Для отправки новых постов используй кнопку ниже',
 
     MSG_HELP: 'Используй клавиатуру ниже',
 

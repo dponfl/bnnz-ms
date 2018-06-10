@@ -87,11 +87,11 @@ function onCallbackQuery() {
 `;
           });
 
-          queryScript = convScript.onCallbackQueryScript(useLang, query.message.chat.id, listProfiles);
+          queryScript = await convScript.onCallbackQueryScript(useLang, query.message.chat.id, listProfiles);
 
         } else {
 
-          queryScript = convScript.onCallbackQueryScript(useLang, query.message.chat.id);
+          queryScript = await convScript.onCallbackQueryScript(useLang, query.message.chat.id);
 
         }
 
