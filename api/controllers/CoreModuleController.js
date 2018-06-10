@@ -8,6 +8,7 @@
 const generalServices = require('../services/general');
 const clientCodes = generalServices.clientCodes();
 const restLinks = generalServices.RESTLinks();
+const generalLinks = generalServices.generalLinks();
 
 const _ = require('lodash');
 
@@ -107,12 +108,7 @@ module.exports = {
         // client = await checkClient(false);
 
 
-        if (client && !client.result) {
-
-          /**
-           * client.result = false => client doesn't exist in out database
-           * and we need to propose enter /start command
-           */
+        if (!client) {
 
           html = `
 <b>${t.t(lang, 'NEW_SUBS_ERROR_COMMAND')}</b>
@@ -131,7 +127,7 @@ module.exports = {
             text: clientCodes.wrongCommand.text,
           });
 
-        } else if (client && client.result) {
+        } else if (client && client.code == 200) {
 
           /**
            * client do exists in our database
@@ -140,35 +136,91 @@ module.exports = {
 
           html = `${t.t(lang, 'MSG_HELP')}`;
 
+          let inline_keyboard_star = [
+            [
+              {
+                text: t.t(lang, 'ACT_NEW_POST'),
+                callback_data: 'upload_post'
+              },
+            ],
+            [
+              {
+                text: t.t(lang, 'ACT_FAQ'),
+                url: generalLinks.faq,
+              },
+              {
+                text: t.t(lang, 'ACT_WEB'),
+                url: generalLinks.web,
+              },
+            ],
+          ];
+
+          let inline_keyboard_friend = [
+            [
+              {
+                text: t.t(lang, 'ACT_NEW_POST'),
+                callback_data: 'upload_post'
+              },
+            ],
+            [
+              {
+                text: t.t(lang, 'ACT_FAQ'),
+                url: generalLinks.faq,
+              },
+              {
+                text: t.t(lang, 'ACT_WEB'),
+                url: generalLinks.web,
+              },
+            ],
+          ];
+
+          let inline_keyboard_general = [
+            [
+              {
+                text: t.t(lang, 'ACT_NEW_POST'),
+                callback_data: 'upload_post'
+              },
+            ],
+            [
+              {
+                text: t.t(lang, 'ACT_PAY'),
+                callback_data: 'make_next_payment',
+              },
+            ],
+            [
+              {
+                text: t.t(lang, 'ACT_FAQ'),
+                url: generalLinks.faq,
+              },
+              {
+                text: t.t(lang, 'ACT_WEB'),
+                url: generalLinks.web,
+              },
+            ],
+          ];
+
+          let use_inline_keyboard;
+
+          if (client.data.service.name == 'star') {
+            use_inline_keyboard = inline_keyboard_star;
+          } else if (/^friend_/.test(_.trim(client.data.service.name))) {
+            use_inline_keyboard = inline_keyboard_friend;
+          } else {
+            use_inline_keyboard = inline_keyboard_general;
+          }
+
+
           messageParams = {
             messenger: params.messenger,
             chatId: params.chatId,
             html: html,
-            inline_keyboard: [
-              [
-                {
-                  text: t.t(lang, 'ACT_NEW_POST'),
-                  callback_data: 'upload_post'
-                },
-              ],
-              [
-                {
-                  text: t.t(lang, 'ACT_PAY'),
-                  callback_data: 'make_next_payment',
-                },
-              ],
-              [
-                {
-                  text: t.t(lang, 'ACT_FAQ'),
-                  url: 'https://policies.google.com/terms',
-                },
-                {
-                  text: t.t(lang, 'ACT_WEB'),
-                  url: 'https://policies.google.com/terms',
-                },
-              ],
-            ],
+            inline_keyboard: use_inline_keyboard,
           };
+
+          console.log('<<<<<<<<< messageParams:');
+          console.dir(messageParams);
+          console.log('<<<<<<<<< messageParams.inline_keyboard:');
+          console.dir(messageParams.inline_keyboard);
 
           await sendInlineButtons(messageParams);
 

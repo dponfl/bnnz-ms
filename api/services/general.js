@@ -180,4 +180,11 @@ module.exports = {
     }
   }, // RESTLinks
 
+  generalLinks: function () {
+    return {
+      faq: 'https://policies.google.com/terms',
+      web: 'https://policies.google.com/terms',
+    }
+  }, // generalLinks
+
 };
