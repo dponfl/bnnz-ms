@@ -34,20 +34,20 @@ module.exports = {
             client = client.data;
           }
 
-          console.log('from inside onCallbackQueryScript...');
-          console.log('lang: ' + lang);
-          console.log('chatId: ' + chatId);
-          console.log('client:');
-          console.dir(client);
+          // console.log('from inside onCallbackQueryScript...');
+          // console.log('lang: ' + lang);
+          // console.log('chatId: ' + chatId);
+          // console.log('client:');
+          // console.dir(client);
 
           if (client.service.name == 'star') {
-            console.log('<<<<<<<<<<<< star >>>>>>>>>>>>>>>');
+            // console.log('<<<<<<<<<<<< star >>>>>>>>>>>>>>>');
             resolve(starSteps(chatId, lang, msg));
           } else if (/^friend_/.test(_.trim(client.service.name))) {
-            console.log('<<<<<<<<<<<< friend >>>>>>>>>>>>>>>');
+            // console.log('<<<<<<<<<<<< friend >>>>>>>>>>>>>>>');
             resolve(friendSteps(chatId, lang, msg));
           } else {
-            console.log('<<<<<<<<<<<< general >>>>>>>>>>>>>>>');
+            // console.log('<<<<<<<<<<<< general >>>>>>>>>>>>>>>');
             resolve(generalSteps(chatId, lang, msg));
           }
 
@@ -59,7 +59,12 @@ module.exports = {
           console.dir(err.error);
           console.log('options: ');
           console.dir(err.options);
-          reject();
+          reject({
+            err_location: moduleName + methodName,
+            err_statusCode: err.statusCode,
+            err_message: err.message,
+            err_options: err.options,
+          });
         }
       })();
     });
