@@ -107,133 +107,9 @@ module.exports = {
         client = await checkClient(params);
         // client = await checkClient(false);
 
-
-        if (!client) {
-
-          html = `
-<b>${t.t(lang, 'NEW_SUBS_ERROR_COMMAND')}</b>
-`;
-
-          messageParams = {
-            messenger: params.messenger,
-            chatId: params.chatId,
-            html: html,
-          };
-
-          await sendForcedMessage(messageParams);
-
-          return res.json(clientCodes.wrongCommand.code, {
-            code: clientCodes.wrongCommand.ext_code,
-            text: clientCodes.wrongCommand.text,
-          });
-
-        } else if (client && client.code == 200) {
-
-          /**
-           * client do exists in our database
-           * and we need to send help info
-           */
-
-          html = `${t.t(lang, 'MSG_HELP')}`;
-
-          let inline_keyboard_star = [
-            [
-              {
-                text: t.t(lang, 'ACT_NEW_POST'),
-                callback_data: 'upload_post'
-              },
-            ],
-            [
-              {
-                text: t.t(lang, 'ACT_FAQ'),
-                url: generalLinks.faq,
-              },
-              {
-                text: t.t(lang, 'ACT_WEB'),
-                url: generalLinks.web,
-              },
-            ],
-          ];
-
-          let inline_keyboard_friend = [
-            [
-              {
-                text: t.t(lang, 'ACT_NEW_POST'),
-                callback_data: 'upload_post'
-              },
-            ],
-            [
-              {
-                text: t.t(lang, 'ACT_FAQ'),
-                url: generalLinks.faq,
-              },
-              {
-                text: t.t(lang, 'ACT_WEB'),
-                url: generalLinks.web,
-              },
-            ],
-          ];
-
-          let inline_keyboard_general = [
-            [
-              {
-                text: t.t(lang, 'ACT_NEW_POST'),
-                callback_data: 'upload_post'
-              },
-            ],
-            [
-              {
-                text: t.t(lang, 'ACT_PAY'),
-                callback_data: 'make_next_payment',
-              },
-            ],
-            [
-              {
-                text: t.t(lang, 'ACT_FAQ'),
-                url: generalLinks.faq,
-              },
-              {
-                text: t.t(lang, 'ACT_WEB'),
-                url: generalLinks.web,
-              },
-            ],
-          ];
-
-          let use_inline_keyboard;
-
-          if (client.data.service.name == 'star') {
-            use_inline_keyboard = inline_keyboard_star;
-          } else if (/^friend_/.test(_.trim(client.data.service.name))) {
-            use_inline_keyboard = inline_keyboard_friend;
-          } else {
-            use_inline_keyboard = inline_keyboard_general;
-          }
+        await proceedClientHelpCommand(client, params);
 
 
-          messageParams = {
-            messenger: params.messenger,
-            chatId: params.chatId,
-            html: html,
-            inline_keyboard: use_inline_keyboard,
-          };
-
-          console.log('<<<<<<<<< messageParams:');
-          console.dir(messageParams);
-          console.log('<<<<<<<<< messageParams.inline_keyboard:');
-          console.dir(messageParams.inline_keyboard);
-
-          await sendInlineButtons(messageParams);
-
-          return res.json(clientCodes.wrongCommand.code, {
-            code: clientCodes.wrongCommand.ext_code,
-            text: clientCodes.wrongCommand.text,
-          })
-        } else {
-          return res.json(clientCodes.noClient.code, {
-            code: clientCodes.noClient.ext_code,
-            text: clientCodes.noClient.text,
-          })
-        }
 
       } catch (err) {
         console.log(moduleName + methodName + ', Error:');
@@ -283,7 +159,7 @@ function proceedClient(client, params) {
        * Proceed with new client
        */
 
-      console.log('proceedClient, client does not exists, params:');
+      console.log(moduleName + methodName + ', client does not exists, params:');
       console.dir(params);
 
       // todo: check special subscription groups and
@@ -342,7 +218,7 @@ function proceedClient(client, params) {
 
       client = client.data;
 
-      console.log('proceedClient, client do exists, client:');
+      console.log(moduleName + methodName + ', client do exists, client:');
       console.dir(client);
 
       (async () => {
@@ -399,6 +275,193 @@ function proceedClient(client, params) {
   });
 } // proceedClient
 
+function proceedClientHelpCommand(client, params) {
+  return new PromiseBB((resolve, reject) => {
+
+    const methodName = 'proceedClientHelpCommand';
+
+    console.log(moduleName + methodName + ', client:');
+    console.dir(client);
+    console.log(moduleName + methodName + ', params:');
+    console.dir(params);
+
+    if (!client) {
+
+      (async() => {
+
+        let html = `
+<b>${t.t(lang, 'NEW_SUBS_ERROR_COMMAND')}</b>
+`;
+
+        let messageParams = {
+          messenger: params.messenger,
+          chatId: params.chatId,
+          html: html,
+        };
+
+        await sendForcedMessage(messageParams);
+
+        resolve({
+          code: clientCodes.wrongCommand.code,
+          data: {
+            code: clientCodes.wrongCommand.ext_code,
+            text: clientCodes.wrongCommand.text,
+          },
+        });
+
+      })();
+
+    } else if (client && client.code == 200) {
+
+      /**
+       * client do exists in our database
+       * and we need to send help info
+       */
+
+      client = client.data;
+
+      (async () => {
+
+        let html = `${t.t(lang, 'MSG_HELP')}`;
+
+        let inline_keyboard_star = [
+          [
+            {
+              text: t.t(lang, 'ACT_NEW_POST'),
+              callback_data: 'upload_post'
+            },
+          ],
+          [
+            {
+              text: t.t(lang, 'ACT_FAQ'),
+              url: generalLinks.faq,
+            },
+            {
+              text: t.t(lang, 'ACT_WEB'),
+              url: generalLinks.web,
+            },
+          ],
+        ];
+
+        let inline_keyboard_friend = [
+          [
+            {
+              text: t.t(lang, 'ACT_NEW_POST'),
+              callback_data: 'upload_post'
+            },
+          ],
+          [
+            {
+              text: t.t(lang, 'ACT_FAQ'),
+              url: generalLinks.faq,
+            },
+            {
+              text: t.t(lang, 'ACT_WEB'),
+              url: generalLinks.web,
+            },
+          ],
+        ];
+
+        let inline_keyboard_general = [
+          [
+            {
+              text: t.t(lang, 'ACT_NEW_POST'),
+              callback_data: 'upload_post'
+            },
+          ],
+          [
+            {
+              text: t.t(lang, 'ACT_PAY'),
+              callback_data: 'make_next_payment',
+            },
+          ],
+          [
+            {
+              text: t.t(lang, 'ACT_FAQ'),
+              url: generalLinks.faq,
+            },
+            {
+              text: t.t(lang, 'ACT_WEB'),
+              url: generalLinks.web,
+            },
+          ],
+        ];
+
+        let use_inline_keyboard;
+
+        if (client.service.name == 'star') {
+          use_inline_keyboard = inline_keyboard_star;
+        } else if (/^friend_/.test(_.trim(client.service.name))) {
+          use_inline_keyboard = inline_keyboard_friend;
+        } else {
+          use_inline_keyboard = inline_keyboard_general;
+        }
+
+        let saveComandRecord = await saveCommand(client, params);
+
+
+        let messageParams = {
+          messenger: params.messenger,
+          chatId: params.chatId,
+          html: html,
+          inline_keyboard: use_inline_keyboard,
+        };
+
+        let messageRec = {
+          guid: client.guid,
+          message: messageParams.html,
+          message_format: 'inline_keyboard',
+          message_buttons: JSON.stringify(messageParams.inline_keyboard),
+          messenger: params.messenger,
+          message_originator: 'bot',
+          owner: client.id,
+        };
+
+        await sendInlineButtons(messageParams);
+
+        Message.create(messageRec).exec((err, record) => {
+
+          if (err) {
+            reject(err);
+          }
+
+          if (record) {
+            resolve(record);
+          }
+        });
+
+        // console.log('<<<<<<<<< messageParams:');
+        // console.dir(messageParams);
+        // console.log('<<<<<<<<< messageParams.inline_keyboard:');
+        // console.dir(messageParams.inline_keyboard);
+
+        resolve({
+          code: clientCodes.existingClient.code,
+          data: {
+            code: clientCodes.existingClient.ext_code,
+            text: clientCodes.existingClient.text,
+          },
+        });
+
+      })();
+
+
+
+
+    } else {
+
+      resolve({
+        code: clientCodes.noClient.code,
+        data: {
+          code: clientCodes.noClient.ext_code,
+          text: clientCodes.noClient.text,
+        },
+      });
+
+    };
+  });
+} // proceedClientHelpCommand
+
 function saveNewClient(rec) {
 
   return new PromiseBB((resolve, reject) => {
@@ -418,9 +481,11 @@ function saveNewClient(rec) {
 
 function saveCommand(command, params) {
 
-  console.log('saveCommand, command:');
+  let methodName = 'saveCommand';
+
+  console.log(moduleName + methodName + ', command:');
   console.dir(command);
-  console.log('saveCommand, params:');
+  console.log(moduleName + methodName + ', params:');
   console.dir(params);
 
 

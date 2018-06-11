@@ -129,6 +129,7 @@ module.exports = {
     res.params = {
       messenger: 'telegram',
       chatId: msg.chat.id,
+      text: msg.text,
       lang: lang,
     };
 
