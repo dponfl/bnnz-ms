@@ -6,6 +6,8 @@
  */
 
 const generalServices = require('../services/general');
+const storageGatewayServices = require('../services/storageGateway');
+
 const clientCodes = generalServices.clientCodes();
 const restLinks = generalServices.RESTLinks();
 const generalLinks = generalServices.generalLinks();
@@ -174,10 +176,18 @@ function proceedClient(client, params) {
             last_name: params.lastName,
             chat_id: params.chatId,
             username: params.userName,
-            ref_guid: params.ref,
+            // ref_key: params.ref,
             messenger: params.messenger,
             lang: params.lang,
           };
+
+          let refData = await storageGatewayServices.getRef(params.ref);
+
+          console.log(moduleName + methodName + ', refData:');
+          console.dir(refData);
+
+          // todo: put value for clientRec.ref_key
+          // todo: put "true" to clientRec.is_ref
 
           let saveNewClientRecord = await saveNewClient(clientRec);
 

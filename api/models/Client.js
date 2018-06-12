@@ -31,7 +31,7 @@ module.exports = {
       type: 'string',
       size: 30,
     },
-    ref_guid: {
+    ref_key: {
       type: 'string',
       size: 36,
     },
