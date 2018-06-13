@@ -186,8 +186,17 @@ function proceedClient(client, params) {
           console.log(moduleName + methodName + ', refData:');
           console.dir(refData);
 
-          // todo: put value for clientRec.ref_key
-          // todo: put "true" to clientRec.is_ref
+          if (refData && refData.service) {
+            let serviceData = await storageGatewayServices.getService(refData.service);
+
+            console.log(moduleName + methodName + ', serviceData:');
+            console.dir(serviceData);
+          }
+
+          if (refData && refData.key) {
+            clientRec.ref_key = refData.key;
+            clientRec.is_ref = true;
+          }
 
           let saveNewClientRecord = await saveNewClient(clientRec);
 
@@ -203,13 +212,13 @@ function proceedClient(client, params) {
           resolve();
 
         } catch (err) {
-          // console.log(moduleName + methodName + ', Error:');
-          // console.log('statusCode: ' + err.statusCode);
-          // console.log('message: ' + err.message);
-          // console.log('error: ');
-          // console.dir(err.error);
-          // console.log('options: ');
-          // console.dir(err.options);
+          console.log(moduleName + methodName + ', Error:');
+          console.log('statusCode: ' + err.statusCode);
+          console.log('message: ' + err.message);
+          console.log('error: ');
+          console.dir(err.error);
+          console.log('options: ');
+          console.dir(err.options);
 
           reject({
             err_location: moduleName + methodName,
@@ -265,13 +274,13 @@ function proceedClient(client, params) {
           resolve();
 
         } catch (err) {
-          // console.log(moduleName + methodName + ', Error:');
-          // console.log('statusCode: ' + err.statusCode);
-          // console.log('message: ' + err.message);
-          // console.log('error: ');
-          // console.dir(err.error);
-          // console.log('options: ');
-          // console.dir(err.options);
+          console.log(moduleName + methodName + ', Error:');
+          console.log('statusCode: ' + err.statusCode);
+          console.log('message: ' + err.message);
+          console.log('error: ');
+          console.dir(err.error);
+          console.log('options: ');
+          console.dir(err.options);
 
           reject({
             err_location: moduleName + methodName,

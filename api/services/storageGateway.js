@@ -29,8 +29,7 @@ module.exports = {
 
     const methodName = 'getRef';
 
-    console.log(moduleName + methodName + ', params:');
-    console.dir(params);
+    console.log(moduleName + methodName + ', ref: ' + ref);
 
     return new PromiseBB((resolve, reject) => {
 
@@ -43,7 +42,9 @@ module.exports = {
       }
 
       Ref.findOne({
-        key: ref
+        key: ref,
+        used: false,
+        deleted: false,
       }).exec((err, record) => {
         if (err) {
           reject(err);
@@ -68,17 +69,63 @@ module.exports = {
 
           console.log(moduleName + methodName + ', ref key was FOUND, key: ' + rec.key);
 
-          // todo: put flag "used" for this ref key
+          Ref.update({key: ref}, {used: true}).exec((error, updated) => {
+            if (error) {
+              reject(error);
+            }
 
-          resolve({
-            guid: rec.guid,
-            key: rec.key,
-            service: rec.service,
-          })
+            console.log(moduleName + methodName + ', updated record: ');
+            console.dir(updated);
 
+            resolve({
+              guid: rec.guid,
+              key: rec.key,
+              service: rec.service,
+            })
+          });
         }
       })
     });
-
   }, // getRef
+
+  getService: function (service) {
+
+    const methodName = 'getService';
+
+    console.log(moduleName + methodName + ', service: ' + service);
+
+    return new PromiseBB((resolve, reject) => {
+
+      Service.findOne({
+        name: service,
+        deleted: false,
+      }).exec((err, record) => {
+        if (err) {
+          reject(err);
+        }
+
+        let rec = (record) ? record.toObject() : null;
+
+        if (!rec) {
+
+          /**
+           * record for the specified criteria was not found
+           */
+
+          console.log(moduleName + methodName + ', service was NOT FOUND');
+
+          resolve(false);
+        } else {
+
+          /**
+           * found record for the specified criteria
+           */
+
+          console.log(moduleName + methodName + ', service was FOUND, service: ' + rec.name);
+
+          resolve(rec);
+        }
+      });
+    });
+  }, // getService
 };

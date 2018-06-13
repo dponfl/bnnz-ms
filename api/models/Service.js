@@ -35,6 +35,9 @@ module.exports = {
     check_subscription: {
       type: 'boolean',
     },
+    deleted: {
+      type: 'boolean',
+    },
     user: {
       collection: 'client',
       via: 'service',
