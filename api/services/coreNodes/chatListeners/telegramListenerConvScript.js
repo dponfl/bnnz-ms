@@ -46,6 +46,8 @@ module.exports = {
           } else if (/^friend_/.test(_.trim(client.service.name))) {
             // console.log('<<<<<<<<<<<< friend >>>>>>>>>>>>>>>');
             resolve(friendSteps(chatId, lang, msg));
+          } else if (client.service.name == 'bronze') {
+            resolve(bronzePaidSteps(chatId, lang, msg));
           } else {
             // console.log('<<<<<<<<<<<< general >>>>>>>>>>>>>>>');
             resolve(generalSteps(chatId, lang, msg));
@@ -639,6 +641,161 @@ ${t.t(lang, 'POST_UPLOAD')}
 
   ];
 } // generalSteps
+
+function bronzePaidSteps(chatId, lang, msg) {
+  return [
+
+    /**
+     * instagram_profile_yes
+     */
+
+    {
+      req: 'instagram_profile_yes',
+      route: restLinks.mgSendInlineButtons,
+      params: {
+        messenger: 'telegram',
+        chatId: chatId,
+        html: `
+${t.t(lang, 'PLAN_BRONZE_THANKS_MSG_02')} 
+
+${t.t(lang, 'NEW_SUBS_INST_08')} 
+${msg}
+
+${t.t(lang, 'NEW_SUBS_INST_09')} 
+`,
+        inline_keyboard: [
+          [
+            {
+              text: t.t(lang, 'ACT_SUBSCRIBE'),
+              callback_data: 'subscribed'
+            },
+          ],
+        ],
+      },
+    },
+
+    /**
+     * instagram_profile_no
+     */
+
+    {
+      req: 'instagram_profile_no',
+      route: restLinks.mgSendForcedMessage,
+      params: {
+        messenger: 'telegram',
+        chatId: chatId,
+        html: `
+${t.t(lang, 'NEW_SUBS_INST_01')} 
+`,
+      },
+    },
+
+    /**
+     * subscribed - Confirmation of subscription to the list of Instagram profiles
+     */
+
+    {
+      req: 'subscribed',
+      route: restLinks.mgSendSimpleMessage,
+      params: {
+        messenger: 'telegram',
+        chatId: chatId,
+        html: `
+${t.t(lang, 'PLAN_THANKS_MSG_02')} 
+`,
+      },
+    },
+
+    /**
+     * subscription confirmed - Subscription to the list of Instagram profiles is confirmed
+     */
+
+    {
+      req: 'subscribed_confirmed',
+      route: restLinks.mgSendInlineButtons,
+      params: {
+        messenger: 'telegram',
+        chatId: chatId,
+        html: `
+${t.t(lang, 'PLAN_THANKS_MSG_03')} 
+`,
+        inline_keyboard: [
+          [
+            {
+              text: t.t(lang, 'POST_UPLOAD_BUTTON'),
+              callback_data: 'upload_post'
+            },
+          ],
+        ],
+      },
+    },
+
+    /**
+     * make_next_payment
+     */
+
+    {
+      req: 'make_next_payment',
+      route: restLinks.mgSendInlineButtons,
+      params: {
+        messenger: 'telegram',
+        chatId: chatId,
+        html: `
+${t.t(lang, 'NEW_SUBS_INST_07')}
+`,
+        inline_keyboard: [
+          [
+            {
+              text: t.t(lang, 'PLAN_PLATINUM'),
+              callback_data: 'instagram_plan_platinum'
+            },
+          ],
+          [
+            {
+              text: t.t(lang, 'PLAN_GOLD'),
+              callback_data: 'instagram_plan_gold'
+            },
+          ],
+          [
+            {
+              text: t.t(lang, 'PLAN_BRONZE'),
+              callback_data: 'instagram_plan_bronze'
+            },
+          ],
+        ],
+      },
+    },
+
+    /**
+     * upload_post - Load Instagram post
+     */
+
+    {
+      req: 'upload_post',
+      route: restLinks.mgSendForcedMessage,
+      params: {
+        messenger: 'telegram',
+        chatId: chatId,
+        html: `
+${t.t(lang, 'POST_UPLOAD')} 
+`,
+      },
+    },
+
+    // /**
+    //  * _____
+    //  */
+    //
+    // {
+    //   req: '',
+    //   route: '',
+    //   params: {
+    //
+    //   },
+    // },
+
+  ];
+} // paymentDoneSteps
 
 function starSteps(chatId, lang, msg) {
   return [

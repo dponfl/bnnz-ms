@@ -90,6 +90,12 @@ module.exports = {
       type: 'string',
       size: 50,
     },
+    start_msg_01_shown: {
+      type: 'boolean',
+    },
+    start_msg_02_shown: {
+      type: 'boolean',
+    },
     profile_provided: {
       type: 'boolean',
     },

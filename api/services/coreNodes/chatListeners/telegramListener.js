@@ -76,7 +76,8 @@ function onCallbackQuery() {
 
         if (query.data == 'make_payment_plan_platinum'
           || query.data == 'make_payment_plan_gold'
-          || query.data == 'make_payment_plan_bronze') {
+          || query.data == 'make_payment_plan_bronze'
+          || query.data == 'instagram_profile_yes') {
 
           let listProfiles = '';
 

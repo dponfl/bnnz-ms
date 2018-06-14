@@ -191,6 +191,12 @@ function proceedClient(client, params) {
 
             console.log(moduleName + methodName + ', serviceData:');
             console.dir(serviceData);
+
+            if (serviceData && serviceData.id) {
+              clientRec.service = serviceData.id;
+            }
+          } else {
+            // todo: make for the case of generic service
           }
 
           if (refData && refData.key) {
@@ -198,7 +204,18 @@ function proceedClient(client, params) {
             clientRec.is_ref = true;
           }
 
-          let saveNewClientRecord = await saveNewClient(clientRec);
+          await saveNewClient(clientRec);
+
+          let saveNewClientRecord = await checkClient({chatId: clientRec.chat_id});
+
+          if (saveNewClientRecord && saveNewClientRecord.code == 200) {
+            saveNewClientRecord = saveNewClientRecord.data;
+          }
+
+          console.log(moduleName + methodName + ', saveNewClientRecord:');
+          console.dir(saveNewClientRecord);
+
+          let clientStatus = await getClientStatus(saveNewClientRecord);
 
           // await ((p) => {
           //   console.log('!!!!!!!!!!!!!!!!!!!!!!');
@@ -206,8 +223,11 @@ function proceedClient(client, params) {
           // })(saveNewClientResult);
 
           let saveComandRecord = await saveCommand(saveNewClientRecord, params);
-          let newClientSendMessage01Record = await newClientSendMessage01(saveNewClientRecord);
-          let newClientSendMessage02Record = await newClientSendMessage02(saveNewClientRecord);
+
+          await proceedClientStatus(clientStatus, saveNewClientRecord);
+
+          // let newClientSendMessage01Record = await newClientSendMessage01(saveNewClientRecord);
+          // let newClientSendMessage02Record = await newClientSendMessage02(saveNewClientRecord);
 
           resolve();
 
@@ -736,6 +756,8 @@ function getClientStatus(client) {
     resolve({
       deletedFlag: client.deleted,
       bannedFlag: client.banned,
+      noStartMsg01ShownFlag: !client.start_msg_01_shown,
+      noStartMsg02ShownFlag: !client.start_msg_02_shown,
       noProfileProvidedFlag: !client.profile_provided,
       noProfileConfirmedFlag: !client.profile_confirmed,
       noPaymentPlanSelectedFlag: !client.payment_plan_selected,
@@ -766,8 +788,8 @@ function proceedClientStatus(statusObj, client) {
     console.log('statusObj:');
     console.dir(statusObj);
 
-    let {deletedFlag, bannedFlag, noProfileProvidedFlag,
-    noProfileConfirmedFlag, noPaymentPlanSelectedFlag,
+    let {deletedFlag, bannedFlag, noStartMsg01ShownFlag, noStartMsg02ShownFlag,
+    noProfileProvidedFlag, noProfileConfirmedFlag, noPaymentPlanSelectedFlag,
     noPaymentFlag, noSubscriptionFlag, noSubscriptionFinalizedFlag,
     profileFlag, paymentFlag, subscriptionFlag} = statusObj;
 
@@ -782,6 +804,18 @@ function proceedClientStatus(statusObj, client) {
           resolve();
         } else if (bannedFlag) {
           await proceedBanned(client);
+          resolve();
+        } else if (!profileFlag && !paymentFlag
+          && !subscriptionFlag && noStartMsg01ShownFlag) {
+          await newClientSendMessage01(client);
+          await clientConfirmSubscriptionConfirmed(client);
+          resolve();
+        } else if (noStartMsg01ShownFlag) {
+          await newClientSendMessage01(client);
+          await newClientSendMessage02(client);
+          resolve();
+        } else if (noStartMsg02ShownFlag) {
+          await newClientSendMessage02(client);
           resolve();
         } else if (profileFlag && noProfileProvidedFlag) {
           await newClientSendMessage02(client);
