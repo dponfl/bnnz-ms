@@ -9,10 +9,6 @@ module.exports = {
   tableName: 'message',
   migrate: 'safe',
   attributes: {
-    guid: {
-      type: 'string',
-      size: 36,
-    },
     message: {
       type: 'string',
       size: 255,

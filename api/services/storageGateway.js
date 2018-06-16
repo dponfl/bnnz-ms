@@ -23,6 +23,31 @@ module.exports = {
 
   messageCreate: function (params) {
 
+    const methodName = 'messageCreate';
+
+    console.log(moduleName + methodName + ', params:');
+    console.dir(params);
+
+    return new PromiseBB((resolve) => {
+
+      Message.create(params).exec((err, record) => {
+        if (err) {
+          resolve({
+            code: 500,
+            data: err,
+          });
+        }
+
+        if (record) {
+          resolve({
+            code: 200,
+            data: record,
+          });
+        }
+      })
+
+    });
+
   }, // messageCreate
 
   getRef: function (ref) {

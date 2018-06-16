@@ -197,6 +197,15 @@ function proceedClient(client, params) {
             }
           } else {
             // todo: make for the case of generic service
+
+            let serviceData = await storageGatewayServices.getService('generic');
+
+            console.log(moduleName + methodName + ', serviceData:');
+            console.dir(serviceData);
+
+            if (serviceData && serviceData.id) {
+              clientRec.service = serviceData.id;
+            }
           }
 
           if (refData && refData.key) {
@@ -217,17 +226,24 @@ function proceedClient(client, params) {
 
           let clientStatus = await getClientStatus(saveNewClientRecord);
 
-          // await ((p) => {
-          //   console.log('!!!!!!!!!!!!!!!!!!!!!!');
-          //   console.dir(p);
-          // })(saveNewClientResult);
+          let saveMessageRecord = await storageGatewayServices.messageCreate({
+            message: params.text,
+            message_format: 'command',
+            messenger: saveNewClientRecord.messenger,
+            message_originator: 'client',
+            owner: saveNewClientRecord.id,
+          });
 
-          let saveComandRecord = await saveCommand(saveNewClientRecord, params);
+          if (saveMessageRecord && saveMessageRecord.code == 200) {
+            resolve();
+          } else {
+            console.error(moduleName + methodName + ', messageCreate error');
+            console.dir(saveMessageRecord);
+            reject();
+          }
+
 
           await proceedClientStatus(clientStatus, saveNewClientRecord);
-
-          // let newClientSendMessage01Record = await newClientSendMessage01(saveNewClientRecord);
-          // let newClientSendMessage02Record = await newClientSendMessage02(saveNewClientRecord);
 
           resolve();
 
@@ -264,7 +280,22 @@ function proceedClient(client, params) {
 
         try {
 
-          let saveComandRecord = await saveCommand(client, params);
+          let saveMessageRecord = await storageGatewayServices.messageCreate({
+            message: params.text,
+            message_format: 'command',
+            messenger: client.messenger,
+            message_originator: 'client',
+            owner: client.id,
+          });
+
+          if (saveMessageRecord && saveMessageRecord.code == 200) {
+            resolve();
+          } else {
+            console.error(moduleName + methodName + ', messageCreate error');
+            console.dir(saveMessageRecord);
+            reject();
+          }
+
 
           let clientStatus = await getClientStatus(client);
 
@@ -326,29 +357,38 @@ function proceedClientHelpCommand(client, params) {
 
     if (!client) {
 
-      (async() => {
+      (async () => {
 
-        let html = `
-<b>${t.t(lang, 'NEW_SUBS_ERROR_COMMAND')}</b>
-`;
+        try {
 
-        let messageParams = {
-          messenger: params.messenger,
-          chatId: params.chatId,
-          html: html,
-        };
+          let messageParams = {
+            messenger: params.messenger,
+            chatId: params.chatId,
+            html: html,
+          };
 
-        await sendForcedMessage(messageParams);
+          await sendForcedMessage(messageParams);
 
-        resolve({
-          code: clientCodes.wrongCommand.code,
-          data: {
-            code: clientCodes.wrongCommand.ext_code,
-            text: clientCodes.wrongCommand.text,
-          },
-        });
+          resolve({
+            code: clientCodes.wrongCommand.code,
+            data: {
+              code: clientCodes.wrongCommand.ext_code,
+              text: clientCodes.wrongCommand.text,
+            },
+          });
 
+        } catch (err) {
+          console.log(moduleName + methodName + ', Catch block, Error:');
+          console.log('statusCode: ' + err.statusCode);
+          console.log('message: ' + err.message);
+          console.log('error: ');
+          console.dir(err.error);
+          console.log('options: ');
+          console.dir(err.options);
+        }
       })();
+
+
 
     } else if (client && client.code == 200) {
 
@@ -361,131 +401,131 @@ function proceedClientHelpCommand(client, params) {
 
       (async () => {
 
-        let html = `${t.t(lang, 'MSG_HELP')}`;
+        try {
 
-        let inline_keyboard_star = [
-          [
-            {
-              text: t.t(lang, 'ACT_NEW_POST'),
-              callback_data: 'upload_post'
-            },
-          ],
-          [
-            {
-              text: t.t(lang, 'ACT_FAQ'),
-              url: generalLinks.faq,
-            },
-            {
-              text: t.t(lang, 'ACT_WEB'),
-              url: generalLinks.web,
-            },
-          ],
-        ];
+          let html = `${t.t(lang, 'MSG_HELP')}`;
 
-        let inline_keyboard_friend = [
-          [
-            {
-              text: t.t(lang, 'ACT_NEW_POST'),
-              callback_data: 'upload_post'
-            },
-          ],
-          [
-            {
-              text: t.t(lang, 'ACT_FAQ'),
-              url: generalLinks.faq,
-            },
-            {
-              text: t.t(lang, 'ACT_WEB'),
-              url: generalLinks.web,
-            },
-          ],
-        ];
+          let inline_keyboard_star = [
+            [
+              {
+                text: t.t(lang, 'ACT_NEW_POST'),
+                callback_data: 'upload_post'
+              },
+            ],
+            [
+              {
+                text: t.t(lang, 'ACT_FAQ'),
+                url: generalLinks.faq,
+              },
+              {
+                text: t.t(lang, 'ACT_WEB'),
+                url: generalLinks.web,
+              },
+            ],
+          ];
 
-        let inline_keyboard_general = [
-          [
-            {
-              text: t.t(lang, 'ACT_NEW_POST'),
-              callback_data: 'upload_post'
-            },
-          ],
-          [
-            {
-              text: t.t(lang, 'ACT_PAY'),
-              callback_data: 'make_next_payment',
-            },
-          ],
-          [
-            {
-              text: t.t(lang, 'ACT_FAQ'),
-              url: generalLinks.faq,
-            },
-            {
-              text: t.t(lang, 'ACT_WEB'),
-              url: generalLinks.web,
-            },
-          ],
-        ];
+          let inline_keyboard_friend = [
+            [
+              {
+                text: t.t(lang, 'ACT_NEW_POST'),
+                callback_data: 'upload_post'
+              },
+            ],
+            [
+              {
+                text: t.t(lang, 'ACT_FAQ'),
+                url: generalLinks.faq,
+              },
+              {
+                text: t.t(lang, 'ACT_WEB'),
+                url: generalLinks.web,
+              },
+            ],
+          ];
 
-        let use_inline_keyboard;
+          let inline_keyboard_general = [
+            [
+              {
+                text: t.t(lang, 'ACT_NEW_POST'),
+                callback_data: 'upload_post'
+              },
+            ],
+            [
+              {
+                text: t.t(lang, 'ACT_PAY'),
+                callback_data: 'make_next_payment',
+              },
+            ],
+            [
+              {
+                text: t.t(lang, 'ACT_FAQ'),
+                url: generalLinks.faq,
+              },
+              {
+                text: t.t(lang, 'ACT_WEB'),
+                url: generalLinks.web,
+              },
+            ],
+          ];
 
-        if (client.service.name == 'star') {
-          use_inline_keyboard = inline_keyboard_star;
-        } else if (/^friend_/.test(_.trim(client.service.name))) {
-          use_inline_keyboard = inline_keyboard_friend;
-        } else {
-          use_inline_keyboard = inline_keyboard_general;
+          let use_inline_keyboard;
+
+          if (client.service.name == 'star') {
+            use_inline_keyboard = inline_keyboard_star;
+          } else if (/^friend_/.test(_.trim(client.service.name))) {
+            use_inline_keyboard = inline_keyboard_friend;
+          } else {
+            use_inline_keyboard = inline_keyboard_general;
+          }
+
+
+
+          await sendInlineButtons({
+            messenger: params.messenger,
+            chatId: params.chatId,
+            html: html,
+            inline_keyboard: use_inline_keyboard,
+          });
+
+          let saveMessageRecord = await storageGatewayServices.messageCreate({
+            guid: client.guid,
+            message: html,
+            message_format: 'inline_keyboard',
+            message_buttons: JSON.stringify(use_inline_keyboard),
+            messenger: params.messenger,
+            message_originator: 'bot',
+            owner: client.id,
+          });
+
+          if (saveMessageRecord && saveMessageRecord.code == 200) {
+            resolve();
+          } else {
+            console.error(moduleName + methodName + ', messageCreate error');
+            console.dir(saveMessageRecord);
+            reject();
+          }
+
+
+          resolve({
+            code: clientCodes.existingClient.code,
+            data: {
+              code: clientCodes.existingClient.ext_code,
+              text: clientCodes.existingClient.text,
+            },
+          });
+
+        } catch (err) {
+          console.error(moduleName + methodName + ', Catch block, Error:');
+          console.error('statusCode: ' + err.statusCode);
+          console.error('message: ' + err.message);
+          console.error('error: ');
+          console.dir(err.error);
+          console.error('options: ');
+          console.dir(err.options);
+
+          reject();
         }
-
-        let saveComandRecord = await saveCommand(client, params);
-
-
-        let messageParams = {
-          messenger: params.messenger,
-          chatId: params.chatId,
-          html: html,
-          inline_keyboard: use_inline_keyboard,
-        };
-
-        let messageRec = {
-          guid: client.guid,
-          message: messageParams.html,
-          message_format: 'inline_keyboard',
-          message_buttons: JSON.stringify(messageParams.inline_keyboard),
-          messenger: params.messenger,
-          message_originator: 'bot',
-          owner: client.id,
-        };
-
-        await sendInlineButtons(messageParams);
-
-        Message.create(messageRec).exec((err, record) => {
-
-          if (err) {
-            reject(err);
-          }
-
-          if (record) {
-            resolve(record);
-          }
-        });
-
-        // console.log('<<<<<<<<< messageParams:');
-        // console.dir(messageParams);
-        // console.log('<<<<<<<<< messageParams.inline_keyboard:');
-        // console.dir(messageParams.inline_keyboard);
-
-        resolve({
-          code: clientCodes.existingClient.code,
-          data: {
-            code: clientCodes.existingClient.ext_code,
-            text: clientCodes.existingClient.text,
-          },
-        });
-
       })();
-
-
-
 
     } else {
 
@@ -518,41 +558,9 @@ function saveNewClient(rec) {
   });
 } // saveNewClient
 
-function saveCommand(command, params) {
-
-  let methodName = 'saveCommand';
-
-  console.log(moduleName + methodName + ', command:');
-  console.dir(command);
-  console.log(moduleName + methodName + ', params:');
-  console.dir(params);
-
-
-  return new PromiseBB((resolve, reject) => {
-
-    let commandRec = {
-      guid: command.guid,
-      message: params.text,
-      message_format: 'command',
-      messenger: command.messenger,
-      message_originator: 'client',
-      owner: command.id,
-    };
-
-    Message.create(commandRec).exec((err, record) => {
-      if (err) {
-        reject(err);
-      }
-
-      if (record) {
-        resolve(record);
-      }
-    })
-
-  });
-} // saveCommand
-
 function newClientSendMessage01(params) {
+
+  const methodName = 'newClientSendMessage01';
 
   console.log('sendMessage01, params:');
   console.dir(params);
@@ -560,7 +568,11 @@ function newClientSendMessage01(params) {
 
   return new PromiseBB((resolve, reject) => {
 
-    let html = `
+    (async () => {
+
+      try {
+
+        let html = `
 <b>${t.t(lang, 'NEW_SUBS_WELCOME_01')}, ${params.first_name + ' ' + params.last_name}</b>
 
 <b>${t.t(lang, 'NEW_SUBS_WELCOME_02')}</b>
@@ -568,177 +580,227 @@ function newClientSendMessage01(params) {
 ${t.t(lang, 'NEW_SUBS_WELCOME_03')} 
 `;
 
-    let messageParams = {
-      messenger: params.messenger,
-      chatId: params.chat_id,
-      html: html,
-    };
+        sendSimpleMessage({
+          messenger: params.messenger,
+          chatId: params.chat_id,
+          html: html,
+        });
 
-    let messageRec = {
-      guid: params.guid,
-      message: messageParams.html,
-      message_format: 'simple',
-      messenger: params.messenger,
-      message_originator: 'bot',
-      owner: params.id,
-    };
+        let saveMessageRecord = await storageGatewayServices.messageCreate({
+          message: html,
+          message_format: 'simple',
+          messenger: params.messenger,
+          message_originator: 'bot',
+          owner: params.id,
+        });
 
-    sendSimpleMessage(messageParams);
+        if (saveMessageRecord && saveMessageRecord.code == 200) {
+          resolve();
+        } else {
+          console.error(moduleName + methodName + ', messageCreate error');
+          console.dir(saveMessageRecord);
+          reject();
+        }
 
-    Message.create(messageRec).exec((err, record) => {
+      } catch (err) {
+        console.log(moduleName + methodName + ', Catch block, Error:');
+        console.log('statusCode: ' + err.statusCode);
+        console.log('message: ' + err.message);
+        console.log('error: ');
+        console.dir(err.error);
+        console.log('options: ');
+        console.dir(err.options);
 
-      if (err) {
-        reject(err);
+        reject();
       }
-
-      if (record) {
-        resolve(record);
-      }
-    });
+    })();
   });
 
 } // newClientSendMessage01
 
 function newClientSendMessage02(params) {
 
+  const methodName = 'newClientSendMessage02';
+
   console.log('sendMessage02, params:');
   console.dir(params);
 
   return new PromiseBB((resolve, reject) => {
 
-    let html = `
+    (async () => {
+
+      try {
+
+        let html = `
 ${t.t(lang, 'NEW_SUBS_INST_01')} 
 `;
 
-    let messageParams = {
-      messenger: params.messenger,
-      chatId: params.chat_id,
-      html: html,
-    };
+        sendForcedMessage({
+          messenger: params.messenger,
+          chatId: params.chat_id,
+          html: html,
+        });
 
-    let messageRec = {
-      guid: params.guid,
-      message: messageParams.html,
-      message_format: 'forced',
-      messenger: params.messenger,
-      message_originator: 'bot',
-      owner: params.id,
-    };
+        let saveMessageRecord = storageGatewayServices.messageCreate({
+          message: html,
+          message_format: 'forced',
+          messenger: params.messenger,
+          message_originator: 'bot',
+          owner: params.id,
+        });
 
-    sendForcedMessage(messageParams);
+        if (saveMessageRecord && saveMessageRecord.code == 200) {
+          resolve();
+        } else {
+          console.error(moduleName + methodName + ', messageCreate error');
+          console.dir(saveMessageRecord);
+          reject();
+        }
 
-    Message.create(messageRec).exec((err, record) => {
+      } catch (err) {
+        console.error(moduleName + methodName + ', Catch block, Error:');
+        console.log('statusCode: ' + err.statusCode);
+        console.log('message: ' + err.message);
+        console.log('error: ');
+        console.dir(err.error);
+        console.log('options: ');
+        console.dir(err.options);
 
-      if (err) {
-        reject(err);
+        reject();
       }
+    })();
 
-      if (record) {
-        resolve(record);
-      }
-    });
   });
 
 } // newClientSendMessage02
 
-
-
 function existingClientValidSubscriptionSendMessage01(params) {
+
+  const methodName = 'existingClientValidSubscriptionSendMessage01';
 
   return new PromiseBB((resolve, reject) => {
 
-    let html = `
+    (async () => {
+
+      try {
+
+        let html = `
 <b>${t.t(lang, 'NEW_SUBS_EXISTS_01')}</b>
 
 ${t.t(lang, 'NEW_SUBS_EXISTS_02')}
 `;
 
-    let messageParams = {
-      messenger: params.messenger,
-      chatId: params.chat_id,
-      html: html,
-      inline_keyboard: [
-        [
-          {
-            text: t.t(lang, 'POST_UPLOAD_BUTTON'),
-            callback_data: 'upload_post'
-          },
-        ],
-      ],
-    };
+        let messageParams = {
+          messenger: params.messenger,
+          chatId: params.chat_id,
+          html: html,
+          inline_keyboard: [
+            [
+              {
+                text: t.t(lang, 'POST_UPLOAD_BUTTON'),
+                callback_data: 'upload_post'
+              },
+            ],
+          ],
+        };
 
-    let messageRec = {
-      guid: params.guid,
-      message: messageParams.html,
-      message_format: 'inline_keyboard',
-      message_buttons: JSON.stringify(messageParams.inline_keyboard),
-      messenger: params.messenger,
-      message_originator: 'bot',
-      owner: params.id,
-    };
+        sendInlineButtons(messageParams);
 
-    sendInlineButtons(messageParams);
+        let saveMessageRecord = await storageGatewayServices.messageCreate({
+          message: messageParams.html,
+          message_format: 'inline_keyboard',
+          message_buttons: JSON.stringify(messageParams.inline_keyboard),
+          messenger: params.messenger,
+          message_originator: 'bot',
+          owner: params.id,
+        });
 
-    Message.create(messageRec).exec((err, record) => {
+        if (saveMessageRecord && saveMessageRecord.code == 200) {
+          resolve();
+        } else {
+          console.error(moduleName + methodName + ', messageCreate error');
+          console.dir(saveMessageRecord);
+          reject();
+        }
 
-      if (err) {
-        reject(err);
+      } catch (err) {
+        console.error(moduleName + methodName + ', Catch block, Error:');
+        console.error('statusCode: ' + err.statusCode);
+        console.error('message: ' + err.message);
+        console.error('error: ');
+        console.dir(err.error);
+        console.error('options: ');
+        console.dir(err.options);
+
+        reject();
       }
+    })();
 
-      if (record) {
-        resolve(record);
-      }
-    });
   });
 
 } // existingClientValidSubscriptionSendMessage01
 
 function existingClientProlongSubscriptionSendMessage01(params) {
 
+  const methodName = 'existingClientProlongSubscriptionSendMessage01';
+
   return new PromiseBB((resolve, reject) => {
 
-    let html = `
+    (async () => {
+
+      try {
+
+        let html = `
 <b>${t.t(lang, 'NEW_SUBS_EXISTS_01')}</b>
 
 ${t.t(lang, 'NEW_SUBS_EXISTS_03')}
 `;
 
-    let messageParams = {
-      messenger: params.messenger,
-      chatId: params.chat_id,
-      html: html,
-      inline_keyboard: [
-        [
-          {
-            text: t.t(lang, 'ACT_PAY'),
-            callback_data: 'make_next_payment'
-          },
-        ],
-      ],
-    };
+        let messageParams = {
+          messenger: params.messenger,
+          chatId: params.chat_id,
+          html: html,
+          inline_keyboard: [
+            [
+              {
+                text: t.t(lang, 'ACT_PAY'),
+                callback_data: 'make_next_payment'
+              },
+            ],
+          ],
+        };
 
-    let messageRec = {
-      guid: params.guid,
-      message: messageParams.html,
-      message_format: 'inline_keyboard',
-      message_buttons: JSON.stringify(messageParams.inline_keyboard),
-      messenger: params.messenger,
-      message_originator: 'bot',
-      owner: params.id,
-    };
+        sendInlineButtons();
 
-    sendInlineButtons(messageParams);
+        let saveMessageRecord = await storageGatewayServices.messageCreate({
+          message: messageParams.html,
+          message_format: 'inline_keyboard',
+          message_buttons: JSON.stringify(messageParams.inline_keyboard),
+          messenger: params.messenger,
+          message_originator: 'bot',
+          owner: params.id,
+        });
 
-    Message.create(messageRec).exec((err, record) => {
+        if (saveMessageRecord && saveMessageRecord.code == 200) {
+          resolve();
+        } else {
+          console.error(moduleName + methodName + ', messageCreate error');
+          console.dir(saveMessageRecord);
+          reject();
+        }
 
-      if (err) {
-        reject(err);
+      } catch (err) {
+        console.error(moduleName + methodName + ', Catch block, Error:');
+        console.error('statusCode: ' + err.statusCode);
+        console.error('message: ' + err.message);
+        console.error('error: ');
+        console.dir(err.error);
+        console.error('options: ');
+        console.dir(err.options);
+
+        reject();
       }
-
-      if (record) {
-        resolve(record);
-      }
-    });
+    })();
   });
 
 } // existingClientProlongSubscriptionSendMessage01
@@ -878,12 +940,6 @@ function proceedDeleted(params) {
 
     resolve();
 
-    // console.log(new Date());
-    // setTimeout(() => {
-    //   console.log(moduleName + methodName);
-    //   console.log(new Date());
-    //   resolve();
-    // }, 5000);
   });
 } // proceedDeleted
 
@@ -909,12 +965,6 @@ function proceedBanned(params) {
 
     resolve();
 
-    // console.log(new Date());
-    // setTimeout(() => {
-    //   console.log(moduleName + methodName);
-    //   console.log(new Date());
-    //   resolve();
-    // }, 5000);
   });
 } // proceedBanned
 
@@ -927,52 +977,65 @@ function clientConfirmProfile(params) {
 
   return new PromiseBB((resolve, reject) => {
 
-    let instUrl = 'https://www.instagram.com/' + _.trim(params.inst_profile);
-    let instConfHtml = `
+    (async () => {
+
+      try {
+
+        let instUrl = 'https://www.instagram.com/' + _.trim(params.inst_profile);
+        let instConfHtml = `
 ${t.t(lang, 'NEW_SUBS_INST_02')}
 <a href="${instUrl}">${instUrl}</a>
 `;
 
-    let messageParams = {
-      messenger: params.messenger,
-      chatId: params.chat_id,
-      html: instConfHtml,
-      inline_keyboard: [
-        [
-          {
-            text: t.t(lang, 'ACT_YES'),
-            callback_data: 'instagram_profile_yes'
-          },
-          {
-            text: t.t(lang, 'ACT_NO'),
-            callback_data: 'instagram_profile_no'
-          }
-        ],
-      ],
-    };
+        let messageParams = {
+          messenger: params.messenger,
+          chatId: params.chat_id,
+          html: instConfHtml,
+          inline_keyboard: [
+            [
+              {
+                text: t.t(lang, 'ACT_YES'),
+                callback_data: 'instagram_profile_yes'
+              },
+              {
+                text: t.t(lang, 'ACT_NO'),
+                callback_data: 'instagram_profile_no'
+              }
+            ],
+          ],
+        };
 
-    let messageRec = {
-      guid: params.guid,
-      message: messageParams.html,
-      message_format: 'inline_keyboard',
-      message_buttons: JSON.stringify(messageParams.inline_keyboard),
-      messenger: params.messenger,
-      message_originator: 'bot',
-      owner: params.id,
-    };
+        sendInlineButtons(messageParams);
 
-    sendInlineButtons(messageParams);
+        let saveMessageRecord = await storageGatewayServices.messageCreate({
+          message: messageParams.html,
+          message_format: 'inline_keyboard',
+          message_buttons: JSON.stringify(messageParams.inline_keyboard),
+          messenger: params.messenger,
+          message_originator: 'bot',
+          owner: params.id,
+        });
 
-    Message.create(messageRec).exec((err, record) => {
+        if (saveMessageRecord && saveMessageRecord.code == 200) {
+          resolve();
+        } else {
+          console.error(moduleName + methodName + ', messageCreate error');
+          console.dir(saveMessageRecord);
+          reject();
+        }
 
-      if (err) {
-        reject(err);
+      } catch (err) {
+        console.error(moduleName + methodName + ', Catch block, Error:');
+        console.error('statusCode: ' + err.statusCode);
+        console.error('message: ' + err.message);
+        console.error('error: ');
+        console.dir(err.error);
+        console.error('options: ');
+        console.dir(err.options);
+
+        reject();
       }
-
-      if (record) {
-        resolve(record);
-      }
-    });
+    })();
   });
 } // clientConfirmProfile
 
@@ -985,60 +1048,76 @@ function clientSelectPaymentPlan(params) {
 
   return new PromiseBB((resolve, reject) => {
 
-    let html = `
+    (async () => {
+
+      try {
+
+        let html = `
 ${t.t(lang, 'NEW_SUBS_INST_05')}
 
 ${t.t(lang, 'NEW_SUBS_INST_06')}
 `;
 
-    let messageParams = {
-      messenger: params.messenger,
-      chatId: params.chat_id,
-      html: html,
-      inline_keyboard: [
-        [
-          {
-            text: t.t(lang, 'PLAN_PLATINUM'),
-            callback_data: 'instagram_plan_platinum'
-          },
-        ],
-        [
-          {
-            text: t.t(lang, 'PLAN_GOLD'),
-            callback_data: 'instagram_plan_gold'
-          },
-        ],
-        [
-          {
-            text: t.t(lang, 'PLAN_BRONZE'),
-            callback_data: 'instagram_plan_bronze'
-          },
-        ],
-      ],
-    };
+        let messageParams = {
+          messenger: params.messenger,
+          chatId: params.chat_id,
+          html: html,
+          inline_keyboard: [
+            [
+              {
+                text: t.t(lang, 'PLAN_PLATINUM'),
+                callback_data: 'instagram_plan_platinum'
+              },
+            ],
+            [
+              {
+                text: t.t(lang, 'PLAN_GOLD'),
+                callback_data: 'instagram_plan_gold'
+              },
+            ],
+            [
+              {
+                text: t.t(lang, 'PLAN_BRONZE'),
+                callback_data: 'instagram_plan_bronze'
+              },
+            ],
+          ],
+        };
 
-    let messageRec = {
-      guid: params.guid,
-      message: messageParams.html,
-      message_format: 'inline_keyboard',
-      message_buttons: JSON.stringify(messageParams.inline_keyboard),
-      messenger: params.messenger,
-      message_originator: 'bot',
-      owner: params.id,
-    };
+        sendInlineButtons(messageParams);
 
-    sendInlineButtons(messageParams);
+        let saveMessageRecord = await storageGatewayServices.messageCreate({
+          message: messageParams.html,
+          message_format: 'inline_keyboard',
+          message_buttons: JSON.stringify(messageParams.inline_keyboard),
+          messenger: params.messenger,
+          message_originator: 'bot',
+          owner: params.id,
+        });
 
-    Message.create(messageRec).exec((err, record) => {
+        if (saveMessageRecord && saveMessageRecord.code == 200) {
+          resolve();
+        } else {
+          console.error(moduleName + methodName + ', messageCreate error');
+          console.dir(saveMessageRecord);
+          reject();
+        }
 
-      if (err) {
-        reject(err);
+      } catch (err) {
+        console.error(moduleName + methodName + ', Catch block, Error:');
+        console.error('statusCode: ' + err.statusCode);
+        console.error('message: ' + err.message);
+        console.error('error: ');
+        console.dir(err.error);
+        console.error('options: ');
+        console.dir(err.options);
+
+        reject();
       }
+    })();
 
-      if (record) {
-        resolve(record);
-      }
-    });
+
+
   });
 } // clientSelectPaymentPlan
 
@@ -1051,52 +1130,69 @@ function clientBronzePlanSelected(params) {
 
   return new PromiseBB((resolve, reject) => {
 
-    let html = `
+    (async () => {
+
+      try {
+
+        let html = `
 ${t.t(lang, 'PLAN_BRONZE_THANKS_MSG')} 
 
 ${t.t(lang, 'PLAN_THANKS_MSG')} 
 `;
 
-    let messageParams = {
-      messenger: params.messenger,
-      chatId: params.chat_id,
-      html: html,
-      inline_keyboard: [
-        [
-          {
-            text: t.t(lang, 'PLAN_PAY_BUTTON'),
-            callback_data: 'make_payment_plan_bronze'
-          },
-          {
-            text: t.t(lang, 'PLAN_TC_BUTTON'),
-            url: 'https://policies.google.com/terms'
-          },
-        ],
-      ],
-    };
+        let messageParams = {
+          messenger: params.messenger,
+          chatId: params.chat_id,
+          html: html,
+          inline_keyboard: [
+            [
+              {
+                text: t.t(lang, 'PLAN_PAY_BUTTON'),
+                callback_data: 'make_payment_plan_bronze'
+              },
+              {
+                text: t.t(lang, 'PLAN_TC_BUTTON'),
+                url: 'https://policies.google.com/terms'
+              },
+            ],
+          ],
+        };
 
-    let messageRec = {
-      guid: params.guid,
-      message: messageParams.html,
-      message_format: 'inline_keyboard',
-      message_buttons: JSON.stringify(messageParams.inline_keyboard),
-      messenger: params.messenger,
-      message_originator: 'bot',
-      owner: params.id,
-    };
+        sendInlineButtons(messageParams);
 
-    sendInlineButtons(messageParams);
+        let saveMessageRecord = await storageGatewayServices.messageCreate({
+          message: messageParams.html,
+          message_format: 'inline_keyboard',
+          message_buttons: JSON.stringify(messageParams.inline_keyboard),
+          messenger: params.messenger,
+          message_originator: 'bot',
+          owner: params.id,
+        });
 
-    Message.create(messageRec).exec((err, record) => {
+        if (saveMessageRecord && saveMessageRecord.code == 200) {
+          resolve();
+        } else {
+          console.error(moduleName + methodName + ', messageCreate error');
+          console.dir(saveMessageRecord);
+          reject();
+        }
 
-      if (err) {
-        reject(err);
+
+      } catch (err) {
+        console.error(moduleName + methodName + ', Catch block, Error:');
+        console.error('statusCode: ' + err.statusCode);
+        console.error('message: ' + err.message);
+        console.error('error: ');
+        console.dir(err.error);
+        console.error('options: ');
+        console.dir(err.options);
+
+        reject();
       }
+    })();
 
-      if (record) {
-        resolve(record);
-      }
-    });
+
+
   });
 } // clientBronzePlanSelected
 
@@ -1109,52 +1205,68 @@ function clientGoldPlanSelected(params) {
 
   return new PromiseBB((resolve, reject) => {
 
-    let html = `
+    (async () => {
+
+      try {
+
+        let html = `
 ${t.t(lang, 'PLAN_GOLD_THANKS_MSG')} 
 
 ${t.t(lang, 'PLAN_THANKS_MSG')} 
 `;
 
-    let messageParams = {
-      messenger: params.messenger,
-      chatId: params.chat_id,
-      html: html,
-      inline_keyboard: [
-        [
-          {
-            text: t.t(lang, 'PLAN_PAY_BUTTON'),
-            callback_data: 'make_payment_plan_gold'
-          },
-          {
-            text: t.t(lang, 'PLAN_TC_BUTTON'),
-            url: 'https://policies.google.com/terms'
-          },
-        ],
-      ],
-    };
+        let messageParams = {
+          messenger: params.messenger,
+          chatId: params.chat_id,
+          html: html,
+          inline_keyboard: [
+            [
+              {
+                text: t.t(lang, 'PLAN_PAY_BUTTON'),
+                callback_data: 'make_payment_plan_gold'
+              },
+              {
+                text: t.t(lang, 'PLAN_TC_BUTTON'),
+                url: 'https://policies.google.com/terms'
+              },
+            ],
+          ],
+        };
 
-    let messageRec = {
-      guid: params.guid,
-      message: messageParams.html,
-      message_format: 'inline_keyboard',
-      message_buttons: JSON.stringify(messageParams.inline_keyboard),
-      messenger: params.messenger,
-      message_originator: 'bot',
-      owner: params.id,
-    };
+        sendInlineButtons(messageParams);
 
-    sendInlineButtons(messageParams);
+        let saveMessageRecord = await storageGatewayServices.messageCreate({
+          message: messageParams.html,
+          message_format: 'inline_keyboard',
+          message_buttons: JSON.stringify(messageParams.inline_keyboard),
+          messenger: params.messenger,
+          message_originator: 'bot',
+          owner: params.id,
+        });
 
-    Message.create(messageRec).exec((err, record) => {
+        if (saveMessageRecord && saveMessageRecord.code == 200) {
+          resolve();
+        } else {
+          console.error(moduleName + methodName + ', messageCreate error');
+          console.dir(saveMessageRecord);
+          reject();
+        }
 
-      if (err) {
-        reject(err);
+      } catch (err) {
+        console.error(moduleName + methodName + ', Catch block, Error:');
+        console.error('statusCode: ' + err.statusCode);
+        console.error('message: ' + err.message);
+        console.error('error: ');
+        console.dir(err.error);
+        console.error('options: ');
+        console.dir(err.options);
+
+        reject();
       }
+    })();
 
-      if (record) {
-        resolve(record);
-      }
-    });
+
+
   });
 } // clientGoldPlanSelected
 
@@ -1167,52 +1279,68 @@ function clientPlatinumPlanSelected(params) {
 
   return new PromiseBB((resolve, reject) => {
 
-    let html = `
+    (async () => {
+
+      try {
+
+        let html = `
 ${t.t(lang, 'PLAN_PLATINUM_THANKS_MSG')} 
 
 ${t.t(lang, 'PLAN_THANKS_MSG')} 
 `;
 
-    let messageParams = {
-      messenger: params.messenger,
-      chatId: params.chat_id,
-      html: html,
-      inline_keyboard: [
-        [
-          {
-            text: t.t(lang, 'PLAN_PAY_BUTTON'),
-            callback_data: 'make_payment_plan_platinum'
-          },
-          {
-            text: t.t(lang, 'PLAN_TC_BUTTON'),
-            url: 'https://policies.google.com/terms'
-          },
-        ],
-      ],
-    };
+        let messageParams = {
+          messenger: params.messenger,
+          chatId: params.chat_id,
+          html: html,
+          inline_keyboard: [
+            [
+              {
+                text: t.t(lang, 'PLAN_PAY_BUTTON'),
+                callback_data: 'make_payment_plan_platinum'
+              },
+              {
+                text: t.t(lang, 'PLAN_TC_BUTTON'),
+                url: 'https://policies.google.com/terms'
+              },
+            ],
+          ],
+        };
 
-    let messageRec = {
-      guid: params.guid,
-      message: messageParams.html,
-      message_format: 'inline_keyboard',
-      message_buttons: JSON.stringify(messageParams.inline_keyboard),
-      messenger: params.messenger,
-      message_originator: 'bot',
-      owner: params.id,
-    };
+        sendInlineButtons(messageParams);
 
-    sendInlineButtons(messageParams);
+        let saveMessageRecord = await storageGatewayServices.messageCreate({
+          message: messageParams.html,
+          message_format: 'inline_keyboard',
+          message_buttons: JSON.stringify(messageParams.inline_keyboard),
+          messenger: params.messenger,
+          message_originator: 'bot',
+          owner: params.id,
+        });
 
-    Message.create(messageRec).exec((err, record) => {
+        if (saveMessageRecord && saveMessageRecord.code == 200) {
+          resolve();
+        } else {
+          console.error(moduleName + methodName + ', messageCreate error');
+          console.dir(saveMessageRecord);
+          reject();
+        }
 
-      if (err) {
-        reject(err);
+      } catch (err) {
+        console.error(moduleName + methodName + ', Catch block, Error:');
+        console.error('statusCode: ' + err.statusCode);
+        console.error('message: ' + err.message);
+        console.error('error: ');
+        console.dir(err.error);
+        console.error('options: ');
+        console.dir(err.options);
+
+        reject();
       }
+    })();
 
-      if (record) {
-        resolve(record);
-      }
-    });
+
+
   });
 } // clientPlatinumPlanSelected
 
@@ -1225,56 +1353,72 @@ function clientConfirmSubscription(params) {
 
   return new PromiseBB((resolve, reject) => {
 
-    let listProfiles = '';
+    (async () => {
 
-    _.forEach(sails.config.superProfiles, (el) => {
-      let listElem = `"https://instagram.com/${el}"`;
-      listProfiles = listProfiles +
-        `<a href=${listElem}>${el}</a>
+      try {
+
+        let listProfiles = '';
+
+        _.forEach(sails.config.superProfiles, (el) => {
+          let listElem = `"https://instagram.com/${el}"`;
+          listProfiles = listProfiles +
+            `<a href=${listElem}>${el}</a>
 `;
-    });
+        });
 
-    let messageParams = {
-      messenger: params.messenger,
-      chatId: params.chat_id,
-      html: `
+        let messageParams = {
+          messenger: params.messenger,
+          chatId: params.chat_id,
+          html: `
 ${t.t(lang, 'NEW_SUBS_INST_08')} 
 ${listProfiles}
 
 ${t.t(lang, 'NEW_SUBS_INST_09')} 
 `,
-      inline_keyboard: [
-        [
-          {
-            text: t.t(lang, 'ACT_SUBSCRIBE'),
-            callback_data: 'subscribed'
-          },
-        ],
-      ],
-    };
+          inline_keyboard: [
+            [
+              {
+                text: t.t(lang, 'ACT_SUBSCRIBE'),
+                callback_data: 'subscribed'
+              },
+            ],
+          ],
+        };
 
-    let messageRec = {
-      guid: params.guid,
-      message: messageParams.html,
-      message_format: 'inline_keyboard',
-      message_buttons: JSON.stringify(messageParams.inline_keyboard),
-      messenger: params.messenger,
-      message_originator: 'bot',
-      owner: params.id,
-    };
+        sendInlineButtons(messageParams);
 
-    sendInlineButtons(messageParams);
+        let saveMessageRecord = await storageGatewayServices.messageCreate({
+          message: messageParams.html,
+          message_format: 'inline_keyboard',
+          message_buttons: JSON.stringify(messageParams.inline_keyboard),
+          messenger: params.messenger,
+          message_originator: 'bot',
+          owner: params.id,
+        });
 
-    Message.create(messageRec).exec((err, record) => {
+        if (saveMessageRecord && saveMessageRecord.code == 200) {
+          resolve();
+        } else {
+          console.error(moduleName + methodName + ', messageCreate error');
+          console.dir(saveMessageRecord);
+          reject();
+        }
 
-      if (err) {
-        reject(err);
+      } catch (err) {
+        console.error(moduleName + methodName + ', Catch block, Error:');
+        console.error('statusCode: ' + err.statusCode);
+        console.error('message: ' + err.message);
+        console.error('error: ');
+        console.dir(err.error);
+        console.error('options: ');
+        console.dir(err.options);
+
+        reject();
       }
+    })();
 
-      if (record) {
-        resolve(record);
-      }
-    });
+
+
   });
 } // clientConfirmSubscription
 
@@ -1287,35 +1431,48 @@ function clientConfirmSubscriptionNotConfirmed(params) {
 
   return new PromiseBB((resolve, reject) => {
 
-    let messageParams = {
-      messenger: params.messenger,
-      chatId: params.chat_id,
-      html: `
+    (async () => {
+
+      try {
+
+        let messageParams = {
+          messenger: params.messenger,
+          chatId: params.chat_id,
+          html: `
 ${t.t(lang, 'PLAN_THANKS_MSG_02')} 
 `,
-    };
+        };
 
-    let messageRec = {
-      guid: params.guid,
-      message: messageParams.html,
-      message_format: 'simple',
-      messenger: params.messenger,
-      message_originator: 'bot',
-      owner: params.id,
-    };
+        sendSimpleMessage(messageParams);
 
-    sendSimpleMessage(messageParams);
+        let saveMessageRecord = await storageGatewayServices.messageCreate({
+          message: messageParams.html,
+          message_format: 'simple',
+          messenger: params.messenger,
+          message_originator: 'bot',
+          owner: params.id,
+        });
 
-    Message.create(messageRec).exec((err, record) => {
+        if (saveMessageRecord && saveMessageRecord.code == 200) {
+          resolve();
+        } else {
+          console.error(moduleName + methodName + ', messageCreate error');
+          console.dir(saveMessageRecord);
+          reject();
+        }
 
-      if (err) {
-        reject(err);
+      } catch (err) {
+        console.error(moduleName + methodName + ', Catch block, Error:');
+        console.error('statusCode: ' + err.statusCode);
+        console.error('message: ' + err.message);
+        console.error('error: ');
+        console.dir(err.error);
+        console.error('options: ');
+        console.dir(err.options);
+
+        reject();
       }
-
-      if (record) {
-        resolve(record);
-      }
-    });
+    })();
   });
 } // clientConfirmSubscriptionNotConfirmed
 
@@ -1328,44 +1485,60 @@ function clientConfirmSubscriptionConfirmed(params) {
 
   return new PromiseBB((resolve, reject) => {
 
-    let messageParams = {
-      messenger: params.messenger,
-      chatId: params.chat_id,
-      html: `
+    (async () => {
+
+      try {
+
+        let messageParams = {
+          messenger: params.messenger,
+          chatId: params.chat_id,
+          html: `
 ${t.t(lang, 'PLAN_THANKS_MSG_03')} 
 `,
-      inline_keyboard: [
-        [
-          {
-            text: t.t(lang, 'POST_UPLOAD_BUTTON'),
-            callback_data: 'upload_post'
-          },
-        ],
-      ],
-    };
+          inline_keyboard: [
+            [
+              {
+                text: t.t(lang, 'POST_UPLOAD_BUTTON'),
+                callback_data: 'upload_post'
+              },
+            ],
+          ],
+        };
 
-    let messageRec = {
-      guid: params.guid,
-      message: messageParams.html,
-      message_format: 'inline_keyboard',
-      message_buttons: JSON.stringify(messageParams.inline_keyboard),
-      messenger: params.messenger,
-      message_originator: 'bot',
-      owner: params.id,
-    };
+        sendInlineButtons(messageParams);
 
-    sendInlineButtons(messageParams);
+        let saveMessageRecord = await storageGatewayServices.messageCreate({
+          message: messageParams.html,
+          message_format: 'inline_keyboard',
+          message_buttons: JSON.stringify(messageParams.inline_keyboard),
+          messenger: params.messenger,
+          message_originator: 'bot',
+          owner: params.id,
+        });
 
-    Message.create(messageRec).exec((err, record) => {
+        if (saveMessageRecord && saveMessageRecord.code == 200) {
+          resolve();
+        } else {
+          console.error(moduleName + methodName + ', messageCreate error');
+          console.dir(saveMessageRecord);
+          reject();
+        }
 
-      if (err) {
-        reject(err);
+      } catch (err) {
+        console.error(moduleName + methodName + ', Catch block, Error:');
+        console.error('statusCode: ' + err.statusCode);
+        console.error('message: ' + err.message);
+        console.error('error: ');
+        console.dir(err.error);
+        console.error('options: ');
+        console.dir(err.options);
+
+        reject();
       }
+    })();
 
-      if (record) {
-        resolve(record);
-      }
-    });
+
+
   });
 } // clientConfirmSubscriptionConfirmed
 
