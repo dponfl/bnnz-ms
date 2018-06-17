@@ -134,7 +134,12 @@ module.exports = {
  */
 
 function checkClient(checkClientParams) {
-    return generalServices.clientExists(checkClientParams);
+
+  const methodName = 'checkClient';
+  console.log(moduleName + methodName + ', checkClientParams:');
+  console.dir(checkClientParams);
+
+  return generalServices.clientExists(checkClientParams);
 } // checkClient
 
 function sendInlineButtons(params) {
@@ -360,6 +365,8 @@ function proceedClientHelpCommand(client, params) {
       (async () => {
 
         try {
+
+          let html = `${t.t(lang, 'NEW_SUBS_ERROR_COMMAND')}`;
 
           let messageParams = {
             messenger: params.messenger,
