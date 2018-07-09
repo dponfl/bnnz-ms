@@ -402,6 +402,8 @@ function proceedClientHelpCommand(client, params) {
       /**
        * client do exists in our database
        * and we need to send help info
+       * if he got confirmation of his subscription
+       * to list of profiles
        */
 
       client = client.data;
