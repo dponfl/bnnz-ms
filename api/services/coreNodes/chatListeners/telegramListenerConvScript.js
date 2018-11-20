@@ -61,12 +61,14 @@ module.exports = {
           console.dir(err.error);
           console.log('options: ');
           console.dir(err.options);
-          reject({
-            err_location: moduleName + methodName,
-            err_statusCode: err.statusCode,
-            err_message: err.message,
-            err_options: err.options,
-          });
+          // reject({
+          //   err_location: moduleName + methodName,
+          //   err_statusCode: err.statusCode,
+          //   err_message: err.message,
+          //   err_options: err.options,
+          // });
+
+          reject(err);
         }
       })();
     });

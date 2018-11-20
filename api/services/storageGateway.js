@@ -15,6 +15,30 @@ module.exports = {
 
   clientCreate: function (params) {
 
+    const methodName = 'clientCreate';
+
+    sails.log.info(moduleName + methodName + ', params:', params);
+
+    return new PromiseBB((resolve) => {
+
+      Client.create(params).exec((err, record) => {
+        if (err) {
+          resolve({
+            code: 500,
+            data: err,
+          });
+        }
+
+        if (record) {
+          resolve({
+            code: 200,
+            data: record,
+          });
+        }
+      })
+
+    });
+
   }, // clientCreate
 
   /**

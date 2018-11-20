@@ -72,14 +72,16 @@ module.exports = {
 
       } catch (err) {
         console.log(moduleName + methodName + ', Error:');
-        console.log('statusCode: ' + err.statusCode);
+        // console.log('statusCode: ' + err.statusCode);
         console.log('message: ' + err.message);
-        console.log('error: ');
-        console.dir(err.error);
-        console.log('options: ');
-        console.dir(err.options);
+        // console.log('error: ');
+        // console.dir(err.error);
+        // console.log('options: ');
+        // console.dir(err.options);
       }
     })();
+
+    res.json(200);
   }, // proceedStartCommand
 
   proceedHelpCommand: function (req, res) {
@@ -124,6 +126,8 @@ module.exports = {
       }
 
     })();
+
+    res.json(200);
   }, // proceedHelpCommand
 
 };
@@ -200,6 +204,10 @@ function proceedClient(client, params) {
             if (serviceData && serviceData.id) {
               clientRec.service = serviceData.id;
             }
+
+            // todo: check what is the service and fill in fields in client
+            // record respectively
+
           } else {
             // todo: make for the case of generic service
 
@@ -222,6 +230,7 @@ function proceedClient(client, params) {
 
           let saveNewClientRecord = await checkClient({chatId: clientRec.chat_id});
 
+          // todo: make else case for below
           if (saveNewClientRecord && saveNewClientRecord.code == 200) {
             saveNewClientRecord = saveNewClientRecord.data;
           }
@@ -244,7 +253,7 @@ function proceedClient(client, params) {
           } else {
             console.error(moduleName + methodName + ', messageCreate error');
             console.dir(saveMessageRecord);
-            reject();
+            reject(new Error('messageCreate error'));
           }
 
 
@@ -254,19 +263,21 @@ function proceedClient(client, params) {
 
         } catch (err) {
           console.log(moduleName + methodName + ', Error:');
-          console.log('statusCode: ' + err.statusCode);
+          // console.log('statusCode: ' + err.statusCode);
           console.log('message: ' + err.message);
-          console.log('error: ');
-          console.dir(err.error);
-          console.log('options: ');
-          console.dir(err.options);
+          // console.log('error: ');
+          // console.dir(err.error);
+          // console.log('options: ');
+          // console.dir(err.options);
 
-          reject({
-            err_location: moduleName + methodName,
-            err_statusCode: err.statusCode,
-            err_message: err.message,
-            err_options: err.options,
-          });
+          // reject({
+          //   err_location: moduleName + methodName,
+          //   // err_statusCode: err.statusCode,
+          //   err_message: err.message,
+          //   // err_options: err.options,
+          // });
+
+          reject(err);
         }
 
       })();
@@ -298,7 +309,7 @@ function proceedClient(client, params) {
           } else {
             console.error(moduleName + methodName + ', messageCreate error');
             console.dir(saveMessageRecord);
-            reject();
+            reject(new Error('messageCreate error'));
           }
 
 
@@ -331,19 +342,21 @@ function proceedClient(client, params) {
 
         } catch (err) {
           console.log(moduleName + methodName + ', Error:');
-          console.log('statusCode: ' + err.statusCode);
+          // console.log('statusCode: ' + err.statusCode);
           console.log('message: ' + err.message);
-          console.log('error: ');
-          console.dir(err.error);
-          console.log('options: ');
-          console.dir(err.options);
+          // console.log('error: ');
+          // console.dir(err.error);
+          // console.log('options: ');
+          // console.dir(err.options);
 
-          reject({
-            err_location: moduleName + methodName,
-            err_statusCode: err.statusCode,
-            err_message: err.message,
-            err_options: err.options,
-          });
+          // reject({
+          //   err_location: moduleName + methodName,
+          //   // err_statusCode: err.statusCode,
+          //   err_message: err.message,
+          //   // err_options: err.options,
+          // });
+
+          reject(err);
         }
       })();
     }
@@ -511,7 +524,7 @@ function proceedClientHelpCommand(client, params) {
           } else {
             console.error(moduleName + methodName + ', messageCreate error');
             console.dir(saveMessageRecord);
-            reject();
+            reject(new Error('messageCreate error'));
           }
 
 
@@ -532,7 +545,7 @@ function proceedClientHelpCommand(client, params) {
           console.error('options: ');
           console.dir(err.options);
 
-          reject();
+          reject(err);
         }
       })();
 
@@ -552,18 +565,48 @@ function proceedClientHelpCommand(client, params) {
 
 function saveNewClient(rec) {
 
+  const methodName = 'saveNewClient';
+
+
   return new PromiseBB((resolve, reject) => {
 
-    Client.create(rec).exec((err, record) => {
+    // Client.create(rec).exec((err, record) => {
+    //
+    //   if (err) {
+    //     reject(err);
+    //   }
+    //
+    //   if (record) {
+    //     resolve(record.toObject());
+    //   }
+    // });
 
-      if (err) {
+    (async () => {
+
+      try {
+
+        let createdClientRecord = await storageGatewayServices.clientCreate(rec);
+
+        if (createdClientRecord && createdClientRecord.code == 200) {
+          resolve();
+        } else {
+          sails.log.error(moduleName + methodName + ', messageCreate error:', createdClientRecord);
+          reject(new Error(moduleName + methodName + ', messageCreate error:', createdClientRecord));
+        }
+
+      } catch (err) {
+        console.log(moduleName + methodName + ', Catch block, Error:');
+        console.log('statusCode: ' + err.statusCode);
+        console.log('message: ' + err.message);
+        console.log('error: ');
+        console.dir(err.error);
+        console.log('options: ');
+        console.dir(err.options);
+
         reject(err);
       }
+    })();
 
-      if (record) {
-        resolve(record.toObject());
-      }
-    });
   });
 } // saveNewClient
 
@@ -589,38 +632,51 @@ function newClientSendMessage01(params) {
 ${t.t(lang, 'NEW_SUBS_WELCOME_03')} 
 `;
 
-        sendSimpleMessage({
+        let sendSimpleMessageResult = await sendSimpleMessage({
           messenger: params.messenger,
           chatId: params.chat_id,
           html: html,
         });
 
-        let saveMessageRecord = await storageGatewayServices.messageCreate({
-          message: html,
-          message_format: 'simple',
-          messenger: params.messenger,
-          message_originator: 'bot',
-          owner: params.id,
-        });
+        if (!_.isNil(sendSimpleMessageResult.status)
+          && sendSimpleMessageResult.status == 'ok') {
 
-        if (saveMessageRecord && saveMessageRecord.code == 200) {
-          resolve();
+          sails.log.info('!!!!!!!!!!!!!!!! sendSimpleMessageResult.status is ok: ', sendSimpleMessageResult);
+
+          let saveMessageRecord = await storageGatewayServices.messageCreate({
+            message: html,
+            message_format: 'simple',
+            messenger: params.messenger,
+            message_originator: 'bot',
+            owner: params.id,
+          });
+
+          if (saveMessageRecord && saveMessageRecord.code == 200) {
+            resolve();
+          } else {
+            console.error(moduleName + methodName + ', messageCreate error');
+            console.dir(saveMessageRecord);
+            reject(new Error('messageCreate error'));
+          }
+
         } else {
-          console.error(moduleName + methodName + ', messageCreate error');
-          console.dir(saveMessageRecord);
-          reject();
+
+          sails.log.error('!!!!!!!!!!!!!!!! sendSimpleMessageResult.status is NOT ok: ', sendSimpleMessageResult);
+          // reject(new Error({statusCode: 123, message: 'sendSimpleMessage error'}));
+          reject(new Error(moduleName + methodName + 'sendSimpleMessageResult.status is NOT ok'));
         }
+
 
       } catch (err) {
         console.log(moduleName + methodName + ', Catch block, Error:');
-        console.log('statusCode: ' + err.statusCode);
+        // console.log('statusCode: ' + err.statusCode);
         console.log('message: ' + err.message);
-        console.log('error: ');
-        console.dir(err.error);
-        console.log('options: ');
-        console.dir(err.options);
+        // console.log('error: ');
+        // console.dir(err.error);
+        // console.log('options: ');
+        // console.dir(err.options);
 
-        reject();
+        reject(err);
       }
     })();
   });
@@ -644,27 +700,40 @@ function newClientSendMessage02(params) {
 ${t.t(lang, 'NEW_SUBS_INST_01')} 
 `;
 
-        sendForcedMessage({
+        let sendForcedMessageResult = await sendForcedMessage({
           messenger: params.messenger,
           chatId: params.chat_id,
           html: html,
         });
 
-        let saveMessageRecord = storageGatewayServices.messageCreate({
-          message: html,
-          message_format: 'forced',
-          messenger: params.messenger,
-          message_originator: 'bot',
-          owner: params.id,
-        });
+        if (!_.isNil(sendForcedMessageResult.status)
+        && sendForcedMessageResult.status == 'ok') {
 
-        if (saveMessageRecord && saveMessageRecord.code == 200) {
-          resolve();
+          sails.log.info('sendForcedMessageResult.status is ok: ', sendForcedMessageResult.status);
+
+          let saveMessageRecord = await storageGatewayServices.messageCreate({
+            message: html,
+            message_format: 'forced',
+            messenger: params.messenger,
+            message_originator: 'bot',
+            owner: params.id,
+          });
+
+          if (saveMessageRecord && saveMessageRecord.code == 200) {
+            resolve();
+          } else {
+            console.error(moduleName + methodName + ', messageCreate error');
+            console.dir(saveMessageRecord);
+            reject(new Error('messageCreate error'));
+          }
+
         } else {
-          console.error(moduleName + methodName + ', messageCreate error');
-          console.dir(saveMessageRecord);
-          reject();
+
+          sails.log.error('sendForcedMessageResult.status is NOT ok: ', sendForcedMessageResult.status);
+
+          reject(new Error(moduleName + methodName + 'sendForcedMessageResult.status is NOT okr'));
         }
+
 
       } catch (err) {
         console.error(moduleName + methodName + ', Catch block, Error:');
@@ -675,7 +744,7 @@ ${t.t(lang, 'NEW_SUBS_INST_01')}
         console.log('options: ');
         console.dir(err.options);
 
-        reject();
+        reject(err);
       }
     })();
 
@@ -729,7 +798,7 @@ ${t.t(lang, 'NEW_SUBS_EXISTS_02')}
         } else {
           console.error(moduleName + methodName + ', messageCreate error');
           console.dir(saveMessageRecord);
-          reject();
+          reject(new Error('messageCreate error'));
         }
 
       } catch (err) {
@@ -741,7 +810,7 @@ ${t.t(lang, 'NEW_SUBS_EXISTS_02')}
         console.error('options: ');
         console.dir(err.options);
 
-        reject();
+        reject(err);
       }
     })();
 
@@ -795,7 +864,7 @@ ${t.t(lang, 'NEW_SUBS_EXISTS_03')}
         } else {
           console.error(moduleName + methodName + ', messageCreate error');
           console.dir(saveMessageRecord);
-          reject();
+          reject(new Error('messageCreate error'));
         }
 
       } catch (err) {
@@ -807,7 +876,7 @@ ${t.t(lang, 'NEW_SUBS_EXISTS_03')}
         console.error('options: ');
         console.dir(err.options);
 
-        reject();
+        reject(err);
       }
     })();
   });
@@ -821,8 +890,6 @@ function getClientStatus(client) {
   return new PromiseBB((resolve, reject) => {
 
     // console.log(moduleName + methodName);
-
-    // todo: check current client's status and resolve with respective reply
 
     resolve({
       deletedFlag: client.deleted,
@@ -916,12 +983,13 @@ function proceedClientStatus(statusObj, client) {
         }
 
       } catch (err) {
-        reject({
-          err_location: moduleName + methodName,
-          err_statusCode: err.statusCode,
-          err_message: err.message,
-          err_options: err.options,
-        });
+        // reject({
+        //   err_location: moduleName + methodName,
+        //   // err_statusCode: err.statusCode,
+        //   err_message: err.message,
+        //   // err_options: err.options,
+        // });
+        reject(err);
       }
     })();
   });
@@ -933,21 +1001,38 @@ function proceedDeleted(params) {
 
   return new PromiseBB((resolve, reject) => {
 
-    // console.log(moduleName + methodName);
+    (async () => {
 
-    let html = `
+      try {
+
+        // console.log(moduleName + methodName);
+
+        let html = `
 <b>${t.t(lang, 'EXISTING_DELETED')}</b>
 `;
 
-    let messageParams = {
-      messenger: params.messenger,
-      chatId: params.chat_id,
-      html: html,
-    };
+        let messageParams = {
+          messenger: params.messenger,
+          chatId: params.chat_id,
+          html: html,
+        };
 
-    sendSimpleMessage(messageParams);
+        let sendSimpleMessageResult = await sendSimpleMessage(messageParams);
 
-    resolve();
+        if (!_.isNil(sendSimpleMessageResult.status)
+          && sendSimpleMessageResult.status == 'ok') {
+
+          resolve();
+
+        } else {}
+
+
+      } catch (err) {
+        sails.log.error(moduleName + methodName + 'sendSimpleMessage error');
+        reject(err);
+      }
+
+    })();
 
   });
 } // proceedDeleted
@@ -958,21 +1043,41 @@ function proceedBanned(params) {
 
   return new PromiseBB((resolve, reject) => {
 
-    // console.log(moduleName + methodName);
+    (async () => {
 
-    let html = `
+      try {
+
+        // console.log(moduleName + methodName);
+
+        let html = `
 <b>${t.t(lang, 'EXISTING_BANNED')}</b>
 `;
 
-    let messageParams = {
-      messenger: params.messenger,
-      chatId: params.chat_id,
-      html: html,
-    };
+        let messageParams = {
+          messenger: params.messenger,
+          chatId: params.chat_id,
+          html: html,
+        };
 
-    sendSimpleMessage(messageParams);
+        let sendSimpleMessageResult = await sendSimpleMessage(messageParams);
 
-    resolve();
+        if (!_.isNil(sendSimpleMessageResult.status)
+        && sendSimpleMessageResult.status == 'ok') {
+
+          resolve();
+
+        } else {
+          reject(new Error(moduleName + methodName + 'sendSimpleMessage error'));
+        }
+
+      } catch (err) {
+
+        sails.log.error(moduleName + methodName + 'sendSimpleMessage error: ')
+        reject(err);
+
+      }
+
+    })();
 
   });
 } // proceedBanned
@@ -1030,7 +1135,7 @@ ${t.t(lang, 'NEW_SUBS_INST_02')}
         } else {
           console.error(moduleName + methodName + ', messageCreate error');
           console.dir(saveMessageRecord);
-          reject();
+          reject(new Error('messageCreate error'));
         }
 
       } catch (err) {
@@ -1042,7 +1147,7 @@ ${t.t(lang, 'NEW_SUBS_INST_02')}
         console.error('options: ');
         console.dir(err.options);
 
-        reject();
+        reject(err);
       }
     })();
   });
@@ -1109,7 +1214,7 @@ ${t.t(lang, 'NEW_SUBS_INST_06')}
         } else {
           console.error(moduleName + methodName + ', messageCreate error');
           console.dir(saveMessageRecord);
-          reject();
+          reject(new Error('messageCreate error'));
         }
 
       } catch (err) {
@@ -1121,7 +1226,7 @@ ${t.t(lang, 'NEW_SUBS_INST_06')}
         console.error('options: ');
         console.dir(err.options);
 
-        reject();
+        reject(err);
       }
     })();
 
@@ -1183,7 +1288,7 @@ ${t.t(lang, 'PLAN_THANKS_MSG')}
         } else {
           console.error(moduleName + methodName + ', messageCreate error');
           console.dir(saveMessageRecord);
-          reject();
+          reject(new Error('messageCreate error'));
         }
 
 
@@ -1196,7 +1301,7 @@ ${t.t(lang, 'PLAN_THANKS_MSG')}
         console.error('options: ');
         console.dir(err.options);
 
-        reject();
+        reject(err);
       }
     })();
 
@@ -1258,7 +1363,7 @@ ${t.t(lang, 'PLAN_THANKS_MSG')}
         } else {
           console.error(moduleName + methodName + ', messageCreate error');
           console.dir(saveMessageRecord);
-          reject();
+          reject(new Error('messageCreate error'));
         }
 
       } catch (err) {
@@ -1270,7 +1375,7 @@ ${t.t(lang, 'PLAN_THANKS_MSG')}
         console.error('options: ');
         console.dir(err.options);
 
-        reject();
+        reject(err);
       }
     })();
 
@@ -1332,7 +1437,7 @@ ${t.t(lang, 'PLAN_THANKS_MSG')}
         } else {
           console.error(moduleName + methodName + ', messageCreate error');
           console.dir(saveMessageRecord);
-          reject();
+          reject(new Error('messageCreate error'));
         }
 
       } catch (err) {
@@ -1344,7 +1449,7 @@ ${t.t(lang, 'PLAN_THANKS_MSG')}
         console.error('options: ');
         console.dir(err.options);
 
-        reject();
+        reject(err);
       }
     })();
 
@@ -1410,7 +1515,7 @@ ${t.t(lang, 'NEW_SUBS_INST_09')}
         } else {
           console.error(moduleName + methodName + ', messageCreate error');
           console.dir(saveMessageRecord);
-          reject();
+          reject(new Error('messageCreate error'));
         }
 
       } catch (err) {
@@ -1422,7 +1527,7 @@ ${t.t(lang, 'NEW_SUBS_INST_09')}
         console.error('options: ');
         console.dir(err.options);
 
-        reject();
+        reject(err);
       }
     })();
 
@@ -1452,34 +1557,44 @@ ${t.t(lang, 'PLAN_THANKS_MSG_02')}
 `,
         };
 
-        sendSimpleMessage(messageParams);
+        let sendSimpleMessageResult = await sendSimpleMessage(messageParams);
 
-        let saveMessageRecord = await storageGatewayServices.messageCreate({
-          message: messageParams.html,
-          message_format: 'simple',
-          messenger: params.messenger,
-          message_originator: 'bot',
-          owner: params.id,
-        });
+        if (!_.isNil(sendSimpleMessageResult.status)
+        && sendSimpleMessageResult.status == 'ok') {
 
-        if (saveMessageRecord && saveMessageRecord.code == 200) {
-          resolve();
+          let saveMessageRecord = await storageGatewayServices.messageCreate({
+            message: messageParams.html,
+            message_format: 'simple',
+            messenger: params.messenger,
+            message_originator: 'bot',
+            owner: params.id,
+          });
+
+          if (saveMessageRecord && saveMessageRecord.code == 200) {
+            resolve();
+          } else {
+            console.error(moduleName + methodName + ', messageCreate error');
+            console.dir(saveMessageRecord);
+            reject(new Error('messageCreate error'));
+          }
+
         } else {
-          console.error(moduleName + methodName + ', messageCreate error');
-          console.dir(saveMessageRecord);
-          reject();
+
+          reject(new Error(moduleName + methodName +
+          'sendSimpleMessageResult.status is NOT ok'));
+
         }
 
       } catch (err) {
         console.error(moduleName + methodName + ', Catch block, Error:');
-        console.error('statusCode: ' + err.statusCode);
+        // console.error('statusCode: ' + err.statusCode);
         console.error('message: ' + err.message);
-        console.error('error: ');
-        console.dir(err.error);
-        console.error('options: ');
-        console.dir(err.options);
+        // console.error('error: ');
+        // console.dir(err.error);
+        // console.error('options: ');
+        // console.dir(err.options);
 
-        reject();
+        reject(err);
       }
     })();
   });
@@ -1530,7 +1645,7 @@ ${t.t(lang, 'PLAN_THANKS_MSG_03')}
         } else {
           console.error(moduleName + methodName + ', messageCreate error');
           console.dir(saveMessageRecord);
-          reject();
+          reject(new Error('messageCreate error'));
         }
 
       } catch (err) {
@@ -1542,7 +1657,7 @@ ${t.t(lang, 'PLAN_THANKS_MSG_03')}
         console.error('options: ');
         console.dir(err.options);
 
-        reject();
+        reject(err);
       }
     })();
 

@@ -20,11 +20,13 @@ module.exports = {
       if (!_.some(possibleMethods, (val) => {
         return val === method;
         })) {
-        reject(name + ': No method or wrong method');
+        // reject(name + ': No method or wrong method');
+        reject(new Error(name + ': No method or wrong method'));
       }
 
       if (!url) {
-        reject(name + ': No url');
+        // reject(name + ': No url');
+        reject(new Error(name + ': No url'));
       }
 
       let options = {
@@ -34,7 +36,16 @@ module.exports = {
         json: true
       };
 
-      resolve(rp(options));
+      // resolve(rp(options));
+
+      rp(options)
+        .then((result) => {
+        resolve(result)
+      })
+        .catch((err) => {
+        reject(err);
+        })
+
     });
 
   }, // sendREST
@@ -63,7 +74,7 @@ module.exports = {
         Client.findOne({
           chat_id: client.chatId
         })
-          .populate('messages')
+          // .populate('messages')
           .populate('rooms')
           .populate('service')
           .exec((err, record) => {
@@ -102,10 +113,12 @@ module.exports = {
 
       } else {
         console.log(moduleName + methodName + ', no client parameter');
-        reject({
-          code: 500,
-          data: moduleName + methodName + ', no client parameter'
-        })
+        // reject({
+        //   code: 500,
+        //   data: moduleName + methodName + ', no client parameter'
+        // })
+
+        reject(new Error(moduleName + methodName + ', no client parameter'));
       }
     });
   }, // clientExists

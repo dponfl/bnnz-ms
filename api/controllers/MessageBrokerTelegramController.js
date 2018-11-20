@@ -22,6 +22,9 @@ module.exports = {
         await bot.sendMessage(params.chatId, params.html, {
           parse_mode: 'HTML',
         });
+
+        res.json(200, {status: 'ok'});
+
       } catch (err) {
         console.log('MessageBrokerTelegramController::sendSimpleMessage, Error:');
         console.log('statusCode: ' + err.statusCode);
@@ -30,10 +33,13 @@ module.exports = {
         console.dir(err.error);
         console.log('options: ');
         console.dir(err.options);
+
+        res.json(200, {status: 'error'});
+
       }
     })();
 
-    res.json(200);
+    // res.json(200);
 
   }, // sendSimpleMessage
 
@@ -52,6 +58,9 @@ module.exports = {
             force_reply: true
           }
         });
+
+        res.json(200, {status: 'ok'});
+
       } catch (err) {
         console.log('MessageBrokerTelegramController::sendForceMessage, Error:');
         console.log('statusCode: ' + err.statusCode);
@@ -60,10 +69,13 @@ module.exports = {
         console.dir(err.error);
         console.log('options: ');
         console.dir(err.options);
+
+        res.json(200, {status: 'error'});
+
       }
     })();
 
-    res.json(200);
+    // res.json(200);
 
   }, // sendForceMessage
 
@@ -71,8 +83,7 @@ module.exports = {
 
     let params = req.allParams();
 
-    console.log('MessageBrokerTelegramController::sendInlineButtons, params:');
-    console.dir(params);
+    sails.log.info('MessageBrokerTelegramController::sendInlineButtons, params:', params);
 
     (async () => {
       try {
@@ -82,6 +93,9 @@ module.exports = {
             inline_keyboard: params.inline_keyboard,
           }
         });
+
+        res.json(200, {status: 'ok'});
+
       } catch (err) {
         console.log('MessageBrokerTelegramController::sendInlineButtons, Error:');
         console.log('statusCode: ' + err.statusCode);
@@ -90,10 +104,13 @@ module.exports = {
         console.dir(err.error);
         console.log('options: ');
         console.dir(err.options);
+
+        res.json(200, {status: 'error'});
+
       }
     })();
 
-    res.json(200);
+    // res.json(200);
 
   }, // sendInlineButtons
 
@@ -112,6 +129,9 @@ module.exports = {
             keyboard: params.keyboard,
           }
         });
+
+        res.json(200, {status: 'ok'});
+
       } catch (err) {
         console.log('MessageBrokerTelegramController::sendKeyboard, Error:');
         console.log('statusCode: ' + err.statusCode);
@@ -120,10 +140,13 @@ module.exports = {
         console.dir(err.error);
         console.log('options: ');
         console.dir(err.options);
+
+        res.json(200, {status: 'error'});
+
       }
     })();
 
-    res.json(200);
+    // res.json(200);
 
   }, // sendKeyboard
 

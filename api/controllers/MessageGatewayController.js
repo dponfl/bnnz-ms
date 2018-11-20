@@ -5,7 +5,8 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-let generalServices = require('../../api/services/general');
+const generalServices = require('../../api/services/general');
+const _ = require('lodash');
 
 
 module.exports = {
@@ -17,13 +18,22 @@ module.exports = {
 
     switch (params.messenger) {
       case 'telegram' :
-        callTelegram('/mbt/sendinlinebuttons', params);
+        callTelegram('/mbt/sendinlinebuttons', params)
+          .then((result) => {
+            sails.log.info('!!!!!!!! MessageGatewayController::sendInlineMessage, result:', result);
+            if (!_.isNil(result.status) && result.status == 'ok') {
+              res.json(200, {status: 'ok'});
+            } else {
+              res.json(200, {status: 'error'});
+            }
+          })
+          .catch((err) => {
+            res.json(200, {status: 'catch error', error: err});
+          });
         break;
       case 'facebook':
         break;
     }
-
-    res.json(200);
 
   }, // sendInlineButtons
 
@@ -36,32 +46,49 @@ module.exports = {
 
     switch (params.messenger) {
       case 'telegram' :
-        callTelegram('/mbt/sendforcedmessage', params);
+        callTelegram('/mbt/sendforcedmessage', params)
+          .then((result) => {
+            sails.log.info('!!!!!!!! MessageGatewayController::sendForcedMessage, result:', result);
+            if (!_.isNil(result.status) && result.status == 'ok') {
+              res.json(200, {status: 'ok'});
+            } else {
+              res.json(200, {status: 'error'});
+            }
+          }).catch((err) => {
+          res.json(200, {status: 'catch error', error: err});
+        });
         break;
       case 'facebook':
         break;
     }
-
-    res.json(200);
 
   }, // sendForcedMessage
 
   sendSimpleMessage: function (req, res) {
 
     let params = req.allParams();
+    let ttt;
 
     console.log('MessageGatewayController::sendSimpleMessage, params:');
     console.dir(params);
 
     switch (params.messenger) {
       case 'telegram' :
-        callTelegram('/mbt/sendsimplemessage', params);
+        callTelegram('/mbt/sendsimplemessage', params)
+          .then((result) => {
+            sails.log.info('!!!!!!!! MessageGatewayController::sendSimpleMessage, result:', result);
+            if (!_.isNil(result.status) && result.status == 'ok') {
+              res.json(200, {status: 'ok'});
+            } else {
+              res.json(200, {status: 'error'});
+            }
+          }).catch((err) => {
+          res.json(200, {status: 'catch error', error: err});
+        });
         break;
       case 'facebook':
         break;
     }
-
-    res.json(200);
 
   }, // sendSimpleMessage
 
@@ -74,13 +101,21 @@ module.exports = {
 
     switch (params.messenger) {
       case 'telegram' :
-        callTelegram('/mbt/sendkeyboard', params);
+        callTelegram('/mbt/sendkeyboard', params)
+          .then((result) => {
+            sails.log.info('!!!!!!!! MessageGatewayController::sendKeyboardMessage, result:', result);
+            if (!_.isNil(result.status) && result.status == 'ok') {
+              res.json(200, {status: 'ok'});
+            } else {
+              res.json(200, {status: 'error'});
+            }
+          }).catch((err) => {
+          res.json(200, {status: 'catch error', error: err});
+        });
         break;
       case 'facebook':
         break;
     }
-
-    res.json(200);
 
   }, // sendKeyboard
 
@@ -90,15 +125,18 @@ module.exports = {
 async function callTelegram(route, callTelegramParams) {
 
   try {
-    await generalServices.sendREST('POST', route, callTelegramParams);
+    return await generalServices.sendREST('POST', route, callTelegramParams);
+
   } catch (err) {
     console.log('MessageGatewayController::callTelegram, Error:');
-    console.log('statusCode: ' + err.statusCode);
+    // console.log('statusCode: ' + err.statusCode);
     console.log('message: ' + err.message);
-    console.log('error: ');
-    console.dir(err.error);
-    console.log('options: ');
-    console.dir(err.options);
+    // console.log('error: ');
+    // console.dir(err.error);
+    // console.log('options: ');
+    // console.dir(err.options);
+
+    return false;
   }
 
 } // callTelegram
