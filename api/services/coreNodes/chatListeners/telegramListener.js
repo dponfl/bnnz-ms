@@ -1,6 +1,7 @@
 "use strict";
 
 const generalServices = require('../../../../api/services/general');
+const storageGatewayServices = require('../../../../api/services/storageGateway');
 
 const t = require('../../../../api/services/translate');
 
@@ -141,137 +142,166 @@ function onMessage() {
 
     getUserLang(msg);
 
-    /**
-     * Start command
-     */
+    (async () => {
 
-    if (/\/start/i.test(_.trim(msg.text))) {
-
-      console.log(moduleName + methodName + ', got start command');
-
-      REST = convScript.onMessageStart(msg, useLang);
-
-      sendREST = true;
-
-    }
-
-    /**
-     * Set language
-     */
-
-    // else if (/\/lang/i.test(_.trim(msg.text))) {
-    //
-    //   /**
-    //    * lang command
-    //    */
-    //
-    //   let result = _.trim(msg.text).match(/\/lang(=|\s?)(en|ru)/i);
-    //
-    //   console.log(moduleName + methodName + ', check /lang, result:');
-    //   console.dir(result);
-    //
-    //   if (result) {
-    //     // t.setLang(result[2]);
-    //
-    //     useLang = result[2];
-    //
-    //     REST.route = '/mg/sendsimplemessage';
-    //     REST.params = {
-    //       messenger: 'telegram',
-    //       chatId: msg.chat.id,
-    //       html: `${t.t(useLang, 'CMD_LANG')}` + `${t.t(useLang, 'CMD_LANG_' + result[2].toUpperCase())}`,
-    //     };
-    //
-    //     sendREST = true;
-    //   }
-    // }
-
-    /**
-     * Help command
-     */
-
-    else if (/\/help/i.test(_.trim(msg.text))) {
-
-      console.log(moduleName + methodName + ', got help command');
-
-      REST = convScript.onMessageHelp(msg, useLang);
-
-      sendREST = true;
-
-    }
-
-    /**
-     * Reply to forced messages
-     */
-
-    else if (!_.isNil(msg.reply_to_message)
-      && !_.isNil(msg.reply_to_message.text)) {
-
-      switch (msg.reply_to_message.text) {
+      try {
 
         /**
-         * case 'Reply with your Instagram account'
+         * Start command
          */
 
-        case t.t(useLang, 'NEW_SUBS_INST_01'):
+        if (/\/start/i.test(_.trim(msg.text))) {
 
-          console.log(moduleName + methodName + ', got reply with Instagram account');
+          console.log(moduleName + methodName + ', got start command');
 
-          REST = convScript.onMessageNewInstagramAccount(msg, useLang);
+          REST = convScript.onMessageStart(msg, useLang);
 
           sendREST = true;
 
-          break;
+        }
 
-        case t.t(useLang, 'POST_UPLOAD'):
+        /**
+         * Set language
+         */
 
-          /**
-           * case 'Place your Instagram post'
-           */
+        // else if (/\/lang/i.test(_.trim(msg.text))) {
+        //
+        //   /**
+        //    * lang command
+        //    */
+        //
+        //   let result = _.trim(msg.text).match(/\/lang(=|\s?)(en|ru)/i);
+        //
+        //   console.log(moduleName + methodName + ', check /lang, result:');
+        //   console.dir(result);
+        //
+        //   if (result) {
+        //     // t.setLang(result[2]);
+        //
+        //     useLang = result[2];
+        //
+        //     REST.route = '/mg/sendsimplemessage';
+        //     REST.params = {
+        //       messenger: 'telegram',
+        //       chatId: msg.chat.id,
+        //       html: `${t.t(useLang, 'CMD_LANG')}` + `${t.t(useLang, 'CMD_LANG_' + result[2].toUpperCase())}`,
+        //     };
+        //
+        //     sendREST = true;
+        //   }
+        // }
 
-          REST = convScript.onMessageNewInstagramPost(msg, useLang);
+        /**
+         * Help command
+         */
 
-          console.log('<<<<<<< REST:');
-          console.dir(REST);
+        else if (/\/help/i.test(_.trim(msg.text))) {
 
-          if (!REST) {
-            sendREST = false;
-          } else {
-            sendREST = true;
-          }
-
-
-
-          break;
-        default:
-
-          console.log(moduleName + methodName + ', got wrong forced message');
+          console.log(moduleName + methodName + ', got help command');
 
           REST = convScript.onMessageHelp(msg, useLang);
 
           sendREST = true;
 
-      }
+        }
 
-    }
+        /**
+         * Reply to forced messages
+         */
 
-    else {
+        else if (!_.isNil(msg.reply_to_message)
+          && !_.isNil(msg.reply_to_message.text)) {
 
-      /**
-       * Generic message
-       */
+          switch (msg.reply_to_message.text) {
 
-      console.log(moduleName + methodName + ', got general message');
+            /**
+             * case 'Reply with your Instagram account'
+             */
 
-      REST = convScript.onMessageHelp(msg, useLang);
+            case t.t(useLang, 'NEW_SUBS_INST_01'):
 
-      sendREST = true;
+              console.log(moduleName + methodName + ', got reply with Instagram account');
 
-    }
+              sails.log.info(moduleName + methodName + ', got reply with Instagram account', msg);
 
-    if (sendREST) {
-      (async () => {
-        try {
+              (async () => {
+
+                let clientExistsResult = await generalServices.clientExists({chatId: msg.chat.id});
+
+                if (!_.isNil(clientExistsResult.code) && clientExistsResult.code == 200) {
+                  sails.log.warn('!!!!!!!!!!!!!! clientExistsResult.data: ', clientExistsResult.data);
+
+                  let clientUpdateResult = await storageGatewayServices.clientUpdate({id: clientExistsResult.data.id}, {inst_profile: msg.text, profile_provided: true});
+
+                  sails.log.warn('!!!!!!!!!!!!!!!! clientUpdateResult: ', clientUpdateResult);
+
+                  if (!_.isNil(clientUpdateResult.code) && clientUpdateResult.code == 200) {
+
+                    sails.log.warn('111111111111111111111111111111111111111');
+                    REST = convScript.onMessageNewInstagramAccount(msg, useLang);
+                    sendREST = true;
+
+                    result = await generalServices.sendREST('POST', REST.route, REST.params);
+
+                    console.log('REST request and result:');
+                    console.log('Request:');
+                    console.dir(REST);
+                    console.log('Response:');
+                    console.dir(result);
+                  }
+
+                }
+
+              })();
+              break;
+
+            case t.t(useLang, 'POST_UPLOAD'):
+
+              /**
+               * case 'Place your Instagram post'
+               */
+
+              REST = convScript.onMessageNewInstagramPost(msg, useLang);
+
+              console.log('<<<<<<< REST:');
+              console.dir(REST);
+
+              if (!REST) {
+                sendREST = false;
+              } else {
+                sendREST = true;
+              }
+
+
+
+              break;
+            default:
+
+              console.log(moduleName + methodName + ', got wrong forced message');
+
+              REST = convScript.onMessageHelp(msg, useLang);
+
+              sendREST = true;
+
+          }
+
+        }
+
+        else {
+
+          /**
+           * Generic message
+           */
+
+          console.log(moduleName + methodName + ', got general message');
+
+          REST = convScript.onMessageHelp(msg, useLang);
+
+          sendREST = true;
+
+        }
+
+        if (sendREST) {
 
           result = await generalServices.sendREST('POST', REST.route, REST.params);
 
@@ -281,16 +311,19 @@ function onMessage() {
           console.log('Response:');
           console.dir(result);
 
-        } catch (err) {
-          console.log(moduleName + methodName + ', Error:');
-          console.log('statusCode: ' + err.statusCode);
-          console.log('message: ' + err.message);
-          console.log('error: ');
-          console.dir(err.error);
-          console.log('options: ');
-          console.dir(err.options);
         }
-      })();
-    }
+
+      } catch (err) {
+        console.log(moduleName + methodName + ', Error:');
+        // console.log('statusCode: ' + err.statusCode);
+        console.log('message: ' + err.message);
+        // console.log('error: ');
+        // console.dir(err.error);
+        // console.log('options: ');
+        // console.dir(err.options);
+      }
+
+    })();
+
   })
 } // onMessage

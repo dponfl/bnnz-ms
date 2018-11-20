@@ -41,6 +41,34 @@ module.exports = {
 
   }, // clientCreate
 
+  clientUpdate: function (criteria, params) {
+
+    const methodName = 'clientUpdate';
+
+    sails.log.info(moduleName + methodName + ', criteria: ', criteria, ', params:', params);
+
+    return new PromiseBB((resolve) => {
+
+      Client.update(criteria, params).exec((err, record) => {
+        if (err) {
+          resolve({
+            code: 500,
+            data: err,
+          });
+        }
+
+        if (record) {
+          resolve({
+            code: 200,
+            data: record,
+          });
+        }
+      })
+
+    });
+
+  }, // clientUpdate
+
   /**
    * Message storage
    */
@@ -73,6 +101,10 @@ module.exports = {
     });
 
   }, // messageCreate
+
+  /**
+   * Ref storage
+   */
 
   getRef: function (ref) {
 
@@ -136,6 +168,10 @@ module.exports = {
       })
     });
   }, // getRef
+
+  /**
+   * Service storage
+   */
 
   getService: function (service) {
 

@@ -590,18 +590,18 @@ function saveNewClient(rec) {
         if (createdClientRecord && createdClientRecord.code == 200) {
           resolve();
         } else {
-          sails.log.error(moduleName + methodName + ', messageCreate error:', createdClientRecord);
-          reject(new Error(moduleName + methodName + ', messageCreate error:', createdClientRecord));
+          sails.log.error(moduleName + methodName + ', clientCreate error:', createdClientRecord);
+          reject(new Error(moduleName + methodName + ', clientCreate error:', createdClientRecord));
         }
 
       } catch (err) {
         console.log(moduleName + methodName + ', Catch block, Error:');
-        console.log('statusCode: ' + err.statusCode);
+        // console.log('statusCode: ' + err.statusCode);
         console.log('message: ' + err.message);
-        console.log('error: ');
-        console.dir(err.error);
-        console.log('options: ');
-        console.dir(err.options);
+        // console.log('error: ');
+        // console.dir(err.error);
+        // console.log('options: ');
+        // console.dir(err.options);
 
         reject(err);
       }
@@ -641,7 +641,18 @@ ${t.t(lang, 'NEW_SUBS_WELCOME_03')}
         if (!_.isNil(sendSimpleMessageResult.status)
           && sendSimpleMessageResult.status == 'ok') {
 
-          sails.log.info('!!!!!!!!!!!!!!!! sendSimpleMessageResult.status is ok: ', sendSimpleMessageResult);
+          sails.log.info('sendSimpleMessageResult.status is ok: ', sendSimpleMessageResult);
+
+          // update the flag that the Message01 was shown
+
+          let clientUpdateResult = await storageGatewayServices.clientUpdate({id: params.id}, {start_msg_01_shown: true});
+
+          if (_.isNil(clientUpdateResult.code) || clientUpdateResult.code != 200) {
+            sails.log.error(moduleName + methodName + ', clientUpdate (start_msg_01_shown) error:', clientUpdateResult);
+            reject(new Error(moduleName + methodName + ', clientUpdate (start_msg_01_shown) error:', clientUpdateResult));
+          }
+
+          // save message to DB
 
           let saveMessageRecord = await storageGatewayServices.messageCreate({
             message: html,
@@ -661,7 +672,7 @@ ${t.t(lang, 'NEW_SUBS_WELCOME_03')}
 
         } else {
 
-          sails.log.error('!!!!!!!!!!!!!!!! sendSimpleMessageResult.status is NOT ok: ', sendSimpleMessageResult);
+          sails.log.error('sendSimpleMessageResult.status is NOT ok: ', sendSimpleMessageResult);
           // reject(new Error({statusCode: 123, message: 'sendSimpleMessage error'}));
           reject(new Error(moduleName + methodName + 'sendSimpleMessageResult.status is NOT ok'));
         }
@@ -710,6 +721,17 @@ ${t.t(lang, 'NEW_SUBS_INST_01')}
         && sendForcedMessageResult.status == 'ok') {
 
           sails.log.info('sendForcedMessageResult.status is ok: ', sendForcedMessageResult.status);
+
+          // update the flag that the Message01 was shown
+
+          let clientUpdateResult = await storageGatewayServices.clientUpdate({id: params.id}, {start_msg_02_shown: true});
+
+          if (_.isNil(clientUpdateResult.code) || clientUpdateResult.code != 200) {
+            sails.log.error(moduleName + methodName + ', clientUpdate (start_msg_02_shown) error:', clientUpdateResult);
+            reject(new Error(moduleName + methodName + ', clientUpdate (start_msg_02_shown) error:', clientUpdateResult));
+          }
+
+          // save message
 
           let saveMessageRecord = await storageGatewayServices.messageCreate({
             message: html,
@@ -963,7 +985,7 @@ function proceedClientStatus(statusObj, client) {
         } else if (paymentFlag && noPaymentPlanSelectedFlag) {
           await clientSelectPaymentPlan(client);
         } else if (paymentFlag && noPaymentFlag) {
-          switch (client.service_link.name) {
+          switch (client.service.name) {
             case 'bronze':
               await clientBronzePlanSelected(client);
               break;
