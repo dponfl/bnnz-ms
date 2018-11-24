@@ -5,7 +5,9 @@
   "description": "Bonanza Inst application",
   "keywords": [],
   "engines": {
-    "node": "8.11.1"
+    "node": "8.11.1",
+    "npm": "5.6.0",
+    "yarn": "1.1.0"
   },
   "dependencies": {
     "bluebird": "^3.5.1",
@@ -35,7 +37,7 @@
   },
   "scripts": {
     "debug": "node debug app.js",
-    "start": "node app.js",
+    "start": "node app.js --verbose --no-grunt",
     "build": "./build.sh",
     "postinstall": "chmod +x ./build.sh && npm run build"
   },

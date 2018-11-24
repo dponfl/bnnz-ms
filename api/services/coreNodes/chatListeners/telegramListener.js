@@ -97,26 +97,67 @@ function onCallbackQuery() {
 
         }
 
-        queryScript.map((elem) => {
-          if (elem.req == query.data) {
-            route = elem.route;
-            params = elem.params;
-            sendREST = true;
-          }
-        });
+        sails.log.info(moduleName + methodName + ', queryScript:', queryScript);
 
-        if (sendREST) {
-          await generalServices.sendREST('POST', route, params);
-        }
+        queryScript.steps.map((elem) => {
+
+          (async () => {
+
+            if (elem.req == query.data) {
+
+              route = elem.route;
+              params = elem.params;
+
+              // save info that the client selected payment plan
+
+              if (elem.req == 'make_payment_plan_platinum'
+                || elem.req == 'make_payment_plan_gold'
+                || elem.req == 'make_payment_plan_bronze') {
+
+                let paymentPlan = '';
+
+                switch (elem.req) {
+                  case 'make_payment_plan_platinum':
+                    paymentPlan = 'platinum';
+                    break;
+                  case 'make_payment_plan_gold':
+                    paymentPlan = 'gold';
+                    break;
+                  case 'make_payment_plan_bronze':
+                    paymentPlan = 'bronze';
+                    break;
+                }
+
+                let clientUpdateResult = await storageGatewayServices.clientUpdate({id: queryScript.clientId}, {payment_plan: paymentPlan, payment_made: true});
+
+                if (!_.isNil(clientUpdateResult.code) && clientUpdateResult.code == 200) {
+
+                  await generalServices.sendREST('POST', route, params);
+
+                } else {
+
+                  sails.log.error(moduleName + methodName + ', clientUpdate (payment_plan_selected) error:', clientUpdateResult);
+
+                }
+
+              } else {
+
+                await generalServices.sendREST('POST', route, params);
+              }
+
+            }
+          })();
+
+        });
 
       } catch (err) {
         console.log(moduleName + methodName + ', Error:');
-        console.log('statusCode: ' + err.statusCode);
+        // console.log('statusCode: ' + err.statusCode);
         console.log('message: ' + err.message);
-        console.log('error: ');
-        console.dir(err.error);
-        console.log('options: ');
-        console.dir(err.options);
+        // console.log('error: ');
+        // console.dir(err.error);
+        // console.log('options: ');
+        // console.dir(err.options);
       }
     })();
 

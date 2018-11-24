@@ -10,8 +10,7 @@ module.exports = {
   migrate: 'safe',
   attributes: {
     message: {
-      type: 'string',
-      size: 255,
+      type: 'text',
     },
     message_format: {
       type: 'string',

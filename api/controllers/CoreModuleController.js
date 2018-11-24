@@ -722,7 +722,7 @@ ${t.t(lang, 'NEW_SUBS_INST_01')}
 
           sails.log.info('sendForcedMessageResult.status is ok: ', sendForcedMessageResult.status);
 
-          // update the flag that the Message01 was shown
+          // update the flag that the Message02 was shown
 
           let clientUpdateResult = await storageGatewayServices.clientUpdate({id: params.id}, {start_msg_02_shown: true});
 
@@ -995,6 +995,20 @@ function proceedClientStatus(statusObj, client) {
             case 'platinum':
               await clientPlatinumPlanSelected(client);
               break;
+            case 'generic':
+              switch (client.payment_plan) {
+                case 'bronze':
+                  await clientBronzePlanSelected(client);
+                  break;
+                case 'gold':
+                  await clientGoldPlanSelected(client);
+                  break;
+                case 'platinum':
+                  await clientPlatinumPlanSelected(client);
+                  break;
+                default:
+                  await clientSelectPaymentPlan(client);
+              }
           }
         } else if (subscriptionFlag && noSubscriptionFlag) {
           await clientConfirmSubscription(client);
@@ -1141,33 +1155,57 @@ ${t.t(lang, 'NEW_SUBS_INST_02')}
           ],
         };
 
-        sendInlineButtons(messageParams);
+        var sendInlineButtonsResult = await sendInlineButtons(messageParams);
 
-        let saveMessageRecord = await storageGatewayServices.messageCreate({
-          message: messageParams.html,
-          message_format: 'inline_keyboard',
-          message_buttons: JSON.stringify(messageParams.inline_keyboard),
-          messenger: params.messenger,
-          message_originator: 'bot',
-          owner: params.id,
-        });
+        if (!_.isNil(sendInlineButtonsResult.status)
+          && sendInlineButtonsResult.status == 'ok') {
 
-        if (saveMessageRecord && saveMessageRecord.code == 200) {
-          resolve();
+          sails.log.info('sendInlineButtonsResult.status is ok: ', sendInlineButtonsResult.status);
+
+          // update the flag that the profile was confirmed
+
+          let clientUpdateResult = await storageGatewayServices.clientUpdate({id: params.id}, {profile_confirmed: true});
+
+          if (_.isNil(clientUpdateResult.code) || clientUpdateResult.code != 200) {
+            sails.log.error(moduleName + methodName + ', clientUpdate (profile_confirmed) error:', clientUpdateResult);
+            reject(new Error(moduleName + methodName + ', clientUpdate (profile_confirmed) error:', clientUpdateResult));
+          }
+
+          // save message
+
+          let saveMessageRecord = await storageGatewayServices.messageCreate({
+            message: messageParams.html,
+            message_format: 'inline_keyboard',
+            message_buttons: JSON.stringify(messageParams.inline_keyboard),
+            messenger: params.messenger,
+            message_originator: 'bot',
+            owner: params.id,
+          });
+
+          if (saveMessageRecord && saveMessageRecord.code == 200) {
+            resolve();
+          } else {
+            console.error(moduleName + methodName + ', messageCreate error');
+            console.dir(saveMessageRecord);
+            reject(new Error('messageCreate error'));
+          }
+
         } else {
-          console.error(moduleName + methodName + ', messageCreate error');
-          console.dir(saveMessageRecord);
-          reject(new Error('messageCreate error'));
+
+          sails.log.error('sendInlineButtonsResult.status is NOT ok: ', sendInlineButtonsResult.status);
+
+          reject(new Error(moduleName + methodName + 'sendInlineButtonsResult.status is NOT okr'));
         }
 
+
       } catch (err) {
-        console.error(moduleName + methodName + ', Catch block, Error:');
-        console.error('statusCode: ' + err.statusCode);
-        console.error('message: ' + err.message);
-        console.error('error: ');
-        console.dir(err.error);
-        console.error('options: ');
-        console.dir(err.options);
+        sails.log.error(moduleName + methodName + ', Catch block, Error:');
+        // console.error('statusCode: ' + err.statusCode);
+        sails.log.error('message: ' + err.message);
+        // console.error('error: ');
+        // console.dir(err.error);
+        // console.error('options: ');
+        // console.dir(err.options);
 
         reject(err);
       }
@@ -1220,33 +1258,54 @@ ${t.t(lang, 'NEW_SUBS_INST_06')}
           ],
         };
 
-        sendInlineButtons(messageParams);
+        var sendInlineButtonsResult = await sendInlineButtons(messageParams);
 
-        let saveMessageRecord = await storageGatewayServices.messageCreate({
-          message: messageParams.html,
-          message_format: 'inline_keyboard',
-          message_buttons: JSON.stringify(messageParams.inline_keyboard),
-          messenger: params.messenger,
-          message_originator: 'bot',
-          owner: params.id,
-        });
+        if (!_.isNil(sendInlineButtonsResult.status)
+          && sendInlineButtonsResult.status == 'ok') {
 
-        if (saveMessageRecord && saveMessageRecord.code == 200) {
-          resolve();
+          sails.log.info('sendInlineButtonsResult.status is ok: ', sendInlineButtonsResult.status);
+
+          let clientUpdateResult = await storageGatewayServices.clientUpdate({id: params.id}, {payment_plan_selected: true});
+
+          if (_.isNil(clientUpdateResult.code) || clientUpdateResult.code != 200) {
+            sails.log.error(moduleName + methodName + ', clientUpdate (payment_plan_selected) error:', clientUpdateResult);
+            reject(new Error(moduleName + methodName + ', clientUpdate (payment_plan_selected) error:', clientUpdateResult));
+          }
+
+          // save message
+
+          let saveMessageRecord = await storageGatewayServices.messageCreate({
+            message: messageParams.html,
+            message_format: 'inline_keyboard',
+            message_buttons: JSON.stringify(messageParams.inline_keyboard),
+            messenger: params.messenger,
+            message_originator: 'bot',
+            owner: params.id,
+          });
+
+          if (saveMessageRecord && saveMessageRecord.code == 200) {
+            resolve();
+          } else {
+            console.error(moduleName + methodName + ', messageCreate error');
+            console.dir(saveMessageRecord);
+            reject(new Error('messageCreate error'));
+          }
+
         } else {
-          console.error(moduleName + methodName + ', messageCreate error');
-          console.dir(saveMessageRecord);
-          reject(new Error('messageCreate error'));
+
+          sails.log.error('sendInlineButtonsResult.status is NOT ok: ', sendInlineButtonsResult.status);
+
+          reject(new Error(moduleName + methodName + 'sendInlineButtonsResult.status is NOT okr'));
         }
 
       } catch (err) {
-        console.error(moduleName + methodName + ', Catch block, Error:');
-        console.error('statusCode: ' + err.statusCode);
-        console.error('message: ' + err.message);
-        console.error('error: ');
-        console.dir(err.error);
-        console.error('options: ');
-        console.dir(err.options);
+        sails.log.error(moduleName + methodName + ', Catch block, Error:');
+        // console.error('statusCode: ' + err.statusCode);
+        sails.log.error('message: ' + err.message);
+        // console.error('error: ');
+        // console.dir(err.error);
+        // console.error('options: ');
+        // console.dir(err.options);
 
         reject(err);
       }

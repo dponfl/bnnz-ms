@@ -21,4 +21,9 @@ module.exports = {
   //   connection: 'someMongodbServer'
   // }
 
+  TELEGRAM_TOKEN: process.env.TELEGRAM_TOKEN || '',
+
+  HOST: process.env.HOST || 'http://localhost:1337',
+
+
 };

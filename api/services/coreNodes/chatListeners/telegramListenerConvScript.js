@@ -41,26 +41,28 @@ module.exports = {
           // console.dir(client);
 
           if (client.service.name == 'star') {
-            // console.log('<<<<<<<<<<<< star >>>>>>>>>>>>>>>');
-            resolve(starSteps(chatId, lang, msg));
+            console.log('<<<<<<<<<<<< star >>>>>>>>>>>>>>>');
+            resolve({clientId: client.id, steps: starSteps(chatId, lang, msg)});
           } else if (/^friend_/.test(_.trim(client.service.name))) {
-            // console.log('<<<<<<<<<<<< friend >>>>>>>>>>>>>>>');
-            resolve(friendSteps(chatId, lang, msg));
+            console.log('<<<<<<<<<<<< friend >>>>>>>>>>>>>>>');
+            resolve({clientId: client.id, steps: friendSteps(chatId, lang, msg)});
           } else if (client.service.name == 'bronze') {
-            resolve(bronzePaidSteps(chatId, lang, msg));
+            console.log('<<<<<<<<<<<< bronze >>>>>>>>>>>>>>>');
+            resolve({clientId: client.id, steps: bronzePaidSteps(chatId, lang, msg)});
           } else {
-            // console.log('<<<<<<<<<<<< general >>>>>>>>>>>>>>>');
-            resolve(generalSteps(chatId, lang, msg));
+            console.log('<<<<<<<<<<<< general >>>>>>>>>>>>>>>');
+            resolve({clientId: client.id, steps: generalSteps(chatId, lang, msg)});
           }
 
         } catch (err) {
           console.log(moduleName + methodName + ', Error:');
-          console.log('statusCode: ' + err.statusCode);
+          // console.log('statusCode: ' + err.statusCode);
           console.log('message: ' + err.message);
-          console.log('error: ');
-          console.dir(err.error);
-          console.log('options: ');
-          console.dir(err.options);
+          // console.log('error: ');
+          // console.dir(err.error);
+          // console.log('options: ');
+          // console.dir(err.options);
+
           // reject({
           //   err_location: moduleName + methodName,
           //   err_statusCode: err.statusCode,

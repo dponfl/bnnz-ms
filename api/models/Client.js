@@ -105,6 +105,10 @@ module.exports = {
     payment_plan_selected: {
       type: 'boolean',
     },
+    payment_plan: {
+      type: 'string',
+      size: 250,
+    },
     payment_made: {
       type: 'boolean',
     },
